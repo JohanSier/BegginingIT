@@ -282,7 +282,7 @@ function Btn({ label, x, y, chosen, onClick }:
   );
 }
 
-function QText({ x, y, text, infoText, infoSize, delay = 0 }: { x: number; y: number; text: string; infoText?: string; infoSize?: number; delay?: number }) {
+function QText({ x, y, text, infoText, infoSize, cardStyle, delay = 0 }: { x: number; y: number; text: string; infoText?: string; infoSize?: number; cardStyle?: React.CSSProperties; delay?: number }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4, delay }}
@@ -290,13 +290,15 @@ function QText({ x, y, text, infoText, infoSize, delay = 0 }: { x: number; y: nu
       style={{ position: "absolute", left: x, top: y, fontFamily: "Lato,sans-serif",
         fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.75)",
         whiteSpace: "nowrap", cursor: "text", userSelect: "none" }}>
-      {text}{infoText && <HoverInfo text={infoText} width={250} size={infoSize} />}
+      {text}{infoText && <HoverInfo text={infoText} width={250} size={infoSize} cardStyle={cardStyle} />}
     </motion.div>
   );
 }
 
-function HoverInfo({ text, width = 220, size = 18 }: { text: string; width?: number; size?: number }) {
+function HoverInfo({ text, width = 220, size = 18, cardStyle }: { text: string; width?: number; size?: number; cardStyle?: React.CSSProperties }) {
   const [shown, setShown] = useState(false);
+  const leftOffset = typeof cardStyle?.left === 'number' ? cardStyle.left + 28 : 28;
+  const topOffset = typeof cardStyle?.top === 'number' ? cardStyle.top : -42;
   return (
     <span data-no-drag onMouseEnter={() => setShown(true)} onMouseLeave={() => setShown(false)}
       onFocus={() => setShown(true)} onBlur={() => setShown(false)}
@@ -306,7 +308,7 @@ function HoverInfo({ text, width = 220, size = 18 }: { text: string; width?: num
         fontSize: Math.round(size * .72), lineHeight: `${size}px`, cursor: "help" }}>i</button>
       <AnimatePresence>
         {shown && <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -4 }}
-          transition={{ duration: 0.18 }} style={{ position: "absolute", left: 28, top: -42, zIndex: 30,
+          transition={{ duration: 0.18 }} style={{ position: "absolute", left: leftOffset, top: topOffset, zIndex: 30,
             width, padding: "14px 16px", borderRadius: "8px 8px 8px 8px", background: "#fff",
             border: "1px solid #e4e4e4", boxShadow: "0 1px 8px white", color: "#111",
             fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, lineHeight: 1.55,
@@ -657,7 +659,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
               style={{ marginTop: 14, width: "100%" }}>
               <MobileNode label="Give feedback to Higgy" state={progress.feedback ? "done" : "idle"} onClick={() => complete("feedback")}
-                hoverCard={<InfoCard title="Higgy is our AI assistant that helps us understand tickets better." />} />
+                hoverCard={<InfoCard title="Higgy is our AI assistant that helps us understand tickets better."/>} />
               <VConnector height={26} />
               {progress.feedback && <MobileNode label={'Change ticket status from “Open” to “Solved”'} state={progress.status ? "done" : "idle"} onClick={() => complete("status")} />}
               <VConnector height={26} />
@@ -989,14 +991,14 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             {docVis && (
               <Node key={`doc-${info}`} x={XD - 25} y={NODE_Y} label="Document Everything"
                 state={progress.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={d.doc}
-                hoverCard={<InfoCard width={170} title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />}
+                hoverCard={<InfoCard width={170} title="Write everything you did as an internal note and in bullet points. Call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />}
                 cardStyle={{ left: -15, top: 65}} />
             )}
           </AnimatePresence>
 
           {/* ── Q3 ── */}
           <AnimatePresence>
-            {q3Open && <QText key={`q3t-${info}`} x={Q3X - 68} y={NODE_Y - 42}
+            {q3Open && <QText key={`q3t-${info}`} x={Q3X - 68} y={NODE_Y - 35}
               text="Did the issue get fixed?" delay={d.q3text} />}
           </AnimatePresence>
           {q3Open && (
@@ -1019,8 +1021,11 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
           <AnimatePresence>
             {yesEnd && <>
               <Node key="feedback" x={XF} y={Q3_YES_Y - 8} label="Give feedback to Higgy"
-                state={progress.feedback ? "done" : "idle"} onClick={() => complete("feedback")} delay={0.08}
-                hoverCard={<InfoCard title="Higgy is our AI assistant that helps us understand tickets better." />} cardStyle={{ left: -72, top: 52 }} />
+                state={progress.feedback ? "done" : "idle"} onClick={() => complete("feedback")} delay={0.08} />
+              <QText key="feedback-info" x={XF + 32} y={Q3_YES_Y + 30}
+                text=""
+                infoText="Higgy is our AI assistant that helps us understand tickets better."
+                infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 20 }} />
               {progress.feedback && <Node key="status-solved" x={XS} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
                 state={progress.status ? "done" : "idle"} onClick={() => complete("status")} delay={0.22} />}
               {progress.status && <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />}
