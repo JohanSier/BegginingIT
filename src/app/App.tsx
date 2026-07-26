@@ -474,7 +474,7 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
               style={{ marginTop: 16, width: "100%" }}>
-              <InfoCard compact
+              <InfoCard 
                 title="Take it no matter the order"
                 bullets={["VIP Queue always has priority"]} />
             </motion.div>
@@ -517,7 +517,7 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: d.cw }}
                 style={{ marginTop: 12, width: "100%" }}>
-                <InfoCard compact
+                <InfoCard 
                   title="Gather more information using 5 Ws"
                   bullets={[
                     "1. Let user know you are legitimate by saying the Word of the Day",
@@ -571,8 +571,8 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
               style={{ marginTop: 14, width: "100%" }}>
-              <InfoCard compact
-                title="Write everything you did to solve the issue, in bullet points. You can call the user to confirm what you did to solve issue (optional)"
+              <InfoCard 
+                title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)"
                 bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
             </motion.div>
           )}
@@ -908,7 +908,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
             {yesEnd && (
               <div key="yes-card" data-no-drag
                 style={{ position: "absolute", left: Q3X + 10, top: Q3_YES_Y - 185 }}>
-                <InfoCard width={300} title="Write everything you did to solve the issue, in bullet points. You can call the user to confirm what you did to solve issue (optional)"
+                <InfoCard width={300} title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)"
                   bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
               </div>
             )}
