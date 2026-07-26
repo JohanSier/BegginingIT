@@ -152,7 +152,7 @@ function Human({ size = 40 }: { size?: number }) {
 const CARD_STYLE: React.CSSProperties = {
   background: "white",
   border: "1px solid #e4e4e4",
-  borderRadius: "8px 8px 8px 2px",   // tl tr br bl — Figma asymmetric
+  borderRadius: "2px 8px 8px 8px",   // tl tr br bl — Figma asymmetric
   filter: "drop-shadow(0px 1px 3.5px white)",
   fontFamily: "Lato, sans-serif",
   padding: "16px",
@@ -298,7 +298,7 @@ function HoverInfo({ text, width = 220, size = 18 }: { text: string; width?: num
       <AnimatePresence>
         {shown && <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -4 }}
           transition={{ duration: 0.18 }} style={{ position: "absolute", left: 28, top: -42, zIndex: 30,
-            width, padding: "14px 16px", borderRadius: "8px 8px 8px 2px", background: "#fff",
+            width, padding: "14px 16px", borderRadius: "8px 8px 8px 8px", background: "#fff",
             border: "1px solid #e4e4e4", boxShadow: "0 1px 8px white", color: "#111",
             fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, lineHeight: 1.55,
             textAlign: "center", whiteSpace: "normal" }}>{text}</motion.span>}
@@ -1021,7 +1021,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
           <AnimatePresence>
             {callVis && (
               <div key="call-card" data-no-drag
-                style={{ position: "absolute", left: XC - 70, top: CY + 50 }}>
+                style={{ position: "absolute", left: XC - 20, top: CY + 50 }}>
                 <InfoCard title="Gather more information using 5 Ws"
                   bullets={[
                     "1. Let user know you are legitimate by saying the Word of the Day",
