@@ -6,7 +6,7 @@ type Progress = { analyze: boolean; call: boolean; work: boolean; doc: boolean; 
 const EMPTY_PROGRESS: Progress = { analyze: false, call: false, work: false, doc: false, feedback: false, status: false, letKnow: false, escalate: false };
 
 // ─── Desktop layout constants ─────────────────────────────────────────────────
-const CW = 1560;
+const CW = 1700;
 const CH = 560;
 const NODE_Y = 262;
 const Q1X = 152;
@@ -30,7 +30,7 @@ const P_ANALYZE_Q2 = `M ${XA+12},${AY} C ${XA+80},${AY-32} ${Q2X-50},${Q2Y-8} ${
 // A short incoming segment leaves clear space for the urgency question label.
 const P_Q1_NO      = `M ${Q1X},${Q1_NO_Y} C ${Q1X+54},${Q1_NO_Y+26} ${UX-98},${UY-18} ${UX-70},${UY}`;
 const P_URGENT_YES = `M ${U_BTN_X},${U_YES_Y} C ${U_BTN_X+42},${U_YES_Y-70} ${Q2X-45},${Q2Y+40} ${Q2X},${Q2Y}`;
-const P_URGENT_NO  = `M ${U_BTN_X},${U_NO_Y} C ${U_BTN_X+125},${U_NO_Y+42} ${Q2X-55},${Q2Y+76} ${Q2X},${Q2Y}`;
+const P_URGENT_NO  = `M ${U_BTN_X},${U_NO_Y} C ${U_BTN_X+45},${U_NO_Y+42} ${Q2X-55},${Q2Y+76} ${Q2X},${Q2Y}`;
 const P_Q2_YES     = `M ${Q2X},${Q2_YES_Y} C ${Q2X+65},${Q2_YES_Y-44} ${XW-55},${Q2_YES_Y-44} ${XW},${NODE_Y}`;
 const P_Q2_NO      = `M ${Q2X},${Q2_NO_Y} C ${Q2X+20},${CY} ${XC-16},${CY} ${XC},${CY}`;
 const P_CALL_WORK  = `M ${XC+12},${CY} L ${XW-12},${NODE_Y}`;
@@ -600,7 +600,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               <motion.div key={`call-card-${info}`}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: d.cw }}
-                style={{ marginTop: 12, width: "100%" }}>
+                style={{marginTop: 12, width: "100%" }}>
                 <InfoCard 
                   title="Gather more information using 5 Ws"
                   bullets={[
@@ -973,7 +973,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             {callVis && <Node key={`call-${info}`} x={XC} y={CY} label="Call the user"
               state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
               hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Let user know you are legitimate by saying the Word of the Day", "2. Most Important: Do Caller Verify"]} />}
-              cardStyle={{ left: -50, top: 60 }} />}
+              cardStyle={{ left: -30, top: 60 }} />}
           </AnimatePresence>
 
           {/* ── Work the Ticket ── */}
@@ -987,10 +987,10 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
           {/* ── Document Everything ── */}
           <AnimatePresence>
             {docVis && (
-              <Node key={`doc-${info}`} x={XD} y={NODE_Y} label="Document Everything"
+              <Node key={`doc-${info}`} x={XD - 25} y={NODE_Y} label="Document Everything"
                 state={progress.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={d.doc}
-                hoverCard={<InfoCard width={300} title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />}
-                cardStyle={{ left: -132, top: -190 }} />
+                hoverCard={<InfoCard width={170} title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />}
+                cardStyle={{ left: -15, top: 65}} />
             )}
           </AnimatePresence>
 
