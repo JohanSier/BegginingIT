@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from "motion/react";
 type Branch = "yes" | "no" | null;
 
 // ─── Desktop layout constants ─────────────────────────────────────────────────
-const CW = 1480;
-const CH = 520;
+const CW = 1560;
+const CH = 560;
 const NODE_Y = 262;
 const Q1X = 152;
 const Q1_YES_Y = NODE_Y;
@@ -17,12 +17,17 @@ const XC = 486; const CY = NODE_Y;
 const XW = 630; const XD = 766; const Q3X = 898;
 const Q3_YES_Y = NODE_Y - 42; const Q3_NO_Y = NODE_Y + 18;
 const XE = 1010; const EY = NODE_Y + 50;
+const UX = 330; const UY = NODE_Y + 88; const U_BTN_X = UX + 48;
+const U_YES_Y = UY - 18; const U_NO_Y = UY + 34;
+const XF = 1010; const XS = 1150; const XEND = 1325;
 
 // ─── SVG paths ────────────────────────────────────────────────────────────────
 const P_START      = `M ${76},${Q1_YES_Y} L ${Q1X},${Q1_YES_Y}`;
 const P_Q1_YES     = `M ${Q1X},${Q1_YES_Y} C ${Q1X+15},${Q1_YES_Y-28} ${XA-16},${AY-28} ${XA},${AY}`;
 const P_ANALYZE_Q2 = `M ${XA+12},${AY} C ${XA+80},${AY-32} ${Q2X-50},${Q2Y-8} ${Q2X},${Q2Y}`;
-const P_Q1_NO      = `M ${Q1X},${Q1_NO_Y} C ${Q1X+80},${Q1_NO_Y+30} ${Q2X-60},${Q2_NO_Y+40} ${Q2X},${Q2Y}`;
+const P_Q1_NO      = `M ${Q1X},${Q1_NO_Y} C ${Q1X+54},${Q1_NO_Y+26} ${U_BTN_X-44},${UY-18} ${U_BTN_X},${UY}`;
+const P_URGENT_YES = `M ${U_BTN_X},${U_YES_Y} C ${U_BTN_X+42},${U_YES_Y-70} ${Q2X-45},${Q2Y+40} ${Q2X},${Q2Y}`;
+const P_URGENT_NO  = `M ${U_BTN_X},${U_NO_Y} C ${U_BTN_X+45},${U_NO_Y+42} ${Q2X-55},${Q2Y+76} ${Q2X},${Q2Y}`;
 const P_Q2_YES     = `M ${Q2X},${Q2_YES_Y} C ${Q2X+65},${Q2_YES_Y-44} ${XW-55},${Q2_YES_Y-44} ${XW},${NODE_Y}`;
 const P_Q2_NO      = `M ${Q2X},${Q2_NO_Y} C ${Q2X+20},${CY} ${XC-16},${CY} ${XC},${CY}`;
 const P_CALL_WORK  = `M ${XC+12},${CY} L ${XW-12},${NODE_Y}`;
@@ -30,10 +35,13 @@ const P_WORK_DOC   = `M ${XW+12},${NODE_Y} L ${XD-12},${NODE_Y}`;
 const P_DOC_Q3     = `M ${XD+12},${NODE_Y} L ${Q3X-5},${NODE_Y}`;
 const P_Q3_YES     = `M ${Q3X},${Q3_YES_Y} C ${Q3X+55},${Q3_YES_Y-38} ${XE-10},${Q3_YES_Y-32} ${XE},${Q3_YES_Y-8}`;
 const P_Q3_NO      = `M ${Q3X},${Q3_NO_Y} C ${Q3X+40},${EY} ${XE-20},${EY} ${XE},${EY}`;
+const P_FEEDBACK_STATUS = `M ${XF+12},${Q3_YES_Y-8} L ${XS-12},${Q3_YES_Y-8}`;
+const P_STATUS_END = `M ${XS+12},${Q3_YES_Y-8} C ${XS+56},${Q3_YES_Y-34} ${XEND-50},${Q3_YES_Y-34} ${XEND},${Q3_YES_Y-8}`;
+const P_ESC_END = `M ${XE+12},${EY} C ${XE+105},${EY+42} ${XEND-54},${EY+42} ${XEND},${EY}`;
 
 // ─── Shared icons ─────────────────────────────────────────────────────────────
 function HomeIcon({ on }: { on: boolean }) {
-  const c = on ? "#fff" : "#E4E4E4";
+  const c = on ? "#fff" : "#898989";
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <path d="M3 9.5L12 3L21 9.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z"
@@ -42,7 +50,7 @@ function HomeIcon({ on }: { on: boolean }) {
   );
 }
 function TicketIcon({ on }: { on: boolean }) {
-  const c = on ? "#fff" : "#E4E4E4";
+  const c = on ? "#fff" : "#898989";
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <rect x="2" y="6" width="20" height="13" rx="2" stroke={c} strokeWidth="1.5" />
@@ -52,7 +60,7 @@ function TicketIcon({ on }: { on: boolean }) {
   );
 }
 function EscIcon({ on }: { on: boolean }) {
-  const c = on ? "#fff" : "#E4E4E4";
+  const c = on ? "#fff" : "#898989";
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="4" stroke={c} strokeWidth="1.5" />
@@ -63,6 +71,8 @@ function EscIcon({ on }: { on: boolean }) {
 }
 
 function NavPill({ active, onChange }: { active: string; onChange: (t: string) => void }) {
+  const [hovered, setHovered] = useState<string | null>(null);
+
   return (
     <div className="fixed top-10 left-1/2 z-50 flex gap-[18px] items-center justify-center px-10 py-[14px]"
       style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}>
@@ -70,16 +80,24 @@ function NavPill({ active, onChange }: { active: string; onChange: (t: string) =
         { id: "home", label: "Home", I: HomeIcon },
         { id: "work", label: "Work Ticket", I: TicketIcon },
         { id: "escalations", label: "Escalations", I: EscIcon },
-      ].map(({ id, label, I }) => (
+      ].map(({ id, label, I }) => {
+        const isHighlighted = active === id || hovered === id;
+
+        return (
         <button key={id} onClick={() => onChange(id)}
+          onMouseEnter={() => setHovered(id)}
+          onMouseLeave={() => setHovered(null)}
+          onFocus={() => setHovered(id)}
+          onBlur={() => setHovered(null)}
           className="flex flex-col items-center gap-[2px] cursor-pointer bg-transparent border-0 p-0">
-          <I on={active === id} />
+          <I on={isHighlighted} />
           <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontWeight: 700, fontSize: 12,
-            color: active === id ? "#fff" : "#E4E4E4", whiteSpace: "nowrap", transition: "color 0.2s" }}>
+            color: isHighlighted ? "#fff" : "#898989", whiteSpace: "nowrap", transition: "color 0.2s" }}>
             {label}
           </span>
         </button>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -254,7 +272,7 @@ function Btn({ label, x, y, chosen, onClick }:
   );
 }
 
-function QText({ x, y, text, delay = 0 }: { x: number; y: number; text: string; delay?: number }) {
+function QText({ x, y, text, infoText, infoSize, delay = 0 }: { x: number; y: number; text: string; infoText?: string; infoSize?: number; delay?: number }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4, delay }}
@@ -262,9 +280,46 @@ function QText({ x, y, text, delay = 0 }: { x: number; y: number; text: string; 
       style={{ position: "absolute", left: x, top: y, fontFamily: "Lato,sans-serif",
         fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.75)",
         whiteSpace: "nowrap", cursor: "text", userSelect: "none" }}>
-      {text}
+      {text}{infoText && <HoverInfo text={infoText} width={250} size={infoSize} />}
     </motion.div>
   );
+}
+
+function HoverInfo({ text, width = 220, size = 18 }: { text: string; width?: number; size?: number }) {
+  const [shown, setShown] = useState(false);
+  return (
+    <span data-no-drag onMouseEnter={() => setShown(true)} onMouseLeave={() => setShown(false)}
+      onFocus={() => setShown(true)} onBlur={() => setShown(false)}
+      style={{ position: "relative", display: "inline-flex", marginLeft: 7, verticalAlign: "middle" }}>
+      <button aria-label="More information" style={{ width: size, height: size, borderRadius: "50%", border: "none",
+        padding: 0, background: "#d8d8d8", color: "#111", fontFamily: "serif", fontWeight: 700,
+        fontSize: Math.round(size * .72), lineHeight: `${size}px`, cursor: "help" }}>i</button>
+      <AnimatePresence>
+        {shown && <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -4 }}
+          transition={{ duration: 0.18 }} style={{ position: "absolute", left: 28, top: -42, zIndex: 30,
+            width, padding: "14px 16px", borderRadius: "8px 8px 8px 2px", background: "#fff",
+            border: "1px solid #e4e4e4", boxShadow: "0 1px 8px white", color: "#111",
+            fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, lineHeight: 1.55,
+            textAlign: "center", whiteSpace: "normal" }}>{text}</motion.span>}
+      </AnimatePresence>
+    </span>
+  );
+}
+
+function EndMarker({ x, y, delay = 0 }: { x?: number; y?: number; delay?: number }) {
+  const content = <><svg width="58" height="52" viewBox="0 0 58 52" fill="none" style={{ filter: "drop-shadow(0 0 8px white)" }} aria-label="Treasure chest">
+      <path d="M8 20h42v25H8z" fill="#ffad3e" stroke="#ffad3e" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M11 25h36v17H11z" fill="#bc4058" />
+      <path d="M6 20c5-15 35-18 46 0l-5 5H11z" fill="#ff9f32" stroke="#ffad3e" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M13 20c8-8 24-9 34 0H13z" fill="#bd3f57" />
+      <path d="M26 20h7v25h-7z" fill="#ffd057" />
+      <path d="M7 45h44l-5 5H12z" fill="#ffc146" />
+      <circle cx="29.5" cy="30" r="3" fill="#ffdf65" />
+      <path d="M4 43l4-2m43 2l3-2M16 48l3 2m20-2l3 2" stroke="#ffd52b" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+    <div style={{ marginTop: 7, fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 16, color: "rgba(255,255,255,0.78)" }}>END</div></>;
+  if (x === undefined || y === undefined) return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ textAlign: "center" }}>{content}</motion.div>;
+  return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ position: "absolute", left: x - 25, top: y - 30, textAlign: "center" }}>{content}</motion.div>;
 }
 
 // ─── Escalation card with copyable template dropdown ─────────────────────────
@@ -388,8 +443,8 @@ function MobileNode({ label, sublabel, state, delay = 0 }:
   );
 }
 
-function MobileFork({ question, yesChosen, noChosen, onYes, onNo, delay = 0 }:
-  { question: string; yesChosen: boolean; noChosen: boolean;
+function MobileFork({ question, infoText, yesChosen, noChosen, onYes, onNo, delay = 0 }:
+  { question: string; infoText?: string; yesChosen: boolean; noChosen: boolean;
     onYes: () => void; onNo: () => void; delay?: number }) {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -397,7 +452,7 @@ function MobileFork({ question, yesChosen, noChosen, onYes, onNo, delay = 0 }:
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
       <p style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13,
         color: "rgba(255,255,255,0.78)", textAlign: "center", margin: 0 }}>
-        {question}
+        {question}{infoText && <HoverInfo text={infoText} width={210} />}
       </p>
       <div style={{ display: "flex", gap: 36 }}>
         {[
@@ -422,14 +477,16 @@ function MobileFork({ question, yesChosen, noChosen, onYes, onNo, delay = 0 }:
 }
 
 // ─── Mobile layout ─────────────────────────────────────────────────────────────
-function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed }: {
+function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent, pickInfo, pickFixed }: {
   tab: string; setTab: (t: string) => void;
-  vip: Branch; info: Branch; fixed: Branch;
+  vip: Branch; urgent: Branch; info: Branch; fixed: Branch;
   pickVip: (v: "yes"|"no") => void;
+  pickUrgent: (v: "yes"|"no") => void;
   pickInfo: (v: "yes"|"no") => void;
   pickFixed: (v: "yes"|"no") => void;
 }) {
   const hasCall = info === "no";
+  const q2Open = vip === "yes" || urgent !== null;
   const workVis = info !== null;
   const q3Open  = workVis;
   const escVis  = fixed === "no";
@@ -496,9 +553,19 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
           )}
         </AnimatePresence>
 
+        <AnimatePresence>
+          {vip === "no" && (
+            <MobileFork key="urgent"
+              question="Is it an urgent ticket?"
+              infoText="We treat tickets as urgent if an issue completely stops users from doing their work, or if it creates a security risk for the company (like a hacked account)."
+              yesChosen={urgent === "yes"} noChosen={urgent === "no"}
+              onYes={() => pickUrgent("yes")} onNo={() => pickUrgent("no")} />
+          )}
+        </AnimatePresence>
+
         {/* Q2 fork */}
         <AnimatePresence>
-          {vip !== null && (
+          {q2Open && (
             <MobileFork key={`q2-${vip}`}
               question="Is the information provided enough?"
               yesChosen={info === "yes"} noChosen={info === "no"}
@@ -574,6 +641,15 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
               <InfoCard 
                 title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)"
                 bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
+              <VConnector height={26} />
+              <MobileNode label="Give feedback to Higgy" state="done" />
+              <p style={{ margin: "-3px 0 0", color: "rgba(255,255,255,0.72)", fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, textAlign: "center" }}>
+                <HoverInfo text="Higgy is our AI assistant that helps us understand tickets better." width={205} />
+              </p>
+              <VConnector height={26} />
+              <MobileNode label={'Change ticket status from “Open” to “Solved”'} state="done" />
+              <VConnector height={26} />
+              <EndMarker />
             </motion.div>
           )}
         </AnimatePresence>
@@ -591,6 +667,11 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
                 style={{ marginTop: 14, width: "100%" }}>
                 <EscalationCard compact />
               </motion.div>
+              <VConnector height={26} />
+              <MobileNode label="Escalate Case" state="active" />
+              <p style={{ margin: "-3px 0 0", color: "rgba(255,255,255,0.72)", fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, textAlign: "center" }}>Leave the ticket status in “Open”</p>
+              <VConnector height={26} />
+              <EndMarker />
             </>
           )}
         </AnimatePresence>
@@ -614,10 +695,11 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
 }
 
 // ─── Desktop layout — infinite pannable canvas ───────────────────────────────
-function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed }: {
+function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent, pickInfo, pickFixed }: {
   tab: string; setTab: (t: string) => void;
-  vip: Branch; info: Branch; fixed: Branch;
+  vip: Branch; urgent: Branch; info: Branch; fixed: Branch;
   pickVip: (v: "yes"|"no") => void;
+  pickUrgent: (v: "yes"|"no") => void;
   pickInfo: (v: "yes"|"no") => void;
   pickFixed: (v: "yes"|"no") => void;
 }) {
@@ -642,7 +724,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
 
   // Auto-pan: workflow advances camera left as user makes choices
   // This is added ON TOP of the user's manual cam position
-  const autoPanX = fixed !== null ? -510 : info !== null ? -348 : vip !== null ? -108 : 0;
+  const autoPanX = fixed !== null ? -540 : info !== null ? -348 : urgent !== null ? -220 : vip !== null ? -108 : 0;
 
   // Combined scene transform — camera + auto-advance
   // When dragging: no CSS transition (instant follow)
@@ -710,7 +792,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
   useEffect(() => () => { if (raf.current !== null) cancelAnimationFrame(raf.current); }, []);
 
   // ── Derived state ─────────────────────────────────────────────────────────
-  const q2Open  = vip !== null;
+  const q2Open  = vip === "yes" || urgent !== null;
   const callVis = info === "no";
   const workVis = info !== null;
   const q3Open  = workVis;
@@ -772,6 +854,14 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
             <DimPath d={P_Q1_YES} bright={vip === "yes"} />
             <DimPath d={P_Q1_NO}  bright={vip === "no"} />
             <AnimatePresence>
+              {vip === "no" && (
+                <>
+                  <DimPath d={P_URGENT_YES} bright={urgent === "yes"} />
+                  <DimPath d={P_URGENT_NO} bright={urgent === "no"} />
+                </>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
               {vip === "yes" && <DotPath key="a-q2" d={P_ANALYZE_Q2} delay={0.12} />}
             </AnimatePresence>
             <AnimatePresence>
@@ -792,7 +882,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
               {workVis && <DotPath key={`dq-${info}`}  d={P_DOC_Q3}    delay={d.docQ3} />}
             </AnimatePresence>
             <AnimatePresence>
-              {q3Open && (
+            {q3Open && (
                 <>
                   <DimPath key={`q3y-${info}`} d={P_Q3_YES} bright={fixed === "yes"} />
                   <DimPath key={`q3n-${info}`} d={P_Q3_NO}  bright={fixed === "no"} />
@@ -817,11 +907,29 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
                 Is Ticket in VIP queue?
               </motion.div>
             )}
+            <AnimatePresence>
+              {yesEnd && <><DotPath d={P_FEEDBACK_STATUS} delay={0.22} /><DotPath d={P_STATUS_END} delay={0.36} /></>}
+              {escVis && <DotPath d={P_ESC_END} delay={0.3} />}
+            </AnimatePresence>
           </AnimatePresence>
 
           {/* ── Q1 Yes / No ── */}
           <Btn label="Yes" x={Q1X} y={Q1_YES_Y - 20} chosen={vip === "yes"} onClick={() => pickVip("yes")} />
           <Btn label="No"  x={Q1X} y={Q1_NO_Y + 12}  chosen={vip === "no"}  onClick={() => pickVip("no")} />
+
+          {/* ── Urgent ticket check (NO at Q1) ── */}
+          <AnimatePresence>
+            {vip === "no" && <QText key="urgent-text" x={UX - 48} y={UY + 3}
+              text="Is it an urgent ticket?"
+              infoText="We treat tickets as urgent if an issue completely stops users from doing their work, or if it creates a security risk for the company (like a hacked account)."
+              infoSize={13} delay={0.08} />}
+          </AnimatePresence>
+          {vip === "no" && (
+            <>
+              <Btn label="Yes" x={U_BTN_X} y={U_YES_Y - 16} chosen={urgent === "yes"} onClick={() => pickUrgent("yes")} />
+              <Btn label="No" x={U_BTN_X} y={U_NO_Y + 12} chosen={urgent === "no"} onClick={() => pickUrgent("no")} />
+            </>
+          )}
 
           {/* ── Analyze Information ── */}
           <AnimatePresence>
@@ -830,7 +938,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
 
           {/* ── Q2 ── */}
           <AnimatePresence>
-            {q2Open && <QText key={`q2t-${vip}`} x={Q2X - 100} y={Q2Y - 42}
+            {q2Open && <QText key={`q2t-${vip}`} x={Q2X - 100} y={Q2Y - 28}
               text="Is the information provided enough?" delay={0.1} />}
           </AnimatePresence>
           {q2Open && (
@@ -879,6 +987,23 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
               <Node key={`esc-${fixed}`} x={XE} y={EY} label="Let user know"
                 sublabel="you'll escalate it" state="active" delay={0} />
             )}
+          </AnimatePresence>
+
+          {/* ── Completion paths ── */}
+          <AnimatePresence>
+            {yesEnd && <>
+              <Node key="feedback" x={XF} y={Q3_YES_Y - 8} label="Give feedback to Higgy" state="done" delay={0.08} />
+              <Node key="status-solved" x={XS} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'} state="done" delay={0.22} />
+              <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />
+              <div data-no-drag style={{ position: "absolute", left: XF + 40, top: Q3_YES_Y + 14 }}>
+                <HoverInfo text="Higgy is our AI assistant that helps us understand tickets better." width={210} />
+              </div>
+            </>}
+            {escVis && <>
+              <Node key="escalate-case" x={XS} y={EY} label="Escalate Case" state="active" delay={0.14} />
+              <QText key="open-status" x={XS - 74} y={EY + 45} text={'Leave the ticket status in “Open”'} delay={0.25} />
+              <EndMarker x={XEND} y={EY} delay={0.42} />
+            </>}
           </AnimatePresence>
 
           {/* ── Cards (data-no-drag so pointer-down inside them doesn't pan) ── */}
@@ -947,8 +1072,9 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [tab, setTab]     = useState("work");
+  const [tab, setTab]     = useState("home");
   const [vip, setVip]     = useState<Branch>(null);
+  const [urgent, setUrgent] = useState<Branch>(null);
   const [info, setInfo]   = useState<Branch>(null);
   const [fixed, setFixed] = useState<Branch>(null);
   const [mobile, setMobile] = useState(false);
@@ -961,8 +1087,12 @@ export default function App() {
   }, []);
 
   function pickVip(v: "yes" | "no") {
-    if (vip === v) { setVip(null); setInfo(null); setFixed(null); }
-    else           { setVip(v);   setInfo(null); setFixed(null); }
+    if (vip === v) { setVip(null); setUrgent(null); setInfo(null); setFixed(null); }
+    else           { setVip(v);   setUrgent(null); setInfo(null); setFixed(null); }
+  }
+  function pickUrgent(v: "yes" | "no") {
+    if (urgent === v) { setUrgent(null); setInfo(null); setFixed(null); }
+    else              { setUrgent(v);   setInfo(null); setFixed(null); }
   }
   function pickInfo(v: "yes" | "no") {
     if (info === v) { setInfo(null); setFixed(null); }
@@ -973,7 +1103,7 @@ export default function App() {
     else             setFixed(v);
   }
 
-  const shared = { tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed };
+  const shared = { tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent, pickInfo, pickFixed };
 
   return (
     <div style={{ width: "100vw", height: mobile ? "auto" : "100vh",
