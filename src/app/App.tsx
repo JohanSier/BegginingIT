@@ -25,7 +25,8 @@ const XF = 1010; const XS = 1150; const XEND = 1325;
 const P_START      = `M ${76},${Q1_YES_Y} L ${Q1X},${Q1_YES_Y}`;
 const P_Q1_YES     = `M ${Q1X},${Q1_YES_Y} C ${Q1X+15},${Q1_YES_Y-28} ${XA-16},${AY-28} ${XA},${AY}`;
 const P_ANALYZE_Q2 = `M ${XA+12},${AY} C ${XA+80},${AY-32} ${Q2X-50},${Q2Y-8} ${Q2X},${Q2Y}`;
-const P_Q1_NO      = `M ${Q1X},${Q1_NO_Y} C ${Q1X+54},${Q1_NO_Y+26} ${U_BTN_X-44},${UY-18} ${U_BTN_X},${UY}`;
+// A short incoming segment leaves clear space for the urgency question label.
+const P_Q1_NO      = `M ${Q1X},${Q1_NO_Y} C ${Q1X+54},${Q1_NO_Y+26} ${UX-98},${UY-18} ${UX-70},${UY}`;
 const P_URGENT_YES = `M ${U_BTN_X},${U_YES_Y} C ${U_BTN_X+42},${U_YES_Y-70} ${Q2X-45},${Q2Y+40} ${Q2X},${Q2Y}`;
 const P_URGENT_NO  = `M ${U_BTN_X},${U_NO_Y} C ${U_BTN_X+45},${U_NO_Y+42} ${Q2X-55},${Q2Y+76} ${Q2X},${Q2Y}`;
 const P_Q2_YES     = `M ${Q2X},${Q2_YES_Y} C ${Q2X+65},${Q2_YES_Y-44} ${XW-55},${Q2_YES_Y-44} ${XW},${NODE_Y}`;
@@ -853,6 +854,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
             <DimPath d={P_START}  bright={true} />
             <DimPath d={P_Q1_YES} bright={vip === "yes"} />
             <DimPath d={P_Q1_NO}  bright={vip === "no"} />
+            <DimPath d={P_Q1_NO}  bright={vip === "no"} />
             <AnimatePresence>
               {vip === "no" && (
                 <>
@@ -919,7 +921,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
 
           {/* ── Urgent ticket check (NO at Q1) ── */}
           <AnimatePresence>
-            {vip === "no" && <QText key="urgent-text" x={UX - 48} y={UY + 3}
+            {vip === "no" && <QText key="urgent-text" x={UX - 50} y={UY + -5}
               text="Is it an urgent ticket?"
               infoText="We treat tickets as urgent if an issue completely stops users from doing their work, or if it creates a security risk for the company (like a hacked account)."
               infoSize={13} delay={0.08} />}
