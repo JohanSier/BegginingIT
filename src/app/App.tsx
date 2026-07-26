@@ -15,7 +15,7 @@ const Q2X = 440; const Q2Y = NODE_Y - 28;
 const Q2_YES_Y = Q2Y - 36; const Q2_NO_Y = Q2Y + 6;
 const XC = 486; const CY = NODE_Y;
 const XW = 630; const XD = 766; const Q3X = 898;
-const Q3_YES_Y = NODE_Y - 42; const Q3_NO_Y = NODE_Y + 42;
+const Q3_YES_Y = NODE_Y - 42; const Q3_NO_Y = NODE_Y + 18;
 const XE = 1010; const EY = NODE_Y + 50;
 
 // ─── SVG paths ────────────────────────────────────────────────────────────────
@@ -156,8 +156,8 @@ const CARD_BODY: React.CSSProperties = {
   margin: 0,
 };
 
-function InfoCard({ title, bullets, note }: {
-  title: string; bullets?: string[]; note?: string;
+function InfoCard({ title, bullets, note, width = 168 }: {
+  title: string; bullets?: string[]; note?: string; width?: number;
 }) {
   return (
     <motion.div
@@ -165,7 +165,7 @@ function InfoCard({ title, bullets, note }: {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      style={{ ...CARD_STYLE, width: 168 }}
+      style={{ ...CARD_STYLE, width }}
     >
       <p style={{ ...CARD_TITLE, cursor: "text" }}>{title}</p>
       {(bullets || note) && <div style={CARD_DIVIDER} />}
@@ -564,7 +564,7 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
               exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
               style={{ marginTop: 14, width: "100%" }}>
               <InfoCard compact
-                title="Write everything you did to solve the issue, in bullet points"
+                title="Write everything you did to solve the issue, in bullet points. You can call the user to confirm what you did to solve issue (optional)"
                 bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
             </motion.div>
           )}
@@ -798,11 +798,11 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
 
           {/* ── Q1 question (fades out once answered) ── */}
           <AnimatePresence>
-            {vip === null && (
+            {vip !== "yes" && (
               <motion.div key="q1text" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
                 data-no-drag
-                style={{ position: "absolute", left: Q1X - 10, top: Q1_TEXT_Y,
+                style={{ position: "absolute", left: Q1X - 30, top: Q1_TEXT_Y,
                   fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13,
                   color: "rgba(255,255,255,0.75)", whiteSpace: "nowrap",
                   cursor: "text", userSelect: "none" }}>
@@ -861,7 +861,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
           {q3Open && (
             <>
               <Btn label="Yes" x={Q3X} y={Q3_YES_Y - 14} chosen={fixed === "yes"} onClick={() => pickFixed("yes")} />
-              <Btn label="No"  x={Q3X} y={Q3_NO_Y + 14}  chosen={fixed === "no"}  onClick={() => pickFixed("no")} />
+              <Btn label="No"  x={Q3X + 20} y={Q3_NO_Y + 14}  chosen={fixed === "no"}  onClick={() => pickFixed("no")} />
             </>
           )}
 
@@ -877,7 +877,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
           <AnimatePresence>
             {vip === "yes" && (
               <div key="vip-card" data-no-drag
-                style={{ position: "absolute", left: Q1X - 55, top: Q1_YES_Y - 158 }}>
+                style={{ position: "absolute", left: Q1X - 15, top: Q1_YES_Y - 148 }}>
                 <InfoCard title="Take it no matter the order" bullets={["VIP Queue always has priority"]} />
               </div>
             )}
@@ -899,8 +899,8 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
           <AnimatePresence>
             {yesEnd && (
               <div key="yes-card" data-no-drag
-                style={{ position: "absolute", left: Q3X + 10, top: Q3_YES_Y - 218 }}>
-                <InfoCard title="Write everything you did to solve the issue, in bullet points"
+                style={{ position: "absolute", left: Q3X + 10, top: Q3_YES_Y - 185 }}>
+                <InfoCard width={300} title="Write everything you did to solve the issue, in bullet points. You can call the user to confirm what you did to solve issue (optional)"
                   bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
               </div>
             )}
