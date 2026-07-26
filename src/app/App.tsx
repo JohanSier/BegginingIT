@@ -38,9 +38,8 @@ const P_WORK_DOC   = `M ${XW+12},${NODE_Y} L ${XD-12},${NODE_Y}`;
 const P_DOC_Q3     = `M ${XD+12},${NODE_Y} L ${Q3X-5},${NODE_Y}`;
 const P_Q3_YES     = `M ${Q3X},${Q3_YES_Y} C ${Q3X+55},${Q3_YES_Y-38} ${XE-10},${Q3_YES_Y-32} ${XE},${Q3_YES_Y-8}`;
 const P_Q3_NO      = `M ${Q3X},${Q3_NO_Y} C ${Q3X+40},${EY} ${XE-20},${EY} ${XE},${EY}`;
-const P_FEEDBACK_STATUS = `M ${XF+12},${Q3_YES_Y-8} L ${XS-12},${Q3_YES_Y-8}`;
-const P_STATUS_END = `M ${XS+12},${Q3_YES_Y-8} C ${XS+56},${Q3_YES_Y-34} ${XEND-50},${Q3_YES_Y-34} ${XEND},${Q3_YES_Y-8}`;
-const P_ESC_END = `M ${XE+12},${EY} C ${XE+105},${EY+42} ${XEND-54},${EY+42} ${XEND},${EY}`;
+const P_FEEDBACK_STATUS = `M ${XF+12},${Q3_YES_Y-8} L ${XS+60-75},${Q3_YES_Y-8}`;
+const P_STATUS_END = `M ${XS+0+5},${Q3_YES_Y-8} C ${XS+40+56},${Q3_YES_Y-34} ${XEND-20},${Q3_YES_Y-34} ${XEND + 80},${Q3_YES_Y-8}`;const P_ESC_END = `M ${XE+12},${EY} C ${XE+105},${EY+42} ${XEND-54},${EY+42} ${XEND},${EY}`;
 
 // ─── Shared icons ─────────────────────────────────────────────────────────────
 function HomeIcon({ on }: { on: boolean }) {
@@ -907,6 +906,11 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
                 </>
               )}
             </AnimatePresence>
+            <AnimatePresence>
+              {yesEnd && <DotPath d={P_FEEDBACK_STATUS} delay={0.22} />}
+              {yesEnd && progress.feedback && <DotPath d={P_STATUS_END} delay={0.36} />}
+              {escVis && progress.escalate && <DotPath d={P_ESC_END} delay={0.3} />}
+            </AnimatePresence>
           </svg>
 
           {/* ── Human figure ── */}
@@ -925,11 +929,6 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
                 Is Ticket in VIP queue?
               </motion.div>
             )}
-            <AnimatePresence>
-              {yesEnd && progress.feedback && <DotPath d={P_FEEDBACK_STATUS} delay={0.22} />}
-              {yesEnd && progress.status && <DotPath d={P_STATUS_END} delay={0.36} />}
-              {escVis && progress.escalate && <DotPath d={P_ESC_END} delay={0.3} />}
-            </AnimatePresence>
           </AnimatePresence>
 
           {/* ── Q1 Yes / No ── */}
@@ -1026,7 +1025,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
                 text=""
                 infoText="Higgy is our AI assistant that helps us understand tickets better."
                 infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 25}} />
-              {progress.feedback && <Node key="status-solved" x={XS} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
+              {progress.feedback && <Node key="status-solved" x={XS + 20} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
                 state={progress.status ? "done" : "idle"} onClick={() => complete("status")} delay={0.22} />}
               {progress.status && <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />}
             </>}
