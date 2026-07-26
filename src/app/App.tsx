@@ -1025,7 +1025,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
               <QText key="feedback-info" x={XF + 32} y={Q3_YES_Y + 30}
                 text=""
                 infoText="Higgy is our AI assistant that helps us understand tickets better."
-                infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 20 }} />
+                infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 25}} />
               {progress.feedback && <Node key="status-solved" x={XS} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
                 state={progress.status ? "done" : "idle"} onClick={() => complete("status")} delay={0.22} />}
               {progress.status && <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />}
