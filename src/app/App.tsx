@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 type Branch = "yes" | "no" | null;
+type Progress = { analyze: boolean; call: boolean; work: boolean; doc: boolean; feedback: boolean; status: boolean; letKnow: boolean; escalate: boolean };
+const EMPTY_PROGRESS: Progress = { analyze: false, call: false, work: false, doc: false, feedback: false, status: false, letKnow: false, escalate: false };
 
 // ─── Desktop layout constants ─────────────────────────────────────────────────
 const CW = 1560;
@@ -223,8 +225,9 @@ function DimPath({ d, bright }: { d: string; bright: boolean }) {
 }
 
 // ─── Desktop: node ────────────────────────────────────────────────────────────
-function Node({ x, y, label, sublabel, state, delay = 0 }:
-  { x: number; y: number; label: string; sublabel?: string; state: PinState; delay?: number }) {
+function Node({ x, y, label, sublabel, state, onClick, hoverCard, cardStyle, delay = 0 }:
+  { x: number; y: number; label: string; sublabel?: string; state: PinState; onClick?: () => void;
+    hoverCard?: React.ReactNode; cardStyle?: React.CSSProperties; delay?: number }) {
   const [hov, setHov] = useState(false);
   const eff: PinState = hov && state === "idle" ? "active" : state;
   const col = state === "inactive" ? "rgba(255,255,255,0.24)"
@@ -232,9 +235,10 @@ function Node({ x, y, label, sublabel, state, delay = 0 }:
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.38, delay }}
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} onClick={onClick}
+      data-no-drag
       style={{ position: "absolute", left: x - 10, top: y - 14,
-        display: "flex", flexDirection: "column", alignItems: "center" }}>
+        display: "flex", flexDirection: "column", alignItems: "center", cursor: onClick ? "pointer" : "default" }}>
       <motion.div
         animate={state === "active" ? { scale: [1, 1.1, 1] } : hov && state === "idle" ? { scale: 1.12 } : { scale: 1 }}
         transition={state === "active" ? { repeat: Infinity, duration: 1.7, ease: "easeInOut" } : { duration: 0.16 }}>
@@ -250,6 +254,11 @@ function Node({ x, y, label, sublabel, state, delay = 0 }:
           </div>
         )}
       </div>
+      <AnimatePresence>
+        {hoverCard && <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 4 }}
+          transition={{ duration: .18 }} onClick={e => e.stopPropagation()}
+          style={{ position: "absolute", zIndex: 25, ...cardStyle }}>{hoverCard}</motion.div>}
+      </AnimatePresence>
     </motion.div>
   );
 }
@@ -358,9 +367,9 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.35, ease: "easeOut" }}
-      style={{ ...CARD_STYLE, width: 168 }}>
+      style={{ ...CARD_STYLE, width: 168, marginLeft: "15px", marginTop: "5px"}}>
 
-      <p style={{ ...CARD_TITLE, cursor: "text" }}>Leave notes on everything you did and why you are escalating</p>
+      <p style={{ ...CARD_TITLE, cursor: "text"}}>Leave notes on everything you did and why you are escalating</p>
       <div style={CARD_DIVIDER} />
       <p style={{ ...CARD_BODY, cursor: "text" }}>Exceeding 40 min, lack of knowledge or tool access</p>
 
@@ -417,14 +426,16 @@ function VConnector({ delay = 0, height = 40 }: { delay?: number; height?: numbe
   );
 }
 
-function MobileNode({ label, sublabel, state, delay = 0 }:
-  { label: string; sublabel?: string; state: PinState; delay?: number }) {
+function MobileNode({ label, sublabel, state, onClick, hoverCard, delay = 0 }:
+  { label: string; sublabel?: string; state: PinState; onClick?: () => void; hoverCard?: React.ReactNode; delay?: number }) {
+  const [hov, setHov] = useState(false);
   const col = state === "inactive" ? "rgba(255,255,255,0.3)"
     : state === "done" ? "rgba(255,255,255,0.65)" : "#fff";
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 5 }} transition={{ duration: 0.38, delay }}
-      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+      onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, cursor: onClick ? "pointer" : "default", position: "relative" }}>
       <motion.div
         animate={state === "active" ? { scale: [1, 1.1, 1] } : { scale: 1 }}
         transition={state === "active" ? { repeat: Infinity, duration: 1.7, ease: "easeInOut" } : {}}>
@@ -440,6 +451,7 @@ function MobileNode({ label, sublabel, state, delay = 0 }:
           {sublabel}
         </span>
       )}
+      <AnimatePresence>{hoverCard && <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} style={{ position: "absolute", zIndex: 10, top: 62 }}>{hoverCard}</motion.div>}</AnimatePresence>
     </motion.div>
   );
 }
@@ -478,19 +490,21 @@ function MobileFork({ question, infoText, yesChosen, noChosen, onYes, onNo, dela
 }
 
 // ─── Mobile layout ─────────────────────────────────────────────────────────────
-function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent, pickInfo, pickFixed }: {
+function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, pickVip, pickUrgent, pickInfo, pickFixed }: {
   tab: string; setTab: (t: string) => void;
   vip: Branch; urgent: Branch; info: Branch; fixed: Branch;
+  progress: Progress; complete: (step: keyof Progress) => void;
   pickVip: (v: "yes"|"no") => void;
   pickUrgent: (v: "yes"|"no") => void;
   pickInfo: (v: "yes"|"no") => void;
   pickFixed: (v: "yes"|"no") => void;
 }) {
   const hasCall = info === "no";
-  const q2Open = vip === "yes" || urgent !== null;
-  const workVis = info !== null;
-  const q3Open  = workVis;
-  const escVis  = fixed === "no";
+  const q2Open = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null);
+  const workVis = q2Open && (info === "yes" || (info === "no" && progress.call));
+  const docVis = workVis && progress.work;
+  const q3Open  = docVis && progress.doc;
+  const escVis  = fixed === "no" && progress.letKnow;
   const yesEnd  = fixed === "yes";
 
   const d = {
@@ -527,7 +541,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
 
         {/* VIP card (YES at Q1) */}
         <AnimatePresence>
-          {vip === "yes" && (
+          {false && vip === "yes" && (
             <motion.div key="vip-card"
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
@@ -548,7 +562,8 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
         <AnimatePresence>
           {vip === "yes" && (
             <>
-              <MobileNode key="analyze" label="Analyze Information" state="done" delay={0.08} />
+              <MobileNode key="analyze" label="Analyze Information" state={progress.analyze ? "done" : "idle"} onClick={() => complete("analyze")} delay={0.08}
+                hoverCard={<InfoCard title="Take it no matter the order" bullets={["VIP Queue always has priority"]} />} />
               <VConnector key="v-a-q2" delay={0.18} height={28} />
             </>
           )}
@@ -577,10 +592,11 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
 
         {/* 5Ws card + Call user (NO at Q2) */}
         <AnimatePresence>
-          {info === "no" && (
+          {false && info === "no" && (
             <>
               <VConnector key={`v-call-${info}`} delay={d.call} height={28} />
-              <MobileNode key={`call-${info}`} label="Call the user" state="done" delay={d.call} />
+              <MobileNode key={`call-${info}`} label="Call the user" state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
+                hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Let user know you are legitimate by saying the Word of the Day", "Most Important: Do Caller Verify"]} />} />
               <motion.div key={`call-card-${info}`}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: d.cw }}
@@ -602,18 +618,19 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
             <>
               <VConnector key={`v-work-${info}`} delay={d.work - 0.1} height={28} />
               <MobileNode key={`work-${info}`} label="Work the Ticket"
-                state={fixed !== null ? "done" : "active"} delay={d.work} />
+                state={progress.work ? "done" : "idle"} onClick={() => complete("work")} delay={d.work} />
             </>
           )}
         </AnimatePresence>
 
         {/* Document Everything */}
         <AnimatePresence>
-          {workVis && (
+          {docVis && (
             <>
               <VConnector key={`v-doc-${info}`} delay={d.wd} height={28} />
               <MobileNode key={`doc-${info}`} label="Document Everything"
-                state={fixed !== null ? "done" : "idle"} delay={d.doc} />
+                state={progress.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={d.doc}
+                hoverCard={<InfoCard title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />} />
             </>
           )}
         </AnimatePresence>
@@ -639,18 +656,12 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
               style={{ marginTop: 14, width: "100%" }}>
-              <InfoCard 
-                title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)"
-                bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
+              <MobileNode label="Give feedback to Higgy" state={progress.feedback ? "done" : "idle"} onClick={() => complete("feedback")}
+                hoverCard={<InfoCard title="Higgy is our AI assistant that helps us understand tickets better." />} />
               <VConnector height={26} />
-              <MobileNode label="Give feedback to Higgy" state="done" />
-              <p style={{ margin: "-3px 0 0", color: "rgba(255,255,255,0.72)", fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, textAlign: "center" }}>
-                <HoverInfo text="Higgy is our AI assistant that helps us understand tickets better." width={205} />
-              </p>
+              {progress.feedback && <MobileNode label={'Change ticket status from “Open” to “Solved”'} state={progress.status ? "done" : "idle"} onClick={() => complete("status")} />}
               <VConnector height={26} />
-              <MobileNode label={'Change ticket status from “Open” to “Solved”'} state="done" />
-              <VConnector height={26} />
-              <EndMarker />
+              {progress.status && <EndMarker />}
             </motion.div>
           )}
         </AnimatePresence>
@@ -661,18 +672,19 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
             <>
               <VConnector key={`v-esc-${fixed}`} delay={d.escNode} height={28} />
               <MobileNode key={`esc-${fixed}`} label="Let user know"
-                sublabel="you'll escalate it" state="active" delay={d.escNode} />
-              <motion.div key={`esc-card-${fixed}`}
+                sublabel="you'll escalate it" state={progress.letKnow ? "done" : "idle"} onClick={() => complete("letKnow")} delay={d.escNode}
+                hoverCard={<EscalationCard compact />} />
+              {false && <motion.div key={`esc-card-${fixed}`}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: d.escCard }}
                 style={{ marginTop: 14, width: "100%" }}>
                 <EscalationCard compact />
-              </motion.div>
+              </motion.div>}
               <VConnector height={26} />
-              <MobileNode label="Escalate Case" state="active" />
+              {progress.letKnow && <MobileNode label="Escalate Case" state={progress.escalate ? "done" : "idle"} onClick={() => complete("escalate")} />}
               <p style={{ margin: "-3px 0 0", color: "rgba(255,255,255,0.72)", fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, textAlign: "center" }}>Leave the ticket status in “Open”</p>
               <VConnector height={26} />
-              <EndMarker />
+              {progress.escalate && <EndMarker />}
             </>
           )}
         </AnimatePresence>
@@ -696,9 +708,10 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent,
 }
 
 // ─── Desktop layout — infinite pannable canvas ───────────────────────────────
-function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent, pickInfo, pickFixed }: {
+function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, pickVip, pickUrgent, pickInfo, pickFixed }: {
   tab: string; setTab: (t: string) => void;
   vip: Branch; urgent: Branch; info: Branch; fixed: Branch;
+  progress: Progress; complete: (step: keyof Progress) => void;
   pickVip: (v: "yes"|"no") => void;
   pickUrgent: (v: "yes"|"no") => void;
   pickInfo: (v: "yes"|"no") => void;
@@ -793,11 +806,12 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
   useEffect(() => () => { if (raf.current !== null) cancelAnimationFrame(raf.current); }, []);
 
   // ── Derived state ─────────────────────────────────────────────────────────
-  const q2Open  = vip === "yes" || urgent !== null;
-  const callVis = info === "no";
-  const workVis = info !== null;
-  const q3Open  = workVis;
-  const escVis  = fixed === "no";
+  const q2Open  = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null);
+  const callVis = q2Open && info === "no";
+  const workVis = q2Open && (info === "yes" || (info === "no" && progress.call));
+  const docVis  = workVis && progress.work;
+  const q3Open  = docVis && progress.doc;
+  const escVis  = fixed === "no" && progress.letKnow;
   const yesEnd  = fixed === "yes";
 
   const hasCall = info === "no";
@@ -875,13 +889,13 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
               )}
             </AnimatePresence>
             <AnimatePresence>
-              {callVis && <DotPath key={`cw-${info}`}  d={P_CALL_WORK} delay={d.callWork} />}
+              {callVis && progress.call && <DotPath key={`cw-${info}`}  d={P_CALL_WORK} delay={d.callWork} />}
             </AnimatePresence>
             <AnimatePresence>
-              {workVis && <DotPath key={`wd-${info}`}  d={P_WORK_DOC}  delay={d.workDoc} />}
+              {docVis && <DotPath key={`wd-${info}`}  d={P_WORK_DOC}  delay={d.workDoc} />}
             </AnimatePresence>
             <AnimatePresence>
-              {workVis && <DotPath key={`dq-${info}`}  d={P_DOC_Q3}    delay={d.docQ3} />}
+              {q3Open && <DotPath key={`dq-${info}`}  d={P_DOC_Q3}    delay={d.docQ3} />}
             </AnimatePresence>
             <AnimatePresence>
             {q3Open && (
@@ -910,8 +924,9 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
               </motion.div>
             )}
             <AnimatePresence>
-              {yesEnd && <><DotPath d={P_FEEDBACK_STATUS} delay={0.22} /><DotPath d={P_STATUS_END} delay={0.36} /></>}
-              {escVis && <DotPath d={P_ESC_END} delay={0.3} />}
+              {yesEnd && progress.feedback && <DotPath d={P_FEEDBACK_STATUS} delay={0.22} />}
+              {yesEnd && progress.status && <DotPath d={P_STATUS_END} delay={0.36} />}
+              {escVis && progress.escalate && <DotPath d={P_ESC_END} delay={0.3} />}
             </AnimatePresence>
           </AnimatePresence>
 
@@ -935,7 +950,10 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
 
           {/* ── Analyze Information ── */}
           <AnimatePresence>
-            {vip === "yes" && <Node key="analyze" x={XA} y={AY} label="Analyze Information" state="done" delay={0.06} />}
+            {vip === "yes" && <Node key="analyze" x={XA} y={AY} label="Analyze Information"
+              state={progress.analyze ? "done" : "idle"} onClick={() => complete("analyze")} delay={0.06}
+              hoverCard={<InfoCard title="Take it no matter the order" bullets={["VIP Queue always has priority"]} />}
+              cardStyle={{ left: -48, top: -115 }} />}
           </AnimatePresence>
 
           {/* ── Q2 ── */}
@@ -952,22 +970,27 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
 
           {/* ── Call the user ── */}
           <AnimatePresence>
-            {callVis && <Node key={`call-${info}`} x={XC} y={CY} label="Call the user" state="done" delay={d.call} />}
+            {callVis && <Node key={`call-${info}`} x={XC} y={CY} label="Call the user"
+              state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
+              hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Let user know you are legitimate by saying the Word of the Day", "2. Most Important: Do Caller Verify"]} />}
+              cardStyle={{ left: -50, top: 60 }} />}
           </AnimatePresence>
 
           {/* ── Work the Ticket ── */}
           <AnimatePresence>
             {workVis && (
               <Node key={`work-${info}`} x={XW} y={NODE_Y} label="Work the Ticket"
-                state={fixed !== null ? "done" : "active"} delay={d.work} />
+                state={progress.work ? "done" : "idle"} onClick={() => complete("work")} delay={d.work} />
             )}
           </AnimatePresence>
 
           {/* ── Document Everything ── */}
           <AnimatePresence>
-            {workVis && (
+            {docVis && (
               <Node key={`doc-${info}`} x={XD} y={NODE_Y} label="Document Everything"
-                state={fixed !== null ? "done" : "idle"} delay={d.doc} />
+                state={progress.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={d.doc}
+                hoverCard={<InfoCard width={300} title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />}
+                cardStyle={{ left: -132, top: -190 }} />
             )}
           </AnimatePresence>
 
@@ -985,72 +1008,30 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent
 
           {/* ── Escalate ── */}
           <AnimatePresence>
-            {escVis && (
+            {fixed === "no" && (
               <Node key={`esc-${fixed}`} x={XE} y={EY} label="Let user know"
-                sublabel="you'll escalate it" state="active" delay={0} />
+                sublabel="you'll escalate it" state={progress.letKnow ? "done" : "idle"} onClick={() => complete("letKnow")} delay={0}
+                hoverCard={<EscalationCard />} cardStyle={{ left: -64, top: 72 }} />
             )}
           </AnimatePresence>
 
           {/* ── Completion paths ── */}
           <AnimatePresence>
             {yesEnd && <>
-              <Node key="feedback" x={XF} y={Q3_YES_Y - 8} label="Give feedback to Higgy" state="done" delay={0.08} />
-              <Node key="status-solved" x={XS} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'} state="done" delay={0.22} />
-              <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />
-              <div data-no-drag style={{ position: "absolute", left: XF + 40, top: Q3_YES_Y + 14 }}>
-                <HoverInfo text="Higgy is our AI assistant that helps us understand tickets better." width={210} />
-              </div>
+              <Node key="feedback" x={XF} y={Q3_YES_Y - 8} label="Give feedback to Higgy"
+                state={progress.feedback ? "done" : "idle"} onClick={() => complete("feedback")} delay={0.08}
+                hoverCard={<InfoCard title="Higgy is our AI assistant that helps us understand tickets better." />} cardStyle={{ left: -72, top: 52 }} />
+              {progress.feedback && <Node key="status-solved" x={XS} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
+                state={progress.status ? "done" : "idle"} onClick={() => complete("status")} delay={0.22} />}
+              {progress.status && <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />}
             </>}
             {escVis && <>
-              <Node key="escalate-case" x={XS} y={EY} label="Escalate Case" state="active" delay={0.14} />
+              <Node key="escalate-case" x={XS} y={EY} label="Escalate Case" state={progress.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.14} />
               <QText key="open-status" x={XS - 74} y={EY + 45} text={'Leave the ticket status in “Open”'} delay={0.25} />
-              <EndMarker x={XEND} y={EY} delay={0.42} />
+              {progress.escalate && <EndMarker x={XEND} y={EY} delay={0.42} />}
             </>}
           </AnimatePresence>
 
-          {/* ── Cards (data-no-drag so pointer-down inside them doesn't pan) ── */}
-          <AnimatePresence>
-            {vip === "yes" && (
-              <div key="vip-card" data-no-drag
-                style={{ position: "absolute", left: Q1X - 15, top: Q1_YES_Y - 148 }}>
-                <InfoCard title="Take it no matter the order" bullets={["VIP Queue always has priority"]} />
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {callVis && (
-              <div key="call-card" data-no-drag
-                style={{ position: "absolute", left: XC - 20, top: CY + 50 }}>
-                <InfoCard title="Gather more information using 5 Ws"
-                  bullets={[
-                    "1. Let user know you are legitimate by saying the Word of the Day",
-                    "2. Most Important: Do Caller Verify",
-                  ]} />
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {yesEnd && (
-              <div key="yes-card" data-no-drag
-                style={{ position: "absolute", left: Q3X + 10, top: Q3_YES_Y - 185 }}>
-                <InfoCard width={300} title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)"
-                  bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {escVis && (
-              <motion.div key={`esc-card-${fixed}`} data-no-drag
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                transition={{ delay: d.escCard, duration: 0.35 }}
-                style={{ position: "absolute", left: XE - 64, top: EY + 72 }}>
-                <EscalationCard />
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>{/* end world */}
       </div>{/* end canvas viewport */}
 
@@ -1079,6 +1060,7 @@ export default function App() {
   const [urgent, setUrgent] = useState<Branch>(null);
   const [info, setInfo]   = useState<Branch>(null);
   const [fixed, setFixed] = useState<Branch>(null);
+  const [progress, setProgress] = useState<Progress>(EMPTY_PROGRESS);
   const [mobile, setMobile] = useState(false);
 
   useEffect(() => {
@@ -1089,23 +1071,43 @@ export default function App() {
   }, []);
 
   function pickVip(v: "yes" | "no") {
+    setProgress(EMPTY_PROGRESS);
     if (vip === v) { setVip(null); setUrgent(null); setInfo(null); setFixed(null); }
     else           { setVip(v);   setUrgent(null); setInfo(null); setFixed(null); }
   }
   function pickUrgent(v: "yes" | "no") {
+    setProgress(EMPTY_PROGRESS);
     if (urgent === v) { setUrgent(null); setInfo(null); setFixed(null); }
     else              { setUrgent(v);   setInfo(null); setFixed(null); }
   }
   function pickInfo(v: "yes" | "no") {
+    setProgress(p => ({ ...EMPTY_PROGRESS, analyze: p.analyze }));
     if (info === v) { setInfo(null); setFixed(null); }
     else            { setInfo(v);   setFixed(null); }
   }
   function pickFixed(v: "yes" | "no") {
+    setProgress(p => ({ ...p, feedback: false, status: false, letKnow: false, escalate: false }));
     if (fixed === v) setFixed(null);
     else             setFixed(v);
   }
 
-  const shared = { tab, setTab, vip, urgent, info, fixed, pickVip, pickUrgent, pickInfo, pickFixed };
+  function complete(step: keyof Progress) {
+    setProgress(p => {
+      if (p[step]) {
+        // Turning a checkpoint off also retracts everything that depends on it.
+        if (step === "analyze") return EMPTY_PROGRESS;
+        if (step === "call") return { ...p, call: false, work: false, doc: false, feedback: false, status: false, letKnow: false, escalate: false };
+        if (step === "work") return { ...p, work: false, doc: false, feedback: false, status: false, letKnow: false, escalate: false };
+        if (step === "doc") return { ...p, doc: false, feedback: false, status: false, letKnow: false, escalate: false };
+        if (step === "feedback") return { ...p, feedback: false, status: false };
+        if (step === "letKnow") return { ...p, letKnow: false, escalate: false };
+        return { ...p, [step]: false };
+      }
+      return { ...p, [step]: true };
+    });
+  }
+
+  const shared = { tab, setTab, vip, urgent, info, fixed, progress, complete, pickVip, pickUrgent, pickInfo, pickFixed };
 
   return (
     <div style={{ width: "100vw", height: mobile ? "auto" : "100vh",
