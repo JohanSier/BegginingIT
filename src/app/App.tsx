@@ -108,15 +108,23 @@ function GpsPin({ state, size = 20 }: { state: PinState; size?: number }) {
   );
 }
 
-function Human({ size = 33 }: { size?: number }) {
-  const h = Math.round(size * 1.7);
+function Human({ size = 40 }: { size?: number }) {
+  const h = Math.round(size * 89.43 / 48.13);
   return (
-    <svg width={size} height={h} viewBox="0 0 33 56" fill="none"
-      style={{ filter: "drop-shadow(0 0 7px white)" }}>
-      <circle cx="16.5" cy="8" r="7" stroke="white" strokeWidth="2.2" />
-      <path d="M16.5 15v18" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M3 23l13.5-4.5L30 23" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M16.5 33L8 51M16.5 33L25 51" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+    <svg width={size} height={h} viewBox="0 0 48.13 89.4301" fill="none"
+      style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))" }}>
+      {/* Head */}
+      <path
+        d="M16.4 22.12C20.1114 22.12 23.12 19.1114 23.12 15.4C23.12 11.6886 20.1114 8.68 16.4 8.68C12.6886 8.68 9.68 11.6886 9.68 15.4C9.68 19.1114 12.6886 22.12 16.4 22.12Z"
+        stroke="white" strokeWidth="3.36" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Left body/leg */}
+      <path
+        d="M12.2 55.3C7.99998 44.8 10.1 34.3 15.35 31.15C20.25 44.45 20.6 59.85 16.4 77.35C15 78.75 13.25 79.1 11.15 78.4"
+        stroke="white" strokeWidth="3.36" strokeLinecap="round" strokeLinejoin="round" />
+      {/* Right body/leg */}
+      <path
+        d="M38.45 47.95C32.85 40.95 28.65 35 25.85 30.1C23.75 49 24.8 61.6 26.9 77.35C28.3 78.75 30.05 79.1 32.15 78.4"
+        stroke="white" strokeWidth="3.36" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -794,7 +802,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
           </svg>
 
           {/* ── Human figure ── */}
-          <div style={{ position: "absolute", left: 73, top: NODE_Y - 24 }}><Human /></div>
+          <div style={{ position: "absolute", left: 68, top: NODE_Y - 38 }}><Human /></div>
 
           {/* ── Q1 question (fades out once answered) ── */}
           <AnimatePresence>
