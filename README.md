@@ -1,5 +1,7 @@
 
-  # Project that is a begginer's guide on how to troubleshoot issues in IT
+  # Begin in IT
+
+  This is a code bundle for Begin in IT. The original project is available at https://www.figma.com/design/PEVyXTrp11AAFhaEInxIqg/Begin-in-IT.
 
   ## Running the code
 

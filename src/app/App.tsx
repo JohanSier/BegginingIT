@@ -65,7 +65,7 @@ function EscIcon({ on }: { on: boolean }) {
 function NavPill({ active, onChange }: { active: string; onChange: (t: string) => void }) {
   return (
     <div className="fixed top-10 left-1/2 z-50 flex gap-[18px] items-center justify-center px-10 py-[14px]"
-      style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white" }}>
+      style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}>
       {[
         { id: "home", label: "Home", I: HomeIcon },
         { id: "work", label: "Work Ticket", I: TicketIcon },
@@ -267,10 +267,7 @@ I sincerely apologize for the inconvenience. To ensure you receive the best poss
 
 They will review everything carefully and follow up with you shortly.
 
-Thank you for your patience and understanding.
-
-Best regards,
-[Your Name]`;
+Thank you for your patience and understanding.`;
 
 function EscalationCard({ compact: _compact }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -515,9 +512,8 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
                 <InfoCard compact
                   title="Gather more information using 5 Ws"
                   bullets={[
-                    "1. Let user know you are legitimate.",
-                    "2. Tell them the Word of the Day",
-                    "Most Important: 3. Do Caller Verify",
+                    "1. Let user know you are legitimate by saying the Word of the Day",
+                    "Most Important: 2. Do Caller Verify",
                   ]} />
               </motion.div>
             </>
@@ -569,7 +565,7 @@ function MobileApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixed
               style={{ marginTop: 14, width: "100%" }}>
               <InfoCard compact
                 title="Write everything you did to solve the issue, in bullet points"
-                bullets={["Internal notes required", "Make Screenshots!"]} />
+                bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -893,9 +889,8 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
                 style={{ position: "absolute", left: XC - 70, top: CY + 50 }}>
                 <InfoCard title="Gather more information using 5 Ws"
                   bullets={[
-                    "1. Let user know you are legitimate.",
-                    "2. Tell them the Word of the Day",
-                    "Most Important: 3. Do Caller Verify",
+                    "1. Let user know you are legitimate by saying the Word of the Day",
+                    "2. Most Important: Do Caller Verify",
                   ]} />
               </div>
             )}
@@ -904,9 +899,9 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
           <AnimatePresence>
             {yesEnd && (
               <div key="yes-card" data-no-drag
-                style={{ position: "absolute", left: Q3X + 10, top: Q3_YES_Y - 168 }}>
+                style={{ position: "absolute", left: Q3X + 10, top: Q3_YES_Y - 218 }}>
                 <InfoCard title="Write everything you did to solve the issue, in bullet points"
-                  bullets={["There would be internal notes", "Make Screenshots!"]} />
+                  bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />
               </div>
             )}
           </AnimatePresence>
@@ -916,7 +911,7 @@ function DesktopApp({ tab, setTab, vip, info, fixed, pickVip, pickInfo, pickFixe
               <motion.div key={`esc-card-${fixed}`} data-no-drag
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ delay: d.escCard, duration: 0.35 }}
-                style={{ position: "absolute", left: XE - 84, top: EY + 72 }}>
+                style={{ position: "absolute", left: XE - 64, top: EY + 72 }}>
                 <EscalationCard />
               </motion.div>
             )}
