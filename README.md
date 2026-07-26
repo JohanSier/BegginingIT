@@ -1,7 +1,5 @@
 
-  # Refine Mockup Design
-
-  This is a code bundle for Refine Mockup Design. The original project is available at https://www.figma.com/design/PEVyXTrp11AAFhaEInxIqg/Refine-Mockup-Design.
+  # Project that is a begginer's guide on how to troubleshoot issues in IT
 
   ## Running the code
 
