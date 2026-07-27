@@ -56,10 +56,9 @@ function HomeIcon({ on }: { on: boolean }) {
 function TicketIcon({ on }: { on: boolean }) {
   const c = on ? "#fff" : "#898989";
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <rect x="2" y="6" width="20" height="13" rx="2" stroke={c} strokeWidth="1.5" />
-      <path d="M16 6V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v1" stroke={c} strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M12 11v4M10 13h4" stroke={c} strokeWidth="1.5" strokeLinecap="round" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ marginLeft: "2px" }}>
+      <rect x="3" y="4" width="18" height="12" rx="2" stroke={c} strokeWidth="1.5" />
+      <path d="M8 20h8M12 16v4" stroke={c} strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -78,7 +77,7 @@ function NavPill({ active, onChange }: { active: string; onChange: (t: string) =
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <div className="fixed top-10 left-1/2 z-50 flex gap-[18px] items-center justify-center px-10 py-[14px]"
+    <div className="fixed top-10 left-1/2 z-50 flex gap-[25px] items-center justify-center px-10 py-[14px]"
       style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}>
       {[
         { id: "home", label: "Home", I: HomeIcon },
@@ -93,7 +92,8 @@ function NavPill({ active, onChange }: { active: string; onChange: (t: string) =
           onMouseLeave={() => setHovered(null)}
           onFocus={() => setHovered(id)}
           onBlur={() => setHovered(null)}
-          className="flex flex-col items-center gap-[2px] cursor-pointer bg-transparent border-0 p-0">
+          className="flex flex-col items-center gap-[2px] cursor-pointer bg-transparent border-0 p-0"
+          style={{ marginLeft: id === "home" ? "4px" : id === "work" ? "8px" : "0", marginRight: id === "escalations" ? "4px" : "0" }}>
           <I on={isHighlighted} />
           <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontWeight: 700, fontSize: 12,
             color: isHighlighted ? "#fff" : "#898989", whiteSpace: "nowrap", transition: "color 0.2s" }}>
