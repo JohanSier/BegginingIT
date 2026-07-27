@@ -30,7 +30,7 @@ const P_ANALYZE_Q2 = `M ${XA+12},${AY} C ${XA+80},${AY-32} ${Q2X-50},${Q2Y-8} ${
 // A short incoming segment leaves clear space for the urgency question label.
 const P_Q1_NO      = `M ${Q1X},${Q1_NO_Y} C ${Q1X+54},${Q1_NO_Y+26} ${UX-98},${UY-18} ${UX-70},${UY}`;
 const P_URGENT_YES = `M ${U_BTN_X},${U_YES_Y} C ${U_BTN_X+42},${U_YES_Y-70} ${Q2X-45},${Q2Y+40} ${Q2X},${Q2Y}`;
-const P_URGENT_NO  = `M ${U_BTN_X},${U_NO_Y} C ${U_BTN_X+45},${U_NO_Y+42} ${Q2X-55},${Q2Y+76} ${Q2X},${Q2Y}`;
+const P_URGENT_NO  = `M ${U_BTN_X},${U_NO_Y} C ${U_BTN_X+95},${U_NO_Y+42} ${Q2X-55},${Q2Y+76} ${Q2X},${Q2Y}`;
 const P_Q2_YES     = `M ${Q2X},${Q2_YES_Y} C ${Q2X+65},${Q2_YES_Y-44} ${XW-55},${Q2_YES_Y-44} ${XW},${NODE_Y}`;
 const P_Q2_NO      = `M ${Q2X},${Q2_NO_Y} C ${Q2X+20},${CY} ${XC-16},${CY} ${XC},${CY}`;
 const P_CALL_WORK  = `M ${XC+12},${CY} L ${XW-12},${NODE_Y}`;
@@ -39,7 +39,9 @@ const P_DOC_Q3     = `M ${XD+12},${NODE_Y} L ${Q3X-5},${NODE_Y}`;
 const P_Q3_YES     = `M ${Q3X},${Q3_YES_Y} C ${Q3X+55},${Q3_YES_Y-38} ${XE-10},${Q3_YES_Y-32} ${XE},${Q3_YES_Y-8}`;
 const P_Q3_NO      = `M ${Q3X},${Q3_NO_Y} C ${Q3X+40},${EY} ${XE-20},${EY} ${XE},${EY}`;
 const P_FEEDBACK_STATUS = `M ${XF+12},${Q3_YES_Y-8} L ${XS+60-75},${Q3_YES_Y-8}`;
-const P_STATUS_END = `M ${XS+0+5},${Q3_YES_Y-8} C ${XS+40+56},${Q3_YES_Y-34} ${XEND-20},${Q3_YES_Y-34} ${XEND + 80},${Q3_YES_Y-8}`;const P_ESC_END = `M ${XE+12},${EY} C ${XE+105},${EY+42} ${XEND-54},${EY+42} ${XEND},${EY}`;
+const P_STATUS_END = `M ${XS+0+5},${Q3_YES_Y-8} C ${XS+40+56},${Q3_YES_Y-34} ${XEND-20},${Q3_YES_Y-34} ${XEND + 80},${Q3_YES_Y-8}`;
+const P_LET_KNOW_ESCALATE = `M ${XE+12},${EY} L ${XS + 75},${EY}`;
+const P_ESC_END = `M ${XS + 30 + 52},${EY} C ${XS + 30 + 145},${EY+42} ${XEND},${EY+42} ${XEND},${EY}`;
 
 // ─── Shared icons ─────────────────────────────────────────────────────────────
 function HomeIcon({ on }: { on: boolean }) {
@@ -248,7 +250,7 @@ function Node({ x, y, label, sublabel, state, onClick, hoverCard, cardStyle, del
           {label}
         </div>
         {sublabel && (
-          <div style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 10, color: col, whiteSpace: "nowrap" }}>
+          <div style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, color: col, whiteSpace: "nowrap" }}>
             {sublabel}
           </div>
         )}
@@ -330,7 +332,7 @@ function EndMarker({ x, y, delay = 0 }: { x?: number; y?: number; delay?: number
     </svg>
     <div style={{ marginTop: 7, fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 16, color: "rgba(255,255,255,0.78)" }}>END</div></>;
   if (x === undefined || y === undefined) return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ textAlign: "center" }}>{content}</motion.div>;
-  return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ position: "absolute", left: x - 25, top: y - 30, textAlign: "center" }}>{content}</motion.div>;
+  return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ position: "absolute", left: x + 105, top: y - 20, textAlign: "center" }}>{content}</motion.div>;
 }
 
 // ─── Escalation card with copyable template dropdown ─────────────────────────
@@ -368,7 +370,7 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.35, ease: "easeOut" }}
-      style={{ ...CARD_STYLE, width: 168, marginLeft: "15px", marginTop: "5px"}}>
+      style={{ ...CARD_STYLE, width: 168, marginLeft: "15px", marginTop: "10px"}}>
 
       <p style={{ ...CARD_TITLE, cursor: "text"}}>Leave notes on everything you did and why you are escalating</p>
       <div style={CARD_DIVIDER} />
@@ -448,7 +450,7 @@ function MobileNode({ label, sublabel, state, onClick, hoverCard, delay = 0 }:
       </span>
       {sublabel && (
         <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic",
-          fontSize: 11, color: col, textAlign: "center", marginTop: -4 }}>
+          fontSize: 15, color: col, textAlign: "center" }}>
           {sublabel}
         </span>
       )}
@@ -909,6 +911,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             <AnimatePresence>
               {yesEnd && <DotPath d={P_FEEDBACK_STATUS} delay={0.22} />}
               {yesEnd && progress.feedback && <DotPath d={P_STATUS_END} delay={0.36} />}
+              {fixed === "no" && <DotPath d={P_LET_KNOW_ESCALATE} delay={0.2} />}
               {escVis && progress.escalate && <DotPath d={P_ESC_END} delay={0.3} />}
             </AnimatePresence>
           </svg>
@@ -1025,14 +1028,17 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
                 text=""
                 infoText="Higgy is our AI assistant that helps us understand tickets better."
                 infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 25}} />
-              {progress.feedback && <Node key="status-solved" x={XS + 20} y={Q3_YES_Y - 8} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
+              {progress.feedback && <Node key="status-solved" x={XS + 60} y={Q3_YES_Y - 5} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
                 state={progress.status ? "done" : "idle"} onClick={() => complete("status")} delay={0.22} />}
               {progress.status && <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />}
             </>}
             {escVis && <>
-              <Node key="escalate-case" x={XS} y={EY} label="Escalate Case" state={progress.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.14} />
-              <QText key="open-status" x={XS - 74} y={EY + 45} text={'Leave the ticket status in “Open”'} delay={0.25} />
-              {progress.escalate && <EndMarker x={XEND} y={EY} delay={0.42} />}
+              <Node key="escalate-case" x={XS + 30} y={EY} label="Escalate Case" state={progress.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.14} />
+              <QText key="escalate-info" x={XS + 85} y={EY + 17}
+                text=""
+                infoText="Leave the ticket status in Open"
+                infoSize={13} delay={0.14} cardStyle={{ left: -20, top: 25}} />
+              {progress.escalate && <EndMarker x={XEND - 135} y={EY - 70} delay={0.42} />}
             </>}
           </AnimatePresence>
 
