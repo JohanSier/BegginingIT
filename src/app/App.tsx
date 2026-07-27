@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
+// Type declaration for confetti loaded from CDN
+declare global {
+  interface Window {
+    confetti: (options: any) => void;
+  }
+}
+
 type Branch = "yes" | "no" | null;
 type Progress = { analyze: boolean; call: boolean; work: boolean; doc: boolean; feedback: boolean; status: boolean; letKnow: boolean; escalate: boolean };
 const EMPTY_PROGRESS: Progress = { analyze: false, call: false, work: false, doc: false, feedback: false, status: false, letKnow: false, escalate: false };
@@ -77,7 +84,7 @@ function NavPill({ active, onChange }: { active: string; onChange: (t: string) =
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <div className="fixed top-10 left-1/2 z-50 flex gap-[25px] items-center justify-center px-10 py-[14px]"
+    <div className="fixed bottom-20 left-1/2 z-50 flex gap-[25px] items-center justify-center px-10 py-[14px]"
       style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}>
       {[
         { id: "home", label: "Home", I: HomeIcon },
@@ -698,7 +705,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
             <motion.button key="rst-m"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => { pickVip(vip!); }}
-              style={{ marginTop: 36, fontFamily: "Lato,sans-serif", fontStyle: "italic",
+              style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", fontFamily: "Lato,sans-serif", fontStyle: "italic",
                 fontSize: 15, color: "rgba(255,255,255,0.38)", background: "transparent",
                 border: "none", cursor: "pointer", letterSpacing: "0.06em" }}>
               ↺ restart journey
@@ -1051,7 +1058,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
           <motion.button key="rst"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => pickVip(vip!)}
-            style={{ position: "fixed", bottom: 26, left: "50%", transform: "translateX(-50%)",
+            style={{ position: "fixed", top: 40, left: "50%", transform: "translateX(-50%)",
               fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 15,
               color: "rgba(255,255,255,0.38)", background: "transparent",
               border: "none", cursor: "pointer", letterSpacing: "0.06em", zIndex: 50 }}>
@@ -1113,8 +1120,54 @@ export default function App() {
         if (step === "letKnow") return { ...p, letKnow: false, escalate: false };
         return { ...p, [step]: false };
       }
-      return { ...p, [step]: true };
+      const newProgress = { ...p, [step]: true };
+
+      // Trigger confetti for final steps
+      if (step === "status" || step === "escalate") {
+        setTimeout(() => {
+          launchConfetti();
+        }, 2000);
+      }
+
+      return newProgress;
     });
+  }
+
+  function launchConfetti() {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      // Launch confetti from left and right sides
+      window.confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+      });
+      window.confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
+
+    // Final burst after the duration
+    setTimeout(() => {
+      window.confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+      });
+    }, duration);
   }
 
   const shared = { tab, setTab, vip, urgent, info, fixed, progress, complete, pickVip, pickUrgent, pickInfo, pickFixed };
