@@ -193,8 +193,8 @@ const CARD_BODY: React.CSSProperties = {
   margin: 0,
 };
 
-function InfoCard({ title, bullets, note, width = 168 }: {
-  title: string; bullets?: string[]; note?: string; width?: number;
+function InfoCard({ title, bullets, note, width = 168, style }: {
+  title: string; bullets?: string[]; note?: string; width?: number; style?: React.CSSProperties;
 }) {
   return (
     <motion.div
@@ -202,7 +202,7 @@ function InfoCard({ title, bullets, note, width = 168 }: {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }}
       transition={{ duration: 0.35, ease: "easeOut" }}
-      style={{ ...CARD_STYLE, width }}
+      style={{ ...CARD_STYLE, width, ...style }}
     >
       <p style={{ ...CARD_TITLE, cursor: "text" }}>{title}</p>
       {(bullets || note) && <div style={CARD_DIVIDER} />}
@@ -290,7 +290,7 @@ function Btn({ label, x, y, chosen, onClick }:
   );
 }
 
-function QText({ x, y, text, infoText, infoSize, cardStyle, delay = 0 }: { x: number; y: number; text: string; infoText?: string; infoSize?: number; cardStyle?: React.CSSProperties; delay?: number }) {
+function QText({ x, y, text, infoText, infoSize, cardStyle, borderRadius, delay = 0 }: { x: number; y: number; text: string; infoText?: string; infoSize?: number; cardStyle?: React.CSSProperties; borderRadius?: string; delay?: number }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.4, delay }}
@@ -298,15 +298,16 @@ function QText({ x, y, text, infoText, infoSize, cardStyle, delay = 0 }: { x: nu
       style={{ position: "absolute", left: x, top: y, fontFamily: "Lato,sans-serif",
         fontStyle: "italic", fontSize: 15, color: "rgba(255,255,255,0.75)",
         whiteSpace: "nowrap", cursor: "text", userSelect: "none" }}>
-      {text}{infoText && <HoverInfo text={infoText} width={250} size={infoSize} cardStyle={cardStyle} />}
+      {text}{infoText && <HoverInfo text={infoText} width={250} size={infoSize} cardStyle={cardStyle} borderRadius={borderRadius} />}
     </motion.div>
   );
 }
 
-function HoverInfo({ text, width = 220, size = 18, cardStyle }: { text: string; width?: number; size?: number; cardStyle?: React.CSSProperties }) {
+function HoverInfo({ text, width = 220, size = 18, cardStyle, borderRadius }: { text: string; width?: number; size?: number; cardStyle?: React.CSSProperties; borderRadius?: string }) {
   const [shown, setShown] = useState(false);
   const leftOffset = typeof cardStyle?.left === 'number' ? cardStyle.left + 28 : 28;
   const topOffset = typeof cardStyle?.top === 'number' ? cardStyle.top : -42;
+  const radius = borderRadius || "8px 8px 8px 8px";
   return (
     <span data-no-drag onMouseEnter={() => setShown(true)} onMouseLeave={() => setShown(false)}
       onFocus={() => setShown(true)} onBlur={() => setShown(false)}
@@ -317,7 +318,7 @@ function HoverInfo({ text, width = 220, size = 18, cardStyle }: { text: string; 
       <AnimatePresence>
         {shown && <motion.span initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -4 }}
           transition={{ duration: 0.18 }} style={{ position: "absolute", left: leftOffset, top: topOffset, zIndex: 30,
-            width, padding: "14px 16px", borderRadius: "8px 8px 8px 8px", background: "#fff",
+            width, padding: "14px 16px", borderRadius: radius, background: "#fff",
             border: "1px solid #e4e4e4", boxShadow: "0 1px 8px white", color: "#111",
             fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14, lineHeight: 1.55,
             textAlign: "center", whiteSpace: "normal" }}>{text}</motion.span>}
@@ -377,7 +378,7 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
     <motion.div
       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.35, ease: "easeOut" }}
-      style={{ ...CARD_STYLE, width: 168, marginLeft: "15px", marginTop: "10px"}}>
+      style={{ ...CARD_STYLE, width: 168, marginLeft: "25px", marginTop: "10px"}}>
 
       <p style={{ ...CARD_TITLE, cursor: "text"}}>Leave notes on everything you did and why you are escalating</p>
       <div style={CARD_DIVIDER} />
@@ -466,16 +467,16 @@ function MobileNode({ label, sublabel, state, onClick, hoverCard, delay = 0 }:
   );
 }
 
-function MobileFork({ question, infoText, yesChosen, noChosen, onYes, onNo, delay = 0 }:
+function MobileFork({ question, infoText, yesChosen, noChosen, onYes, onNo, borderRadius, delay = 0 }:
   { question: string; infoText?: string; yesChosen: boolean; noChosen: boolean;
-    onYes: () => void; onNo: () => void; delay?: number }) {
+    onYes: () => void; onNo: () => void; borderRadius?: string; delay?: number }) {
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }} transition={{ duration: 0.38, delay }}
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
       <p style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 15,
         color: "rgba(255,255,255,0.78)", textAlign: "center", margin: 0 }}>
-        {question}{infoText && <HoverInfo text={infoText} width={210} />}
+        {question}{infoText && <HoverInfo text={infoText} width={210} borderRadius={borderRadius} />}
       </p>
       <div style={{ display: "flex", gap: 36 }}>
         {[
@@ -585,7 +586,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               question="Is it an urgent ticket?"
               infoText="We treat tickets as urgent if an issue completely stops users from doing their work, or if it creates a security risk for the company (like a hacked account)."
               yesChosen={urgent === "yes"} noChosen={urgent === "no"}
-              onYes={() => pickUrgent("yes")} onNo={() => pickUrgent("no")} />
+              onYes={() => pickUrgent("yes")} onNo={() => pickUrgent("no")} borderRadius="2px 8px 8px 8px" />
           )}
         </AnimatePresence>
 
@@ -596,6 +597,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               question="Is the information provided enough?"
               yesChosen={info === "yes"} noChosen={info === "no"}
               onYes={() => pickInfo("yes")} onNo={() => pickInfo("no")}
+              borderRadius="2px 8px 8px 8px"
               delay={vip === "yes" ? 0.22 : 0.1} />
           )}
         </AnimatePresence>
@@ -654,6 +656,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
                 question="Did the issue get fixed?"
                 yesChosen={fixed === "yes"} noChosen={fixed === "no"}
                 onYes={() => pickFixed("yes")} onNo={() => pickFixed("no")}
+                borderRadius="2px 8px 8px 8px"
                 delay={d.q3} />
             </>
           )}
@@ -816,6 +819,24 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
 
   // ── Zoom handlers ───────────────────────────────────────────────────────────
   function handleWheel(e: React.WheelEvent<HTMLDivElement>) {
+    // Check if scrolling inside a scrollable element (like the escalation card template)
+    const target = e.target as HTMLElement;
+    const scrollableElement = target.closest('[style*="overflow"], [style*="overflowY"], [style*="overflowX"]');
+    
+    // If inside a scrollable element that can scroll, allow normal scrolling
+    if (scrollableElement) {
+      const computedStyle = window.getComputedStyle(scrollableElement);
+      const overflow = computedStyle.overflow;
+      const overflowY = computedStyle.overflowY;
+      const overflowX = computedStyle.overflowX;
+      
+      // Check if the element is actually scrollable
+      if ((overflow === 'auto' || overflow === 'scroll' || overflowY === 'auto' || overflowY === 'scroll' || overflowX === 'auto' || overflowX === 'scroll') &&
+          (scrollableElement.scrollHeight > scrollableElement.clientHeight || scrollableElement.scrollWidth > scrollableElement.clientWidth)) {
+        return; // Allow normal scrolling
+      }
+    }
+
     // Trackpad pinch gesture on Mac (ctrlKey + pinch)
     // Regular scroll wheel for mouse users
     e.preventDefault();
@@ -985,7 +1006,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             {vip === "no" && <QText key="urgent-text" x={UX - 50} y={UY + -5}
               text="Is it an urgent ticket?"
               infoText="We treat tickets as urgent if an issue completely stops users from doing their work, or if it creates a security risk for the company (like a hacked account)."
-              infoSize={13} delay={0.08} />}
+              infoSize={13} delay={0.08} borderRadius="2px 8px 8px 8px" />}
           </AnimatePresence>
           {vip === "no" && (
             <>
@@ -998,8 +1019,8 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
           <AnimatePresence>
             {vip === "yes" && <Node key="analyze" x={XA} y={AY} label="Analyze Information"
               state={progress.analyze ? "done" : "idle"} onClick={() => complete("analyze")} delay={0.06}
-              hoverCard={<InfoCard title="Take it no matter the order" bullets={["VIP Queue always has priority"]} />}
-              cardStyle={{ left: -48, top: -115 }} />}
+              hoverCard={<InfoCard title="Take it no matter the order" bullets={["VIP Queue always has priority"]} style={{ borderTopLeftRadius: "8px", borderBottomLeftRadius: "2px" }} />}
+              cardStyle={{ left: -48, top: -160 }} />}
           </AnimatePresence>
 
           {/* ── Q2 ── */}
@@ -1066,20 +1087,20 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             {yesEnd && <>
               <Node key="feedback" x={XF} y={Q3_YES_Y - 8} label="Give feedback to Higgy"
                 state={progress.feedback ? "done" : "idle"} onClick={() => complete("feedback")} delay={0.08} />
-              <QText key="feedback-info" x={XF + 32} y={Q3_YES_Y + 30}
+              <QText key="feedback-info" x={XF + 45} y={Q3_YES_Y + 30}
                 text=""
                 infoText="Higgy is our AI assistant that helps us understand tickets better."
-                infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 25}} />
+                infoSize={13} delay={0.08} cardStyle={{ left: -20, top: 25}} borderRadius="2px 8px 8px 8px" />
               {progress.feedback && <Node key="status-solved" x={XS + 60} y={Q3_YES_Y - 5} label={'Change ticket status from “Open”'} sublabel={'to “Solved”'}
                 state={progress.status ? "done" : "idle"} onClick={() => complete("status")} delay={0.22} />}
               {progress.status && <EndMarker x={XEND} y={Q3_YES_Y - 8} delay={0.38} />}
             </>}
             {escVis && <>
               <Node key="escalate-case" x={XS + 30} y={EY} label="Escalate Case" state={progress.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.14} />
-              <QText key="escalate-info" x={XS + 85} y={EY + 17}
+              <QText key="escalate-info" x={XS + 98} y={EY + 17}
                 text=""
                 infoText="Leave the ticket status in Open"
-                infoSize={13} delay={0.14} cardStyle={{ left: -20, top: 25}} />
+                infoSize={13} delay={0.14} cardStyle={{ left: -20, top: 25}} borderRadius="2px 8px 8px 8px" />
               {progress.escalate && <EndMarker x={XEND - 135} y={EY - 70} delay={0.42} />}
             </>}
           </AnimatePresence>
