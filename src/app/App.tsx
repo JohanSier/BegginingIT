@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 // Type declaration for confetti loaded from CDN
@@ -729,12 +729,13 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
 }) {
   // ── Camera state: world-space origin of the viewport ──────────────────────
   // x/y = where in world-space the viewport top-left maps to (negative = panned right)
-  // Future zoom: add { z: 1 } and multiply into transform
-  const [cam, setCam] = useState<{ x: number; y: number }>(() => {
-    if (typeof window === "undefined") return { x: 0, y: 0 };
+  // z = zoom level (1 = default, >1 = zoomed in, <1 = zoomed out)
+  const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => {
+    if (typeof window === "undefined") return { x: 0, y: 0, z: 1 };
     return {
       x: Math.round(window.innerWidth * 0.09),
       y: Math.round(window.innerHeight / 2 - CH / 2 + 28),
+      z: 1,
     };
   });
 
@@ -789,6 +790,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
     setCam({
       x: drag.current.camX + (e.clientX - drag.current.startX),
       y: drag.current.camY + (e.clientY - drag.current.startY),
+      z: cam.z,
     });
   }
 
@@ -806,11 +808,43 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
       vy *= FRICTION;
       // Stop when below 0.05 px/ms (≈ 3px/s)
       if (Math.abs(vx) < 0.05 && Math.abs(vy) < 0.05) { raf.current = null; return; }
-      setCam(c => ({ x: c.x + vx * 16, y: c.y + vy * 16 }));
+      setCam(c => ({ x: c.x + vx * 16, y: c.y + vy * 16, z: c.z }));
       raf.current = requestAnimationFrame(step);
     }
     raf.current = requestAnimationFrame(step);
   }
+
+  // ── Zoom handlers ───────────────────────────────────────────────────────────
+  function handleWheel(e: React.WheelEvent<HTMLDivElement>) {
+    // Trackpad pinch gesture on Mac (ctrlKey + pinch)
+    // Regular scroll wheel for mouse users
+    e.preventDefault();
+
+    const delta = e.deltaY > 0 ? -0.1 : 0.1; // Zoom out for scroll down, in for scroll up
+    const newZoom = Math.max(0.5, Math.min(3, cam.z + delta)); // Clamp between 0.5x and 3x
+
+    setCam(c => ({ ...c, z: newZoom }));
+  }
+
+  // Add keyboard event listener for zoom shortcuts
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Keyboard shortcuts for zoom
+      if ((e.metaKey || e.ctrlKey) && (e.key === '=' || e.key === '+')) {
+        e.preventDefault();
+        setCam(c => ({ ...c, z: Math.min(3, c.z + 0.2) })); // Zoom in
+      } else if ((e.metaKey || e.ctrlKey) && e.key === '-') {
+        e.preventDefault();
+        setCam(c => ({ ...c, z: Math.max(0.5, c.z - 0.2) })); // Zoom out
+      } else if ((e.metaKey || e.ctrlKey) && e.key === '0') {
+        e.preventDefault();
+        setCam(c => ({ ...c, z: 1 })); // Reset zoom
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => () => { if (raf.current !== null) cancelAnimationFrame(raf.current); }, []);
@@ -848,6 +882,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
+        onWheel={handleWheel}
         style={{
           position: "fixed", inset: 0,
           overflow: "hidden",
@@ -857,19 +892,19 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
         }}
       >
         {/* ── World container: camera transform applied here ── */}
-        {/* To add zoom later: append  scale(${cam.z})  to the transform string */}
         <div
           style={{
             position: "absolute",
             top: 0, left: 0,
             width: CW,
             height: CH,
-            transform: `translate(${sceneX}px, ${sceneY}px)`,
+            transform: `translate(${sceneX}px, ${sceneY}px) scale(${cam.z})`,
             // Smooth transition for auto-pan advances; instant while dragging
             transition: isDragging
               ? "none"
               : "transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)",
             willChange: "transform",
+            transformOrigin: "0 0",
           }}
         >
           {/* ── SVG dotted paths (pointer-events: none — never block canvas drag) ── */}
