@@ -170,7 +170,7 @@ const CARD_STYLE: React.CSSProperties = {
 };
 
 const CARD_TITLE: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: 700,
   fontStyle: "italic",
   color: "#023256",
@@ -186,7 +186,7 @@ const CARD_DIVIDER: React.CSSProperties = {
 };
 
 const CARD_BODY: React.CSSProperties = {
-  fontSize: 11,
+  fontSize: 13,
   fontStyle: "italic",
   color: "#023256",
   lineHeight: 1.55,
@@ -253,11 +253,11 @@ function Node({ x, y, label, sublabel, state, onClick, hoverCard, cardStyle, del
         <GpsPin state={eff} />
       </motion.div>
       <div style={{ marginTop: 5, textAlign: "center", cursor: "text", userSelect: "none" }}>
-        <div style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, color: col, whiteSpace: "nowrap" }}>
+        <div style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14, color: col, whiteSpace: "nowrap" }}>
           {label}
         </div>
         {sublabel && (
-          <div style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, color: col, whiteSpace: "nowrap" }}>
+          <div style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14, color: col, whiteSpace: "nowrap" }}>
             {sublabel}
           </div>
         )}
@@ -296,7 +296,7 @@ function QText({ x, y, text, infoText, infoSize, cardStyle, delay = 0 }: { x: nu
       transition={{ duration: 0.4, delay }}
       data-no-drag
       style={{ position: "absolute", left: x, top: y, fontFamily: "Lato,sans-serif",
-        fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.75)",
+        fontStyle: "italic", fontSize: 15, color: "rgba(255,255,255,0.75)",
         whiteSpace: "nowrap", cursor: "text", userSelect: "none" }}>
       {text}{infoText && <HoverInfo text={infoText} width={250} size={infoSize} cardStyle={cardStyle} />}
     </motion.div>
@@ -319,7 +319,7 @@ function HoverInfo({ text, width = 220, size = 18, cardStyle }: { text: string; 
           transition={{ duration: 0.18 }} style={{ position: "absolute", left: leftOffset, top: topOffset, zIndex: 30,
             width, padding: "14px 16px", borderRadius: "8px 8px 8px 8px", background: "#fff",
             border: "1px solid #e4e4e4", boxShadow: "0 1px 8px white", color: "#111",
-            fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, lineHeight: 1.55,
+            fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14, lineHeight: 1.55,
             textAlign: "center", whiteSpace: "normal" }}>{text}</motion.span>}
       </AnimatePresence>
     </span>
@@ -337,7 +337,7 @@ function EndMarker({ x, y, delay = 0 }: { x?: number; y?: number; delay?: number
       <circle cx="29.5" cy="30" r="3" fill="#ffdf65" />
       <path d="M4 43l4-2m43 2l3-2M16 48l3 2m20-2l3 2" stroke="#ffd52b" strokeWidth="3" strokeLinecap="round" />
     </svg>
-    <div style={{ marginTop: 7, fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 16, color: "rgba(255,255,255,0.78)" }}>END</div></>;
+    <div style={{ marginTop: 7, fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 18, color: "rgba(255,255,255,0.78)" }}>END</div></>;
   if (x === undefined || y === undefined) return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ textAlign: "center" }}>{content}</motion.div>;
   return <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: .35 }} style={{ position: "absolute", left: x + 105, top: y - 20, textAlign: "center" }}>{content}</motion.div>;
 }
@@ -389,9 +389,9 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
           justifyContent: "center", gap: 5,
           width: "100%", background: "#f1f1f1", border: "none", borderRadius: 6,
           padding: "5px 9px", cursor: "pointer", fontFamily: "Lato,sans-serif",
-          fontSize: 10, color: "#023256", fontStyle: "italic" }}>
+          fontSize: 12, color: "#023256", fontStyle: "italic" }}>
         <span>Use template</span>
-        <span style={{ fontSize: 7, display: "inline-block", transition: "transform 0.2s",
+        <span style={{ fontSize: 9, display: "inline-block", transition: "transform 0.2s",
           transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
       </button>
 
@@ -402,7 +402,7 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
             exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }}
             style={{ overflow: "hidden" }}>
             <div style={{ marginTop: 7, background: "#f0f4f8", borderRadius: 6,
-              padding: "7px 9px", fontSize: 9.5, color: "#023256", lineHeight: 1.65,
+              padding: "7px 9px", fontSize: 11.5, color: "#023256", lineHeight: 1.65,
               whiteSpace: "pre-wrap", fontStyle: "italic", textAlign: "left",
               maxHeight: 120, overflowY: "auto", cursor: "text" }}>
               {ESCALATION_TEMPLATE}
@@ -411,7 +411,7 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
               style={{ marginTop: 6, width: "100%",
                 background: copied ? "#16a34a" : "#023256",
                 color: "white", border: "none", borderRadius: 6, padding: "5px 0",
-                fontSize: 10, fontFamily: "Lato,sans-serif", cursor: "pointer",
+                fontSize: 12, fontFamily: "Lato,sans-serif", cursor: "pointer",
                 transition: "background 0.22s", fontStyle: "italic" }}>
               {copied ? "✓ Copied!" : "Copy to clipboard"}
             </button>
@@ -452,7 +452,7 @@ function MobileNode({ label, sublabel, state, onClick, hoverCard, delay = 0 }:
         <GpsPin state={state} size={24} />
       </motion.div>
       <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic",
-        fontSize: 13, color: col, textAlign: "center" }}>
+        fontSize: 15, color: col, textAlign: "center" }}>
         {label}
       </span>
       {sublabel && (
@@ -473,7 +473,7 @@ function MobileFork({ question, infoText, yesChosen, noChosen, onYes, onNo, dela
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }} transition={{ duration: 0.38, delay }}
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
-      <p style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13,
+      <p style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 15,
         color: "rgba(255,255,255,0.78)", textAlign: "center", margin: 0 }}>
         {question}{infoText && <HoverInfo text={infoText} width={210} />}
       </p>
@@ -488,7 +488,7 @@ function MobileFork({ question, infoText, yesChosen, noChosen, onYes, onNo, dela
               border: chosen ? "1px solid rgba(255,255,255,0.35)" : "1px solid rgba(255,255,255,0.15)",
               borderRadius: 20, padding: "6px 22px",
               fontFamily: "Lato,sans-serif", fontStyle: "italic",
-              fontSize: 13, fontWeight: chosen ? 700 : 400,
+              fontSize: 15, fontWeight: chosen ? 700 : 400,
               color: chosen ? "#fff" : "rgba(255,255,255,0.38)",
               cursor: "pointer", transition: "all 0.18s" }}>
             {label}
@@ -692,7 +692,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               </motion.div>}
               <VConnector height={26} />
               {progress.letKnow && <MobileNode label="Escalate Case" state={progress.escalate ? "done" : "idle"} onClick={() => complete("escalate")} />}
-              <p style={{ margin: "-3px 0 0", color: "rgba(255,255,255,0.72)", fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 12, textAlign: "center" }}>Leave the ticket status in “Open”</p>
+              <p style={{ margin: "-3px 0 0", color: "rgba(255,255,255,0.72)", fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14, textAlign: "center" }}>Leave the ticket status in “Open”</p>
               <VConnector height={26} />
               {progress.escalate && <EndMarker />}
             </>
@@ -706,7 +706,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => { pickVip(vip!); }}
               style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)", fontFamily: "Lato,sans-serif", fontStyle: "italic",
-                fontSize: 15, color: "rgba(255,255,255,0.38)", background: "transparent",
+                fontSize: 17, color: "rgba(255,255,255,0.38)", background: "transparent",
                 border: "none", cursor: "pointer", letterSpacing: "0.06em" }}>
               ↺ restart journey
             </motion.button>
@@ -968,7 +968,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
                 exit={{ opacity: 0 }} transition={{ duration: 0.3 }}
                 data-no-drag
                 style={{ position: "absolute", left: Q1X - 30, top: Q1_TEXT_Y,
-                  fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13,
+                  fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 15,
                   color: "rgba(255,255,255,0.75)", whiteSpace: "nowrap",
                   cursor: "text", userSelect: "none" }}>
                 Is Ticket in VIP queue?
@@ -1094,7 +1094,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             onClick={() => pickVip(vip!)}
             style={{ position: "fixed", top: 40, left: "50%", transform: "translateX(-50%)",
-              fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 15,
+              fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 17,
               color: "rgba(255,255,255,0.38)", background: "transparent",
               border: "none", cursor: "pointer", letterSpacing: "0.06em", zIndex: 50 }}>
             ↺ restart journey
