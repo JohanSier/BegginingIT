@@ -642,7 +642,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               <VConnector key={`v-doc-${info}`} delay={d.wd} height={28} />
               <MobileNode key={`doc-${info}`} label="Document Everything"
                 state={progress.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={d.doc}
-                hoverCard={<InfoCard title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />} />
+                hoverCard={<InfoCard title="Write everything you did to solve the issue in bullet points. You can call the user to confirm what you did to solve issue (optional)" bullets={["1. There should be internal notes", "2. Screenshots are encouraged!"]} />} />
             </>
           )}
         </AnimatePresence>
@@ -1056,7 +1056,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
             {docVis && (
               <Node key={`doc-${info}`} x={XD - 25} y={NODE_Y} label="Document Everything"
                 state={progress.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={d.doc}
-                hoverCard={<InfoCard width={170} title="Write everything you did as an internal note and in bullet points. Call the user to confirm what you did to solve issue (optional)" bullets={["1. They should be internal notes", "2. Screenshots are encouraged!"]} />}
+                hoverCard={<InfoCard width={170} title="Write everything you did as an internal note and in bullet points. Call the user to confirm what you did to solve issue (optional)" bullets={["1. There should be internal notes", "2. Screenshots are encouraged!"]} />}
                 cardStyle={{ left: -15, top: 65}} />
             )}
           </AnimatePresence>
