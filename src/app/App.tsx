@@ -382,7 +382,7 @@ function EscalationCard({ compact: _compact }: { compact?: boolean }) {
 
       <p style={{ ...CARD_TITLE, cursor: "text"}}>Leave notes on everything you did and why you are escalating</p>
       <div style={CARD_DIVIDER} />
-      <p style={{ ...CARD_BODY, cursor: "text" }}>Exceeding 40 min, lack of knowledge or tool access</p>
+      <p style={{ ...CARD_BODY, cursor: "text" }}>Reaching an hour without a solution, lack of knowledge or tool access</p>
 
       {/* Template toggle */}
       <button onClick={() => setOpen(o => !o)}
