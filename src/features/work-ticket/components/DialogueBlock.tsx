@@ -30,7 +30,7 @@ function UserBadge({ dim }: { dim: boolean }) {
   return (
     <div style={{ position: 'relative', width: 54.643, height: 14, opacity: dim ? 0.4 : 1, flexShrink: 0 }}>
       <div style={{ position: 'absolute', inset: '-5.74% 0.17% -5.74% 0.31%' }}>
-        <svg fill="none" height="15.5266" preserveAspectRatio="none" viewBox="0 0 54.3783 15.5266" width="54.3783" style={{ display: 'block', width: '100%', height: '100%' }}>
+        <svg fill="none" height="15.5266" preserveAspectRatio="none" viewBox="0 0 54.3783 15.5266" width="54.3783" style={{ display: 'block', width: '100%', height: '100%', filter: 'drop-shadow(0 1px 8px white)' }}>
           <path d={svgPathsUser.p1430fd80} fill="#FFFCFC" stroke="white" strokeWidth="0.799031" />
         </svg>
       </div>
@@ -45,7 +45,7 @@ function MentorBadge({ dim }: { dim: boolean }) {
   return (
     <div style={{ position: 'relative', width: 61, height: 14, opacity: dim ? 0.4 : 1, flexShrink: 0 }}>
       <div style={{ position: 'absolute', inset: '-5.74% 0.36% -5.74% 0.51%' }}>
-        <svg fill="none" height="15.5266" preserveAspectRatio="none" viewBox="0 0 60.4704 15.5266" width="60.4704" style={{ display: 'block', width: '100%', height: '100%' }}>
+        <svg fill="none" height="15.5266" preserveAspectRatio="none" viewBox="0 0 60.4704 15.5266" width="60.4704" style={{ display: 'block', width: '100%', height: '100%', filter: 'drop-shadow(0 1px 8px white)' }}>
           <path d={svgPathsMentor.p1e13fa00} fill="#FFFCFC" stroke="white" strokeWidth="0.799031" />
         </svg>
       </div>
@@ -62,7 +62,7 @@ function UserAvatar({ dim }: { dim: boolean }) {
     <img
       src={imgRobot}
       alt="User"
-      style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, opacity: dim ? 0.38 : 1, transition: 'opacity 0.5s ease' }}
+      style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, opacity: dim ? 0.38 : 1, transition: 'opacity 0.5s ease', filter: 'drop-shadow(0 1px 8px white)' }}
     />
   )
 }
@@ -71,7 +71,7 @@ function UserAvatar({ dim }: { dim: boolean }) {
 function MentorAvatar({ dim, active, showBulb }: { dim: boolean; active: boolean; showBulb: boolean }) {
   return (
     // Outer div provides room for the overflowing diagonal bulb
-    <div style={{ position: 'relative', width: 52, paddingTop: showBulb ? 14 : 0, flexShrink: 0 }}>
+    <div style={{ position: 'relative', width: 52, paddingTop: showBulb ? 14 : 0, flexShrink: 0, filter: 'drop-shadow(0 1px 8px white)' }}>
       {/* Mentor face — no circle, just crop */}
       <div
         style={{
@@ -105,6 +105,7 @@ function MentorAvatar({ dim, active, showBulb }: { dim: boolean; active: boolean
             opacity: dim ? 0.38 : 1,
             animation: active && !dim ? 'bulbPulse 1.8s ease-in-out infinite' : 'none',
             transition: 'opacity 0.5s ease',
+            filter: 'drop-shadow(0 1px 8px #ffff00)',
           }}
         />
       )}
