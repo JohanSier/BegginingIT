@@ -1,51 +1,68 @@
-import { useEffect, useState } from 'react';
+import svgPaths from '../../../imports/Frame/svg-xgf2o1h7f8'
 
-export type CursorState = 'reading' | 'ready' | 'restart';
+interface CustomCursorProps {
+  x: number
+  y: number
+  state: 'reading' | 'ready' | 'restart'
+  visible: boolean
+}
 
-export function CustomCursor({ state }: { state: CursorState }) {
-  const [visible, setVisible] = useState(false);
+export default function CustomCursor({ x, y, state, visible }: CustomCursorProps) {
+  if (!visible) return null
 
-  useEffect(() => {
-    setVisible(true);
-  }, []);
+  const isReady = state === 'ready' || state === 'restart'
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        pointerEvents: 'none',
-        zIndex: 9999,
-        left: 0,
-        top: 0,
-        transform: 'translate(-50%, -50%)',
-        width: '24px',
-        height: '24px',
-        borderRadius: '50%',
-        background: state === 'ready' || state === 'restart'
-          ? 'radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 70%, transparent 100%)'
-          : 'rgba(255, 255, 255, 0.3)',
-        boxShadow: state === 'ready' || state === 'restart'
-          ? '0 0 8px 2px rgba(255, 255, 255, 0.3), 0 0 16px 4px rgba(255, 255, 255, 0.2)'
-          : 'none',
-        transition: 'all 0.3s ease-out',
-        animation: state === 'ready' || state === 'restart' ? 'pulse 2s ease-in-out infinite' : 'none',
-        cursor: state === 'reading' ? 'wait' : 'pointer',
-      }}
-    >
-      {(state === 'ready' || state === 'restart') && (
+    <>
+      {/* Pulsing ring — expands from the icon when ready */}
+      {isReady && (
         <div
           style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '8px',
-            height: '8px',
+            position: 'fixed',
+            left: x,
+            top: y,
+            width: 28,
+            height: 28,
             borderRadius: '50%',
-            background: 'white',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 9998,
+            animation: 'cursorPulse 1.3s ease-out infinite',
           }}
         />
       )}
-    </div>
-  );
+
+      {/* Circle-arrow icon */}
+      <div
+        style={{
+          position: 'fixed',
+          left: x,
+          top: y,
+          width: 24,
+          height: 24,
+          transform: 'translate(-50%, -50%)',
+          pointerEvents: 'none',
+          zIndex: 9999,
+          opacity: isReady ? 1 : 0.28,
+          filter: isReady ? 'drop-shadow(0 0 6px rgba(255,255,255,0.45))' : 'none',
+          transition: 'opacity 0.35s ease, filter 0.35s ease',
+        }}
+      >
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ display: 'block' }}
+        >
+          <path d={svgPaths.p71ef900} />
+        </svg>
+      </div>
+    </>
+  )
 }

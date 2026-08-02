@@ -1,109 +1,128 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { useNavigate } from 'react-router-dom';
-import { NavPill } from '../../components/NavPill';
-import { sampleConversation } from './data/sampleConversation';
-import { Dialogue, DialogueState, DialogueWithState } from './types/dialogue';
-import { CustomCursor, CursorState } from './components/CustomCursor';
-import { Typewriter } from './components/Typewriter';
+import { useState, useRef, useCallback, useEffect, type CSSProperties, type MouseEvent } from 'react'
+import { NavPill } from '../../components/NavPill'
+import { workTicketDialogue } from './data/workTicketDialogue'
+import DialogueBlock from './components/DialogueBlock'
+import CustomCursor from './components/CustomCursor'
+
+type CursorState = 'reading' | 'ready' | 'restart'
 
 export function WorkTicketPage() {
-  const navigate = useNavigate();
-  const [dialogues, setDialogues] = useState<DialogueWithState[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [cursorState, setCursorState] = useState<CursorState>('reading');
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [isTypingComplete, setIsTypingComplete] = useState(false)
+  const [skipAnimation, setSkipAnimation] = useState(false)
+  const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 })
+  const [inZone, setInZone] = useState(false)
+  const [cursorReady, setCursorReady] = useState(false)
   
-  // Canvas camera state
-  const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => {
-    if (typeof window === "undefined") return { x: 0, y: 0, z: 1 };
-    return {
-      x: 0,
-      y: 0,
-      z: 1,
-    };
-  });
-
+  // Drag functionality (from Home page)
+  const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => ({
+    x: 0,
+    y: 0,
+    z: 1,
+  }));
   const [isDragging, setIsDragging] = useState(false);
   const drag = useRef({ active: false, startX: 0, startY: 0, camX: 0, camY: 0 });
-  const vel = useRef({ vx: 0, vy: 0, px: 0, py: 0, t: performance.now() });
+  const vel = useRef({ vx: 0, vy: 0, px: 0, py: 0, t: 0 });
   const raf = useRef<number | null>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize conversation
-  useEffect(() => {
-    const initialDialogues: DialogueWithState[] = sampleConversation.map((dialogue, index) => ({
-      ...dialogue,
-      state: index === 0 ? 'typing' : 'hidden'
-    }));
-    setDialogues(initialDialogues);
-  }, []);
+  const containerRef = useRef<HTMLDivElement>(null)
+  const dialogueRefs = useRef<(HTMLDivElement | null)[]>([])
+  const readyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const isFinished = activeIndex >= workTicketDialogue.length - 1 && isTypingComplete
+
+  const cursorState: CursorState = !cursorReady ? 'reading' : isFinished ? 'restart' : 'ready'
 
   // Auto-scroll to active dialogue
   useEffect(() => {
-    if (currentIndex > 0 && containerRef.current) {
-      const activeElement = containerRef.current.children[currentIndex];
-      if (activeElement) {
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const elementRect = activeElement.getBoundingClientRect();
-        const scrollTarget = elementRect.top - containerRect.top + (containerRect.height / 2) - (elementRect.height / 2);
-        
-        containerRef.current.scrollTo({
-          top: scrollTarget,
-          behavior: 'smooth'
-        });
-      }
-    }
-  }, [currentIndex]);
+    const el = dialogueRefs.current[activeIndex]
+    if (!el || !containerRef.current) return
+    const container = containerRef.current
+    const elCenter = el.offsetTop + el.offsetHeight / 2
+    container.scrollTo({ top: elCenter - container.clientHeight / 2, behavior: 'smooth' })
+    
+    // Reset camera when moving to new dialogue
+    setCam({ x: 0, y: 0, z: 1 });
+  }, [activeIndex])
 
-  // Inertia physics (same as Home page)
+  // Delay cursor ready state slightly after typing finishes
   useEffect(() => {
-    function step() {
-      const now = performance.now();
-      const dt = (now - vel.current.t) / 1000;
-      vel.current.t = now;
-
-      if (dt > 0.1) {
-        raf.current = requestAnimationFrame(step);
-        return;
-      }
-
-      const friction = 3.5;
-      vel.current.vx *= Math.exp(-friction * dt);
-      vel.current.vy *= Math.exp(-friction * dt);
-
-      if (Math.abs(vel.current.vx) < 0.1 && Math.abs(vel.current.vy) < 0.1) {
-        vel.current.vx = 0;
-        vel.current.vy = 0;
-        raf.current = null;
-        return;
-      }
-
-      setCam(c => ({ ...c, x: c.x + vel.current.vx, y: c.y + vel.current.vy }));
-      raf.current = requestAnimationFrame(step);
+    if (readyTimerRef.current) clearTimeout(readyTimerRef.current)
+    if (isTypingComplete) {
+      readyTimerRef.current = setTimeout(() => setCursorReady(true), 260)
+    } else {
+      setCursorReady(false)
     }
-
-    if (raf.current !== null) {
-      raf.current = requestAnimationFrame(step);
-    }
-
     return () => {
-      if (raf.current !== null) {
-        cancelAnimationFrame(raf.current);
-        raf.current = null;
-      }
-    };
-  }, []);
+      if (readyTimerRef.current) clearTimeout(readyTimerRef.current)
+    }
+  }, [isTypingComplete])
 
-  // Canvas pointer handlers
+  const checkZone = useCallback((clientX: number): boolean => {
+    const w = window.innerWidth
+    const colWidth = Math.min(680, w * 0.82)
+    const left = (w - colWidth) / 2
+    return clientX >= left && clientX <= left + colWidth
+  }, [])
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      setCursorPos({ x: e.clientX, y: e.clientY })
+      setInZone(checkZone(e.clientX))
+    },
+    [checkZone]
+  )
+
+  const handleMouseLeave = useCallback(() => setInZone(false), [])
+
+  const advance = useCallback(() => {
+    if (isFinished) {
+      setActiveIndex(0)
+      setIsTypingComplete(false)
+      setSkipAnimation(false)
+      setCursorReady(false)
+      setCam({ x: 0, y: 0, z: 1 });
+      containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      setActiveIndex((prev) => Math.min(prev + 1, workTicketDialogue.length - 1))
+      setIsTypingComplete(false)
+      setSkipAnimation(false)
+      setCursorReady(false)
+    }
+  }, [isFinished, containerRef])
+
+  const goBack = useCallback(() => {
+    if (activeIndex > 0) {
+      setActiveIndex((prev) => prev - 1)
+      setIsTypingComplete(true)
+      setSkipAnimation(true)
+      setCursorReady(true)
+    }
+  }, [activeIndex])
+
+  const handleClick = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      if (!checkZone(e.clientX)) return
+      if (!isTypingComplete) {
+        // Complete current typewriter instantly on click
+        setSkipAnimation(true)
+        return
+      }
+      advance()
+    },
+    [checkZone, isTypingComplete, advance]
+  )
+
+  const handleTypingComplete = useCallback(() => setIsTypingComplete(true), [])
+
+  // ── Drag functionality (from Home page) ─────────────────────────────────────
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-    // Ignore clicks on interactive elements inside the dialogue area
+    // Ignore clicks on interactive elements — they handle their own events
     const target = e.target as HTMLElement;
     if (target.closest("button, a, input, [data-no-drag]")) return;
 
-    // Ignore clicks inside the dialogue interaction area
-    const interactionArea = document.querySelector('[data-interaction-area="true"]');
-    if (interactionArea && interactionArea.contains(target)) return;
+    // Ignore clicks inside the dialogue interaction zone
+    if (checkZone(e.clientX)) return;
 
     if (raf.current !== null) { cancelAnimationFrame(raf.current); raf.current = null; }
 
@@ -112,390 +131,214 @@ export function WorkTicketPage() {
 
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
-  }, [cam.x, cam.y]);
+  }, [cam.x, cam.y, checkZone]);
 
   const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!drag.current.active) return;
 
-    const dx = e.clientX - drag.current.startX;
-    const dy = e.clientY - drag.current.startY;
+    const now = performance.now();
+    const dt = now - vel.current.t;
+    if (dt > 0) {
+      vel.current.vx = (e.clientX - vel.current.px) / dt;
+      vel.current.vy = (e.clientY - vel.current.py) / dt;
+      vel.current.px = e.clientX;
+      vel.current.py = e.clientY;
+      vel.current.t = now;
+    }
 
-    setCam(c => ({ ...c, x: drag.current.camX + dx, y: drag.current.camY + dy }));
+    setCam({
+      x: drag.current.camX + (e.clientX - drag.current.startX),
+      y: drag.current.camY + (e.clientY - drag.current.startY),
+      z: cam.z,
+    });
+  }, [cam.z]);
 
-    vel.current.px = e.clientX;
-    vel.current.py = e.clientY;
-    vel.current.t = performance.now();
-  }, []);
-
-  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+  const onPointerUp = useCallback(() => {
     if (!drag.current.active) return;
-
     drag.current.active = false;
     setIsDragging(false);
 
-    const now = performance.now();
-    const dt = (now - vel.current.t) / 1000;
+    let { vx, vy } = vel.current;
+    const FRICTION = 0.88;
 
-    if (dt > 0 && dt < 0.1) {
-      const vx = (e.clientX - vel.current.px) / dt;
-      const vy = (e.clientY - vel.current.py) / dt;
-      vel.current.vx = vx;
-      vel.current.vy = vy;
-      vel.current.t = now;
-
-      if (raf.current === null) {
-        raf.current = requestAnimationFrame(step);
-      }
+    function step() {
+      vx *= FRICTION;
+      vy *= FRICTION;
+      if (Math.abs(vx) < 0.05 && Math.abs(vy) < 0.05) { raf.current = null; return; }
+      setCam(c => ({ x: c.x + vx * 16, y: c.y + vy * 16, z: c.z }));
+      raf.current = requestAnimationFrame(step);
     }
-
-    e.currentTarget.releasePointerCapture(e.pointerId);
+    raf.current = requestAnimationFrame(step);
   }, []);
 
-  const onWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
-    // Check if scrolling inside a scrollable element
-    const target = e.target as HTMLElement;
-    const scrollableElement = target.closest('[style*="overflow"], [style*="overflowY"], [style*="overflowX"]');
-    
-    if (scrollableElement) {
-      const computedStyle = window.getComputedStyle(scrollableElement);
-      const overflow = computedStyle.overflow;
-      const overflowY = computedStyle.overflowY;
-      const overflowX = computedStyle.overflowX;
-      
-      if ((overflow === 'auto' || overflow === 'scroll' || overflowY === 'auto' || overflowY === 'scroll' || overflowX === 'auto' || overflowX === 'scroll') &&
-          (scrollableElement.scrollHeight > scrollableElement.clientHeight || scrollableElement.scrollWidth > scrollableElement.clientWidth)) {
-        return;
+  // ── Keyboard navigation ─────────────────────────────────────────────────────
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key === 'ArrowLeft' || e.key === 'Backspace') && document.activeElement === document.body) {
+        e.preventDefault()
+        goBack()
       }
     }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [goBack])
 
-    e.preventDefault();
-
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    const newZoom = Math.max(0.5, Math.min(3, cam.z + delta));
-
-    setCam(c => ({ ...c, z: newZoom }));
-  }, [cam.z]);
-
-  function step() {
-    const now = performance.now();
-    const dt = (now - vel.current.t) / 1000;
-    vel.current.t = now;
-
-    if (dt > 0.1) {
-      raf.current = requestAnimationFrame(step);
-      return;
-    }
-
-    const friction = 3.5;
-    vel.current.vx *= Math.exp(-friction * dt);
-    vel.current.vy *= Math.exp(-friction * dt);
-
-    if (Math.abs(vel.current.vx) < 0.1 && Math.abs(vel.current.vy) < 0.1) {
-      vel.current.vx = 0;
-      vel.current.vy = 0;
-      raf.current = null;
-      return;
-    }
-
-    setCam(c => ({ ...c, x: c.x + vel.current.vx, y: c.y + vel.current.vy }));
-    raf.current = requestAnimationFrame(step);
+  const containerStyle: CSSProperties = {
+    position: 'relative',
+    width: '100%',
+    height: '100vh',
+    backgroundColor: '#000000',
+    cursor: inZone ? 'none' : (isDragging ? 'grabbing' : 'grab'),
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    scrollbarWidth: 'none',
   }
 
-  // Handle dialogue progression
-  const handleAdvance = useCallback(() => {
-    const currentDialogue = dialogues[currentIndex];
-    
-    // Ignore clicks while typing
-    if (currentDialogue.state === 'typing') {
-      return;
-    }
-
-    // Mark current as completed
-    setDialogues(prev => {
-      const updated = [...prev];
-      updated[currentIndex] = { ...updated[currentIndex], state: 'completed' };
-      return updated;
-    });
-
-    // Move to next dialogue
-    if (currentIndex < dialogues.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-      setDialogues(prev => {
-        const updated = [...prev];
-        updated[prev + 1] = { ...updated[prev + 1], state: 'typing' };
-        return updated;
-      });
-    } else {
-      // End of conversation - cursor becomes restart
-      setCursorState('restart');
-    }
-  }, [currentIndex, dialogues]);
-
-  // Handle back navigation
-  const handleBack = useCallback(() => {
-    if (currentIndex > 0) {
-      setDialogues(prev => {
-        const updated = [...prev];
-        updated[currentIndex] = { ...updated[currentIndex], state: 'hidden' };
-        updated[currentIndex - 1] = { ...updated[currentIndex - 1], state: 'active' };
-        return updated;
-      });
-      setCurrentIndex(prev => prev - 1);
-      setCursorState('reading');
-    }
-  }, [currentIndex]);
-
-  // Handle restart
-  const handleRestart = useCallback(() => {
-    setDialogues(sampleConversation.map((dialogue, index) => ({
-      ...dialogue,
-      state: index === 0 ? 'typing' : 'hidden'
-    })));
-    setCurrentIndex(0);
-    setCursorState('reading');
-    setCam({ x: 0, y: 0, z: 1 });
-  }, []);
-
-  // Handle typing completion
-  const handleTypingComplete = useCallback(() => {
-    setDialogues(prev => {
-      const updated = [...prev];
-      updated[currentIndex] = { ...updated[currentIndex], state: 'active' };
-      return updated;
-    });
-    
-    // Transition cursor to ready state after typing
-    setTimeout(() => {
-      setCursorState('ready');
-    }, 300);
-  }, [currentIndex]);
-
-  // Render user icon
-  const UserIcon = () => (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M4 20c0-3 3.58-6 8-6s8 3 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-
-  // Render mentor icon
-  const MentorIcon = () => (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M4 20c0-3 3.58-6 8-6s8 3 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M18 4l3 3-3 3M21 7h-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
-  // Render light bulb icon
-  const LightBulbIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <path d="M9 18h6M12 2v8M9 21a6 6 0 0 1-6 6 6 6 0 0 1 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
   return (
-    <div 
-      ref={canvasRef}
+    <div
+      ref={containerRef}
+      style={containerStyle}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      onWheel={onWheel}
-      style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        background: '#000', 
-        overflow: 'hidden',
-        cursor: isDragging ? 'grabbing' : 'grab'
-      }}
     >
-      <CustomCursor state={cursorState} />
-      
-      {/* Invisible interaction area */}
-      <div
-        data-interaction-area="true"
-        onClick={handleAdvance}
-        style={{
-          position: 'absolute',
-          left: '20%',
-          top: '15%',
-          width: '60%',
-          height: '70%',
-          cursor: cursorState === 'reading' ? 'wait' : 'pointer',
-          zIndex: 10,
-        }}
-      />
+      <CustomCursor x={cursorPos.x} y={cursorPos.y} state={cursorState} visible={inZone} />
 
-      {/* Back button */}
-      {currentIndex > 0 && (
-        <button
-          onClick={handleBack}
+      {/* Conversation column */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          maxWidth: 620,
+          margin: '0 auto',
+          padding: '80px 28px 200px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 64,
+          transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.z})`,
+          transformOrigin: 'top center',
+          transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+        }}
+      >
+        {/* Title */}
+        <p
           style={{
-            position: 'fixed',
-            top: '100px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            padding: '8px 16px',
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '20px',
-            color: '#fff',
-            fontFamily: 'Lato, sans-serif',
+            fontFamily: "'Lato', sans-serif",
             fontStyle: 'italic',
-            fontSize: '14px',
-            cursor: 'pointer',
-            zIndex: 100,
+            fontWeight: 400,
+            fontSize: 18,
+            lineHeight: '22.5px',
+            letterSpacing: '0.9px',
+            color: 'rgba(255,255,255,0.38)',
+            textAlign: 'center',
+            margin: 0,
+            marginBottom: -16,
+            userSelect: 'none',
           }}
         >
-          Back
+          Example of Working a Ticket
+        </p>
+
+        {/* Render dialogues 0..activeIndex */}
+        {workTicketDialogue.slice(0, activeIndex + 1).map((entry, i) => (
+          <DialogueBlock
+            key={entry.id}
+            ref={(el) => {
+              dialogueRefs.current[i] = el
+            }}
+            entry={entry}
+            state={i === activeIndex ? 'active' : 'completed'}
+            skipAnimation={i === activeIndex ? skipAnimation : false}
+            onTypingComplete={i === activeIndex ? handleTypingComplete : undefined}
+          />
+        ))}
+
+        {/* End-of-conversation hint */}
+        {isFinished && (
+          <p
+            style={{
+              fontFamily: "'Lato', sans-serif",
+              fontStyle: 'italic',
+              fontWeight: 400,
+              fontSize: 11,
+              letterSpacing: '0.12em',
+              color: 'rgba(255,255,255,0.22)',
+              textAlign: 'center',
+              margin: 0,
+              marginTop: -24,
+              animation: 'fadeSlideIn 0.6s ease forwards',
+              opacity: 0,
+              userSelect: 'none',
+            }}
+          >
+            Click to restart
+          </p>
+        )}
+      </div>
+
+      {/* Back button */}
+      {activeIndex > 0 && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            goBack()
+          }}
+          style={{
+            position: 'fixed',
+            bottom: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'rgba(255,255,255,0.2)',
+            fontSize: 11,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            fontFamily: "'Lato', sans-serif",
+            fontStyle: 'italic',
+            fontWeight: 400,
+            padding: '8px 16px',
+            zIndex: 100,
+            transition: 'color 0.2s ease',
+            userSelect: 'none',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}
+        >
+          ← back
         </button>
       )}
 
       {/* Navigation pill */}
       <NavPill active="work" onNavigate={() => {}} />
 
-      {/* Restart button at end */}
-      {cursorState === 'restart' && (
-        <button
-          onClick={handleRestart}
-          style={{
-            position: 'fixed',
-            bottom: '120px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            padding: '12px 24px',
-            background: 'rgba(255,255,255,0.1)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            borderRadius: '25px',
-            color: '#fff',
-            fontFamily: 'Lato, sans-serif',
-            fontStyle: 'italic',
-            fontSize: '16px',
-            cursor: 'pointer',
-            zIndex: 100,
-          }}
-        >
-          Restart Demo
-        </button>
-      )}
-
-      {/* Dialogue container */}
-      <div
-        ref={containerRef}
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '0',
-          transform: `translateX(-50%) translate(${cam.x}px, ${cam.y}px) scale(${cam.z})`,
-          transformOrigin: 'top center',
-          width: '600px',
-          height: '100%',
-          padding: '40px 0',
-          overflowY: 'auto',
-          scrollBehavior: 'smooth',
-          transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-        }}
-      >
-        {dialogues.map((dialogue, index) => (
-          <div
-            key={dialogue.id}
-            style={{
-              marginBottom: '60px',
-              opacity: dialogue.state === 'hidden' ? 0 : 1,
-              transition: 'opacity 0.3s ease-in-out',
-              display: dialogue.state === 'hidden' ? 'none' : 'block',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '16px',
-                flexDirection: dialogue.speaker === 'user' ? 'row' : 'row-reverse',
-              }}
-            >
-              {/* Speaker icon */}
-              <div
-                style={{
-                  flexShrink: 0,
-                  color: getSpeakerColor(dialogue.state, dialogue.speaker),
-                  transition: 'color 0.3s ease-in-out',
-                  ...(dialogue.state === 'active' && dialogue.speaker === 'mentor' && {
-                    filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.5))',
-                  }),
-                }}
-              >
-                {dialogue.speaker === 'user' ? <UserIcon /> : <MentorIcon />}
-              </div>
-
-              {/* Message content */}
-              <div
-                style={{
-                  flex: 1,
-                  maxWidth: '400px',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginBottom: '8px',
-                    flexDirection: dialogue.speaker === 'user' ? 'row' : 'row-reverse',
-                  }}
-                >
-                  {dialogue.important && (
-                    <LightBulbIcon />
-                  )}
-                  {dialogue.state === 'typing' ? (
-                    <Typewriter
-                      text={dialogue.message}
-                      onComplete={handleTypingComplete}
-                      speed={dialogue.message.length > 50 ? 15 : 25}
-                    />
-                  ) : (
-                    <span
-                      style={{
-                        fontFamily: 'Lato, sans-serif',
-                        fontStyle: 'italic',
-                        fontSize: '16',
-                        color: getSpeakerColor(dialogue.state, dialogue.speaker),
-                        lineHeight: 1.6,
-                        whiteSpace: 'pre-wrap',
-                      }}
-                    >
-                      {dialogue.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
+      {/* CSS animations */}
       <style>{`
         @keyframes blink {
           0%, 100% { opacity: 1; }
           50% { opacity: 0; }
         }
-        @keyframes pulse {
-          0%, 100% { 
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 0.8;
-          }
-          50% { 
-            transform: translate(-50%, -50%) scale(1.2);
-            opacity: 1;
-          }
+        @keyframes cursorPulse {
+          0% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+          100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+        }
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes iconGlow {
+          0%, 100% { filter: drop-shadow(0 0 3px rgba(255,255,255,0.3)); }
+          50% { filter: drop-shadow(0 0 8px rgba(255,255,255,0.6)); }
+        }
+        @keyframes bulbPulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.1); opacity: 0.8; }
         }
       `}</style>
     </div>
-  );
-}
-
-function getSpeakerColor(state: DialogueState, speaker: 'user' | 'mentor'): string {
-  if (state === 'hidden') return 'transparent';
-  if (state === 'completed') return '#666666';
-  return '#FFFFFF';
+  )
 }
