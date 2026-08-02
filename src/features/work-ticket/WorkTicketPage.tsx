@@ -214,7 +214,7 @@ export function WorkTicketPage() {
           zIndex: 1,
           maxWidth: 620,
           margin: '0 auto',
-          padding: '80px 28px 200px',
+          padding: '80px 28px 250px',
           display: 'flex',
           flexDirection: 'column',
           gap: 64,
