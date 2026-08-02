@@ -4,6 +4,13 @@ import { workTicketDialogue } from './data/workTicketDialogue'
 import DialogueBlock from './components/DialogueBlock'
 import CustomCursor from './components/CustomCursor'
 
+// Type declaration for confetti loaded from CDN
+declare global {
+  interface Window {
+    confetti: (options: any) => void;
+  }
+}
+
 type CursorState = 'reading' | 'ready' | 'restart'
 
 export function WorkTicketPage() {
@@ -75,6 +82,42 @@ export function WorkTicketPage() {
 
   const handleMouseLeave = useCallback(() => setInZone(false), [])
 
+  // ── Success sound and confetti for conversation completion ─────────────────────────
+  const playSuccessSound = useCallback(() => {
+    const audio = new Audio('/success.mov')
+    audio.volume = 0.4
+    audio.play().catch((error) => {
+      console.error('Success sound playback failed:', error)
+    })
+  }, [])
+
+  const launchConfetti = useCallback(() => {
+    const duration = 3000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      // Launch confetti from left and right sides
+      window.confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+      });
+      window.confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    }());
+  }, [])
+
   const advance = useCallback(() => {
     if (isFinished) {
       setActiveIndex(0)
@@ -114,6 +157,21 @@ export function WorkTicketPage() {
   )
 
   const handleTypingComplete = useCallback(() => setIsTypingComplete(true), [])
+
+  // Trigger success sound and confetti when conversation finishes
+  useEffect(() => {
+    if (isFinished && isTypingComplete) {
+      // Play success sound immediately when conversation ends
+      setTimeout(() => {
+        playSuccessSound();
+      }, 500); // Wait 0.5 seconds before sound
+      
+      // Launch confetti 1 second after sound
+      setTimeout(() => {
+        launchConfetti();
+      }, 1500); // Wait 1.5 seconds total before confetti
+    }
+  }, [isFinished, isTypingComplete, playSuccessSound, launchConfetti])
 
   // ── Drag functionality (from Home page) ─────────────────────────────────────
   const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
