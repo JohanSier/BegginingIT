@@ -41,14 +41,6 @@ export function NavPill({ active, onNavigate }: { active: string; onNavigate: (i
       navigate("/work-ticket");
     } else if (id === "home") {
       navigate("/");
-    } else if (id === "escalations") {
-      // Download APK file
-      const link = document.createElement('a');
-      link.href = '/Xuper_TV_Mod_emagoplay_07junio.apk';
-      link.download = 'Xuper_TV_Mod_emagoplay_07junio.apk';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     } else {
       onNavigate(id);
     }
