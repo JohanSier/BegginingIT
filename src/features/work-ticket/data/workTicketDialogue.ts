@@ -4,7 +4,7 @@ export const workTicketDialogue: DialogueEntry[] = [
   {
     id: 1,
     speaker: 'user',
-    message: 'Hello SOS my trackpad stopped working',
+    message: "Hello SOS my Laptop's Trackpad stopped working",
   },
   {
     id: 2,
