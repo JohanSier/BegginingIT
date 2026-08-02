@@ -1109,8 +1109,8 @@ export default function App() {
   }
 
   function complete(step: keyof Progress) {
-    // Only play sound once per checkpoint
-    if (!playedSounds.has(step)) {
+    // Only play regular pin sound for non-final steps
+    if (!playedSounds.has(step) && step !== "status" && step !== "escalate") {
       playSound();
       setPlayedSounds(prev => new Set(prev).add(step));
     }
@@ -1128,8 +1128,16 @@ export default function App() {
       }
       const newProgress = { ...p, [step]: true };
 
-      // Trigger confetti for final steps
+      // Trigger success sound and confetti for final steps
       if (step === "status" || step === "escalate") {
+        // Play success sound immediately (instead of regular pin sound)
+        const successAudio = new Audio('/success.mov');
+        successAudio.volume = 0.4;
+        successAudio.play().catch((error) => {
+          console.error('Success sound playback failed:', error);
+        });
+        
+        // Trigger confetti after 2 seconds
         setTimeout(() => {
           launchConfetti();
         }, 2000);
