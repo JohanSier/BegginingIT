@@ -73,7 +73,7 @@ export const workTicketDialogue: DialogueEntry[] = [
     speaker: 'mentor',
     important: true,
     message:
-      'You found the root cause! We needed to update trackpad driver, now verify full system functionality and, if applicable, implement preventative measures.',
+      "You found the root cause! We needed to update trackpad's driver, now verify full system functionality and, if applicable, implement preventative measures.",
   },
   {
     id: 13,

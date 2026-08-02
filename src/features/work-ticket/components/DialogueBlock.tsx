@@ -215,7 +215,7 @@ const DialogueBlock = forwardRef<HTMLDivElement, DialogueBlockProps>(
 
     // ── Mentor ──────────────────────────────────────────────────────────────
     return (
-      <div ref={ref} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-end', gap: 12, animation: 'fadeSlideIn 0.4s ease forwards', opacity: 0 }}>
+      <div ref={ref} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'flex-end', gap: 12, animation: 'fadeSlideIn 0.4s ease forwards', opacity: 0, marginRight: '50px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <MentorBadge dim={dim} />
           <p style={{ ...textStyle, color: textColor, textAlign: 'right', maxWidth: 334, transition: 'color 0.5s ease' }}>
