@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { NavPill } from "../components/NavPill";
+import { usePinSound } from "../hooks/usePinSound";
 
 // Type declaration for confetti loaded from CDN
 declare global {
@@ -1069,6 +1070,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
 export default function App() {
+  const { playSound } = usePinSound();
   const [tab, setTab]     = useState("home");
   const [vip, setVip]     = useState<Branch>(null);
   const [urgent, setUrgent] = useState<Branch>(null);
@@ -1076,6 +1078,7 @@ export default function App() {
   const [fixed, setFixed] = useState<Branch>(null);
   const [progress, setProgress] = useState<Progress>(EMPTY_PROGRESS);
   const [mobile, setMobile] = useState(false);
+  const [playedSounds, setPlayedSounds] = useState<Set<keyof Progress>>(new Set());
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -1106,6 +1109,12 @@ export default function App() {
   }
 
   function complete(step: keyof Progress) {
+    // Only play sound once per checkpoint
+    if (!playedSounds.has(step)) {
+      playSound();
+      setPlayedSounds(prev => new Set(prev).add(step));
+    }
+    
     setProgress(p => {
       if (p[step]) {
         // Turning a checkpoint off also retracts everything that depends on it.
