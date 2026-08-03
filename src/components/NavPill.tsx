@@ -41,6 +41,8 @@ export function NavPill({ active, onNavigate }: { active: string; onNavigate: (i
       navigate("/work-ticket");
     } else if (id === "home") {
       navigate("/");
+    } else if (id === "escalations") {
+      navigate("/escalations");
     } else {
       onNavigate(id);
     }
