@@ -49,14 +49,14 @@ function noPath(fromX: number, toX: number) {
 }
 
 const P_START = `M 74,${NODE_Y} L ${QX[1] - 18},${NO_Y}`;
-const P_Q1_NO = `M ${QX[1] + 50},${YES_Y - 170} C ${QX[1]+105},${YES_Y- 288} ${QX[2]-60},${YES_Y- 50} ${QX[2] + 20},${YES_Y - 100}`;
-const P_Q2_NO = `M ${QX[2] + 50},${NODE_Y - 60} C ${QX[2]+105},${NODE_Y - 258} ${QX[3]-16},${YES_Y + 50} ${QX[3] + 50},${NODE_Y}`;
-const P_Q3_NO = `M ${QX[3] + 50},${NODE_Y - 60} C ${QX[3]+105},${NODE_Y - 258} ${QX[4]-16},${YES_Y + 50} ${QX[4] + 50},${NODE_Y}`;
-const P_Q4_NO = `M ${QX[4] + 50},${NODE_Y - 60} C ${QX[4]+105},${NODE_Y - 258} ${NO_MORE_X-16},${YES_Y + 50} ${NO_MORE_X + 50},${NODE_Y}`;
-const P_Q1_YES = `M ${QX[1]},${NODE_Y + 100} C ${QX[1]+ 130},${SHARED_Y-55} ${DOC_X- 40},${NODE_Y + 70} ${DOC_X-66},${SHARED_Y}`;
+const P_Q1_NO = `M ${QX[1] + 50},${YES_Y - 170} C ${QX[1] + 105},${YES_Y - 288} ${QX[2] - 60},${YES_Y - 50} ${QX[2] + 20},${YES_Y - 100}`;
+const P_Q2_NO = `M ${QX[2] + 50},${NODE_Y - 60} C ${QX[2] + 105},${NODE_Y - 258} ${QX[3] - 16},${YES_Y + 50} ${QX[3] + 50},${NODE_Y}`;
+const P_Q3_NO = `M ${QX[3] + 50},${NODE_Y - 60} C ${QX[3] + 105},${NODE_Y - 258} ${QX[4] - 16},${YES_Y + 50} ${QX[4] + 50},${NODE_Y}`;
+const P_Q4_NO = `M ${QX[4] + 50},${NODE_Y - 60} C ${QX[4] + 105},${NODE_Y - 258} ${NO_MORE_X - 16},${YES_Y + 50} ${NO_MORE_X + 50},${NODE_Y}`;
+const P_Q1_YES = `M ${QX[1]},${NODE_Y + 100} C ${QX[1] + 130},${SHARED_Y - 55} ${DOC_X - 40},${NODE_Y + 70} ${DOC_X - 66},${SHARED_Y}`;
 const P_Q2_YES = yesPath(QX[2]);
 const P_Q3_YES = yesPath(QX[3]);
-const P_Q4_YES = `M ${QX[4]},${NODE_Y + 100} C ${QX[4]+ 30},${SHARED_Y-55} ${DOC_X- 140},${SHARED_Y- 5} ${DOC_X-16},${SHARED_Y}`;
+const P_Q4_YES = `M ${QX[4]},${NODE_Y + 100} C ${QX[4] + 30},${SHARED_Y - 55} ${DOC_X - 140},${SHARED_Y - 5} ${DOC_X - 16},${SHARED_Y}`;
 const P_DOC_NOTIFY = `M ${DOC_X + 12},${SHARED_Y} L ${NOTIFY_X - 12},${SHARED_Y}`;
 const P_NOTIFY_ESC = `M ${NOTIFY_X + 12},${SHARED_Y} L ${ESC_X - 12},${SHARED_Y}`;
 const P_ESC_END = `M ${ESC_X + 12},${SHARED_Y} L ${END_X - 12},${SHARED_Y}`;
@@ -92,6 +92,7 @@ export function EscalationsPage() {
   const [flow, setFlow] = useState<FlowProgress>(EMPTY_FLOW);
   const [mobile, setMobile] = useState(false);
   const [playedSounds, setPlayedSounds] = useState<Set<keyof FlowProgress>>(new Set());
+  const [triggeredNoMoreConfetti, setTriggeredNoMoreConfetti] = useState(false);
 
   useEffect(() => {
     const check = () => setMobile(window.innerWidth < 768);
@@ -102,6 +103,16 @@ export function EscalationsPage() {
 
   const trigger = ([1, 2, 3, 4] as QNum[]).find(n => answers[n] === "yes") ?? null;
   const allNo = ([1, 2, 3, 4] as QNum[]).every(n => answers[n] === "no");
+
+  useEffect(() => {
+    if (allNo && !triggeredNoMoreConfetti) {
+      setTriggeredNoMoreConfetti(true);
+      const successAudio = new Audio("/success.mov");
+      successAudio.volume = 0.4;
+      successAudio.play().catch(() => {});
+      setTimeout(() => launchConfetti(), 2000);
+    }
+  }, [allNo, triggeredNoMoreConfetti]);
 
   function answer(q: QNum, v: "yes" | "no") {
     setFlow(EMPTY_FLOW);
@@ -122,6 +133,7 @@ export function EscalationsPage() {
   function restart() {
     setAnswers(EMPTY_ANSWERS);
     setFlow(EMPTY_FLOW);
+    setTriggeredNoMoreConfetti(false);
   }
 
   function complete(step: keyof FlowProgress) {
@@ -272,7 +284,7 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [setCam]);
 
   useEffect(() => () => { if (raf.current !== null) cancelAnimationFrame(raf.current); }, []);
 
@@ -327,17 +339,15 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
             return (
               <AnimatePresence key={n}>
                 <React.Fragment>
-                  {answers[n] !== "yes" && (
-                    <motion.div key={`q${n}text`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }} data-no-drag
-                      style={{ position: "absolute", left: QX[n] - 30, top: NODE_Y - 45, width: 214, textAlign: "center",
-                        fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14,
-                        color: "rgba(255,255,255,0.78)", cursor: "text", userSelect: "none" }}>
-                      {q.text}
-                    </motion.div>
-                  )}
+                  <motion.div key={`q${n}text`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: 0.05 }} data-no-drag
+                    style={{ position: "absolute", left: QX[n] - 30, top: NODE_Y - 45, width: 214, textAlign: "center",
+                      fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 14,
+                      color: "rgba(255,255,255,0.78)", cursor: "text", userSelect: "none" }}>
+                    {q.text}
+                  </motion.div>
                   <Btn label="No" x={QX[n] + 30} y={NO_Y - 72} chosen={answers[n] === "no"} onClick={() => answer(n, "no")} />
-                  <Btn label="Yes" x={QX[n] +30} y={YES_Y - 20} chosen={answers[n] === "yes"} onClick={() => answer(n, "yes")} />
+                  <Btn label="Yes" x={QX[n] + 30} y={YES_Y - 20} chosen={answers[n] === "yes"} onClick={() => answer(n, "yes")} />
                 </React.Fragment>
               </AnimatePresence>
             );
@@ -347,7 +357,7 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
           <AnimatePresence>
             {allNo && (
               <motion.div key="no-more" style={{ position: "absolute", left: NO_MORE_X + 70, top: NODE_Y - 70 }}
-                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: 0.1 }}>
                 <InfoCard width={190} title="Keep troubleshooting"
                   note="None of the escalation criteria have been met yet. Continue working the ticket." />
               </motion.div>
@@ -358,17 +368,17 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
           <AnimatePresence>
             {sharedVis && trigger && (
               <Node key="doc" x={DOC_X} y={SHARED_Y} label="Document Everything"
-                state={flow.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={0.1}
+                state={flow.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={0.08}
                 hoverCard={<DocCard trigger={trigger} />} cardStyle={{ left: -30, top: 70 }} />
             )}
             {flow.doc && trigger && (
               <Node key="notify" x={NOTIFY_X} y={SHARED_Y} label="Notify the User"
-                state={flow.notify ? "done" : "idle"} onClick={() => complete("notify")} delay={0.14}
+                state={flow.notify ? "done" : "idle"} onClick={() => complete("notify")} delay={0.18}
                 hoverCard={<NotifyCard />} cardStyle={{ left: -30, top: 70 }} />
             )}
             {flow.notify && trigger && (
               <Node key="escalate" x={ESC_X} y={SHARED_Y} label="Escalate the Ticket"
-                state={flow.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.14}
+                state={flow.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.22}
                 hoverCard={<EscalateCard trigger={trigger} />} cardStyle={{ left: -30, top: 70 }} />
             )}
             {flow.escalate && <EndMarker key="end" x={END_X - 95} y={SHARED_Y - 10} delay={0.3} />}
@@ -380,6 +390,7 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
       <AnimatePresence>
         {([1, 2, 3, 4] as QNum[]).some(n => answers[n] !== null) && (
           <motion.button key="rst" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            whileTap={{ scale: 0.95 }}
             onClick={restart}
             style={{ position: "fixed", top: 40, left: "50%", transform: "translateX(-50%)",
               fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 17,
@@ -416,20 +427,20 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
 
         {visibleQ.map((n, i) => (
           <React.Fragment key={n}>
-            {i > 0 && <VConnector height={30} />}
+            {i > 0 && <VConnector height={30} delay={0.05} />}
             <MobileFork
               question={QUESTIONS[n - 1].text}
               yesChosen={answers[n] === "yes"} noChosen={answers[n] === "no"}
               onYes={() => answer(n, "yes")} onNo={() => answer(n, "no")}
-              borderRadius="2px 8px 8px 8px" />
+              borderRadius="2px 8px 8px 8px" delay={i === 0 ? 0 : 0.05} />
           </React.Fragment>
         ))}
 
         {/* No escalation needed yet */}
         <AnimatePresence>
           {allNo && (
-            <motion.div key="no-more-m" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.35 }} style={{ marginTop: 20, width: "100%" }}>
+            <motion.div key="no-more-m" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.35, delay: 0.1 }} style={{ marginTop: 20, width: "100%" }}>
               <InfoCard title="Keep troubleshooting"
                 note="None of the escalation criteria have been met yet. Continue working the ticket." />
             </motion.div>
@@ -440,9 +451,9 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         <AnimatePresence>
           {trigger !== null && (
             <>
-              <VConnector key="v-doc" height={30} />
+              <VConnector key="v-doc" height={30} delay={0.08} />
               <MobileNode key="doc-m" label="Document Everything"
-                state={flow.doc ? "done" : "idle"} onClick={() => complete("doc")}
+                state={flow.doc ? "done" : "idle"} onClick={() => complete("doc")} delay={0.08}
                 hoverCard={<DocCard trigger={trigger} />} />
             </>
           )}
@@ -450,9 +461,9 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         <AnimatePresence>
           {flow.doc && trigger !== null && (
             <>
-              <VConnector key="v-notify" height={26} />
+              <VConnector key="v-notify" height={26} delay={0.18} />
               <MobileNode key="notify-m" label="Notify the User"
-                state={flow.notify ? "done" : "idle"} onClick={() => complete("notify")}
+                state={flow.notify ? "done" : "idle"} onClick={() => complete("notify")} delay={0.18}
                 hoverCard={<NotifyCard />} />
             </>
           )}
@@ -460,9 +471,9 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         <AnimatePresence>
           {flow.notify && trigger !== null && (
             <>
-              <VConnector key="v-esc" height={26} />
+              <VConnector key="v-esc" height={26} delay={0.22} />
               <MobileNode key="esc-m" label="Escalate the Ticket"
-                state={flow.escalate ? "done" : "idle"} onClick={() => complete("escalate")}
+                state={flow.escalate ? "done" : "idle"} onClick={() => complete("escalate")} delay={0.22}
                 hoverCard={<EscalateCard trigger={trigger} />} />
             </>
           )}
@@ -470,8 +481,8 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         <AnimatePresence>
           {flow.escalate && (
             <>
-              <VConnector key="v-end" height={26} />
-              <EndMarker key="end-m" />
+              <VConnector key="v-end" height={26} delay={0.3} />
+              <EndMarker key="end-m" delay={0.3} />
             </>
           )}
         </AnimatePresence>
@@ -480,6 +491,7 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         <AnimatePresence>
           {([1, 2, 3, 4] as QNum[]).some(n => answers[n] !== null) && (
             <motion.button key="rst-m" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              whileTap={{ scale: 0.95 }}
               onClick={restart}
               style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)",
                 fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 17,

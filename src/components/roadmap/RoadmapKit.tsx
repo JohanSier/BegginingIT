@@ -136,6 +136,7 @@ export function Node({ x, y, label, sublabel, state, onClick, hoverCard, cardSty
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 4 }} transition={{ duration: 0.38, delay }}
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} onClick={onClick}
+      whileTap={{ scale: 0.95 }}
       data-no-drag
       style={{ position: "absolute", left: x - 10, top: y - 14,
         display: "flex", flexDirection: "column", alignItems: "center", cursor: onClick ? "pointer" : "default" }}>
@@ -171,6 +172,7 @@ export function Btn({ label, x, y, chosen, onClick }:
     <motion.button onClick={onClick}
       onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       animate={{ scale: hov ? 1.15 : 1 }} transition={{ duration: 0.13 }}
+      whileTap={{ scale: 0.92 }}
       style={{ position: "absolute", left: x - 16, top: y - 11, width: 34, height: 22,
         background: "transparent", border: "none", padding: 0, cursor: "pointer",
         fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13,
@@ -338,6 +340,7 @@ export function MobileNode({ label, sublabel, state, onClick, hoverCard, delay =
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 5 }} transition={{ duration: 0.38, delay }}
       onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      whileTap={{ scale: 0.95 }}
       style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, cursor: onClick ? "pointer" : "default", position: "relative" }}>
       <motion.div
         animate={state === "active" ? { scale: [1, 1.1, 1] } : { scale: 1 }}
