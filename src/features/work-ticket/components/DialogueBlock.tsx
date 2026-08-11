@@ -124,8 +124,8 @@ interface DialogueBlockProps {
 // W-words only highlighted in entry id=3, case-sensitive. Other tokens always highlighted.
 function highlightText(text: string, baseColor: string, includeWWords: boolean) {
   const re = includeWWords
-    ? /(Who|What|Where|When|Why|1st|2nd|3rd|#534256)/g
-    : /(1st|2nd|3rd|#513524)/g
+    ? /(Who|What|Where|When|Why|1st|2nd|3rd|#521251)/g
+    : /(1st|2nd|3rd|#521251)/g
   const parts = text.split(re)
   return parts.map((part, i) =>
     i % 2 === 1 ? (
