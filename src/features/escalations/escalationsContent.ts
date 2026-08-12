@@ -8,7 +8,7 @@
 export type QNum = 1 | 2 | 3 | 4;
 
 export const QUESTIONS: { n: QNum; text: string }[] = [
-  { n: 1, text: "Have you worked on this ticket for one hour without meaningful progress?" },
+  { n: 1, text: "Have you worked on this ticket for more than 45 - 50 minutes without meaningful progress?" },
   { n: 2, text: "Does this ticket require a Field Services Technician?" },
   { n: 3, text: "Does this ticket require a Tier 2 Technician?" },
   { n: 4, text: "Does this ticket require a Business Systems Technician?" },

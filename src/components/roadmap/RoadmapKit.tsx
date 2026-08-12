@@ -241,11 +241,9 @@ export function EndMarker({ x, y, delay = 0 }: { x?: number; y?: number; delay?:
 export const ESCALATION_TEMPLATE =
   `Hi [Name],
 
-I sincerely apologize for the inconvenience. To ensure you receive the best possible help, I will be escalating your ticket to our T2 team. One of their members will reach out to you quickly.
+I'll be escalating this ticket to our T2 team. they will continue working with you on this.
 
-They will review everything carefully and follow up with you shortly.
-
-Thank you for your patience and understanding.`;
+Have a great rest of your day`;
 
 export function EscalationCard({ compact: _compact }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
