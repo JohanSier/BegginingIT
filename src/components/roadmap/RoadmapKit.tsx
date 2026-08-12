@@ -85,6 +85,15 @@ export const CARD_BODY: React.CSSProperties = {
   margin: 0,
 };
 
+export const CARD_NOTE: React.CSSProperties = {
+  fontSize: 12,
+  fontStyle: "italic",
+  fontWeight: 700,
+  color: "#023256",
+  lineHeight: 1.55,
+  margin: 0,
+};
+
 export function InfoCard({ title, bullets, note, width = 168, style }: {
   title: string; bullets?: string[]; note?: string; width?: number; style?: React.CSSProperties;
 }) {
@@ -101,7 +110,7 @@ export function InfoCard({ title, bullets, note, width = 168, style }: {
       {bullets && bullets.map((b, i) => (
         <p key={i} style={{ ...CARD_BODY, cursor: "text", marginBottom: i < bullets.length - 1 ? 4 : 0 }}>{b}</p>
       ))}
-      {note && <p style={{ ...CARD_BODY, cursor: "text", marginTop: bullets ? 4 : 0 }}>{note}</p>}
+      {note && <p style={{ ...CARD_NOTE, cursor: "text", marginTop: bullets ? 9 : 0 }}>{note}</p>}
     </motion.div>
   );
 }
@@ -274,7 +283,7 @@ export function EscalationCard({ compact: _compact }: { compact?: boolean }) {
 
       <p style={{ ...CARD_TITLE, cursor: "text"}}>Leave notes on everything you did and why you are escalating</p>
       <div style={CARD_DIVIDER} />
-      <p style={{ ...CARD_BODY, cursor: "text" }}>Reaching an hour without a solution, lack of knowledge or tool access</p>
+      <p style={{ ...CARD_BODY, cursor: "text" }}>Reaching almost and hour without a solution, lack of knowledge or tool access</p>
 
       {/* Template toggle */}
       <button onClick={() => setOpen(o => !o)}

@@ -170,7 +170,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
             <>
               <VConnector key={`v-call-${info}`} delay={d.call} height={28} />
               <MobileNode key={`call-${info}`} label="Call the user" state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
-                hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Let user know you are legitimate by saying the Word of the Day", "Most Important: Do Caller Verify"]} />} />
+                hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Most Important: Do Caller Verify", "2. Mention the call will be recorded for security and training purposes" ]} />} />
               <motion.div key={`call-card-${info}`}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: d.cw }}
@@ -178,8 +178,8 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
                 <InfoCard 
                   title="Gather more information using 5 Ws"
                   bullets={[
-                    "1. Let user know you are legitimate by saying the Word of the Day",
-                    "Most Important: 2. Do Caller Verify",
+                    "1. Most Important: Do Caller Verify", 
+                    "2. Mention the call will be recorded for security and training purposes",
                   ]} />
               </motion.div>
             </>
@@ -601,7 +601,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
           <AnimatePresence>
             {callVis && <Node key={`call-${info}`} x={XC} y={CY} label="Call the user"
               state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
-              hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Let user know you are legitimate by saying the Word of the Day", "2. Most Important: Do Caller Verify"]} />}
+              hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Most Important: Do Caller Verify", "2. Mention the call will be recorded for security and training purposes"]} />}
               cardStyle={{ left: -30, top: 60 }} />}
           </AnimatePresence>
 

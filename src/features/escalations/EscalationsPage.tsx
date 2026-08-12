@@ -4,7 +4,7 @@ import { NavPill } from "../../components/NavPill";
 import { usePinSound } from "../../hooks/usePinSound";
 import {
   Human, InfoCard, DotPath, DimPath, Node, Btn, QText, EndMarker,
-  VConnector, MobileNode, MobileFork,
+  VConnector, MobileNode, MobileFork, CARD_NOTE,
 } from "../../components/roadmap/RoadmapKit";
 import { QUESTIONS, DESTINATION, DOC_BULLETS, DOC_NOTE, type QNum } from "./escalationsContent";
 

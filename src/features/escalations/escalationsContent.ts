@@ -26,20 +26,20 @@ export const DESTINATION: Record<QNum, string> = {
 // Context-aware body text for the single shared "Document Everything" card.
 export const DOC_BULLETS: Record<QNum, string[]> = {
   1: [
-    "List every troubleshooting step you've already tried",
-    "Add screenshots of what you've checked",
+    "1. List every troubleshooting step you've already tried",
+    "2. Add screenshots of what you've checked",
   ],
   2: [
-    "Note the physical hardware observations you made",
-    "Include what you tested or ruled out on-site or by phone",
+    "1. Note the physical hardware observations you made",
+    "2. Include what you tested or ruled out on-site or by phone",
   ],
   3: [
-    "Document every diagnostic step already completed",
-    "Include the exact error messages and screenshots",
+    "1. Document every diagnostic step already completed",
+    "2. Include the exact error messages and screenshots",
   ],
   4: [
-    "Capture application-specific detail (module, exact error)",
-    "Include any Epic-related information if relevant",
+    "1. Capture application-specific detail (module, exact error)",
+    "2. Include any Epic-related information if relevant",
   ],
 };
 
