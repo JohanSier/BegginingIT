@@ -5,12 +5,16 @@ interface CustomCursorProps {
   y: number
   state: 'reading' | 'ready' | 'restart'
   visible: boolean
+  side: 'left' | 'right' | null
 }
 
-export default function CustomCursor({ x, y, state, visible }: CustomCursorProps) {
+export default function CustomCursor({ x, y, state, visible, side }: CustomCursorProps) {
   if (!visible) return null
 
   const isReady = state === 'ready' || state === 'restart'
+
+  // Rotate the arrow based on side
+  const rotation = side === 'left' ? 180 : 0
 
   return (
     <>
@@ -41,12 +45,12 @@ export default function CustomCursor({ x, y, state, visible }: CustomCursorProps
           top: y,
           width: 24,
           height: 24,
-          transform: 'translate(-50%, -50%)',
+          transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
           pointerEvents: 'none',
           zIndex: 9999,
           opacity: isReady ? 1 : 0.28,
           filter: isReady ? 'drop-shadow(0 0 6px rgba(255,255,255,0.45))' : 'none',
-          transition: 'opacity 0.35s ease, filter 0.35s ease',
+          transition: 'opacity 0.35s ease, filter 0.35s ease, transform 0.2s ease',
         }}
       >
         <svg

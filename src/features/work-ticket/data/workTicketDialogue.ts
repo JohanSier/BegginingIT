@@ -86,6 +86,6 @@ export const workTicketDialogue: DialogueEntry[] = [
     speaker: 'mentor',
     important: true,
     message:
-      'Success! This ticket was real and you can check it on Zendesk: #521251',
+      'Success! This ticket is real and you can check it on Zendesk: #521251',
   },
 ]

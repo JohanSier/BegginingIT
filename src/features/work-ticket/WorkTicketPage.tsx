@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, type CSSProperties, type MouseEvent } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import { NavPill } from '../../components/NavPill'
 import { workTicketDialogue } from './data/workTicketDialogue'
 import DialogueBlock from './components/DialogueBlock'
@@ -19,7 +20,9 @@ export function WorkTicketPage() {
   const [skipAnimation, setSkipAnimation] = useState(false)
   const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 })
   const [inZone, setInZone] = useState(false)
+  const [cursorSide, setCursorSide] = useState<'left' | 'right' | null>(null)
   const [cursorReady, setCursorReady] = useState(false)
+  const [showBeginningHint, setShowBeginningHint] = useState(false)
   
   // Drag functionality (from Home page)
   const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => ({
@@ -38,7 +41,15 @@ export function WorkTicketPage() {
 
   const isFinished = activeIndex >= workTicketDialogue.length - 1 && isTypingComplete
 
-  const cursorState: CursorState = !cursorReady ? 'reading' : isFinished ? 'restart' : 'ready'
+  const cursorState: CursorState = (() => {
+    if (!inZone) return 'reading'
+    // Left side: always show arrow unless at beginning
+    if (cursorSide === 'left' && activeIndex === 0) return 'reading'
+    // Right side: show restart if finished
+    if (isFinished && cursorSide === 'right') return 'restart'
+    // Show ready state when in zone (arrows always visible per user request)
+    return 'ready'
+  })()
 
   // Auto-scroll to active dialogue
   useEffect(() => {
@@ -52,30 +63,39 @@ export function WorkTicketPage() {
     setCam({ x: 0, y: 0, z: 1 });
   }, [activeIndex])
 
-  // Delay cursor ready state slightly after typing finishes
+  // Cursor ready state - always ready when in zone (per user request for always-show arrows)
   useEffect(() => {
     if (readyTimerRef.current) clearTimeout(readyTimerRef.current)
-    if (isTypingComplete) {
-      readyTimerRef.current = setTimeout(() => setCursorReady(true), 260)
+    // Always set cursor ready when in zone
+    if (inZone) {
+      readyTimerRef.current = setTimeout(() => setCursorReady(true), 100)
     } else {
       setCursorReady(false)
     }
     return () => {
       if (readyTimerRef.current) clearTimeout(readyTimerRef.current)
     }
-  }, [isTypingComplete])
+  }, [inZone])
 
-  const checkZone = useCallback((clientX: number): boolean => {
+  const checkZone = useCallback((clientX: number): { inZone: boolean; side: 'left' | 'right' | null } => {
     const w = window.innerWidth
     const colWidth = Math.min(680, w * 0.82)
     const left = (w - colWidth) / 2
-    return clientX >= left && clientX <= left + colWidth
+    const right = left + colWidth
+    const center = left + colWidth / 2
+
+    if (clientX >= left && clientX <= right) {
+      return { inZone: true, side: clientX < center ? 'left' : 'right' }
+    }
+    return { inZone: false, side: null }
   }, [])
 
   const handleMouseMove = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       setCursorPos({ x: e.clientX, y: e.clientY })
-      setInZone(checkZone(e.clientX))
+      const { inZone, side } = checkZone(e.clientX)
+      setInZone(inZone)
+      setCursorSide(side)
     },
     [checkZone]
   )
@@ -145,15 +165,29 @@ export function WorkTicketPage() {
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
-      if (!checkZone(e.clientX)) return
+      const { inZone, side } = checkZone(e.clientX)
+      if (!inZone) return
+
       if (!isTypingComplete) {
         // Complete current typewriter instantly on click
         setSkipAnimation(true)
         return
       }
-      advance()
+
+      // Left side: go back, Right side: go forward
+      if (side === 'left') {
+        if (activeIndex > 0) {
+          goBack()
+        } else {
+          // Show hint that we're at the beginning
+          setShowBeginningHint(true)
+          setTimeout(() => setShowBeginningHint(false), 1500)
+        }
+      } else {
+        advance()
+      }
     },
-    [checkZone, isTypingComplete, advance]
+    [checkZone, isTypingComplete, advance, goBack, activeIndex]
   )
 
   const handleTypingComplete = useCallback(() => setIsTypingComplete(true), [])
@@ -180,7 +214,8 @@ export function WorkTicketPage() {
     if (target.closest("button, a, input, [data-no-drag]")) return;
 
     // Ignore clicks inside the dialogue interaction zone
-    if (checkZone(e.clientX)) return;
+    const { inZone } = checkZone(e.clientX)
+    if (inZone) return;
 
     if (raf.current !== null) { cancelAnimationFrame(raf.current); raf.current = null; }
 
@@ -263,7 +298,7 @@ export function WorkTicketPage() {
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
     >
-      <CustomCursor x={cursorPos.x} y={cursorPos.y} state={cursorState} visible={inZone} />
+      <CustomCursor x={cursorPos.x} y={cursorPos.y} state={cursorState} visible={inZone} side={cursorSide} />
 
       {/* Conversation column */}
       <div
@@ -337,39 +372,31 @@ export function WorkTicketPage() {
         )}
       </div>
 
-      {/* Back button */}
-      {activeIndex > 0 && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation()
-            goBack()
-          }}
-          style={{
-            position: 'fixed',
-            bottom: 80,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'rgba(255,255,255,0.2)',
-            fontSize: 11,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            fontFamily: "'Lato', sans-serif",
-            fontStyle: 'italic',
-            fontWeight: 400,
-            padding: '8px 16px',
-            zIndex: 100,
-            transition: 'color 0.2s ease',
-            userSelect: 'none',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.2)')}
-        >
-          ← back
-        </button>
-      )}
+      {/* Beginning hint */}
+      <AnimatePresence>
+        {showBeginningHint && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              bottom: 120,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              fontFamily: "'Lato', sans-serif",
+              fontStyle: 'italic',
+              fontSize: 12,
+              color: 'rgba(255,255,255,0.3)',
+              textAlign: 'center',
+              pointerEvents: 'none',
+              zIndex: 100,
+            }}
+          >
+            You're at the beginning
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Navigation pill */}
       <NavPill active="work" onNavigate={() => {}} />
