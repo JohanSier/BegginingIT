@@ -4,6 +4,8 @@
   import App from "./app/App.tsx";
   import { WorkTicketPage } from "./features/work-ticket/WorkTicketPage";
   import { EscalationsPage } from "./features/escalations/EscalationsPage";
+  import TemplatesPage from "./features/templates/TemplatesPage";
+  import ITTeamPage from "./features/it-team/ITTeamPage";
   import "./styles/index.css";
 
   createRoot(document.getElementById("root")!).render(
@@ -12,6 +14,8 @@
         <Route path="/" element={<App />} />
         <Route path="/work-ticket" element={<WorkTicketPage />} />
         <Route path="/escalations" element={<EscalationsPage />} />
+        <Route path="/templates" element={<TemplatesPage />} />
+        <Route path="/it-team" element={<ITTeamPage />} />
       </Routes>
     </BrowserRouter>
   );
