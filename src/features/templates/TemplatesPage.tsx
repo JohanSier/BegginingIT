@@ -73,6 +73,8 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
   const [copiedTitle, setCopiedTitle] = useState<string | null>(null)
   const [slideDir, setSlideDir] = useState<"forward" | "back" | null>(null)
   const bodyRef = useRef<HTMLPreElement>(null)
+  const modeTimeoutRef = useRef<number | null>(null)
+  const slideTimeoutRef = useRef<number | null>(null)
 
   // Reset scroll position when template changes
   useEffect(() => {
@@ -87,21 +89,30 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
 
   // Click category card → open
   const openCard = () => {
+    if (modeTimeoutRef.current !== null) {
+      window.clearTimeout(modeTimeoutRef.current)
+    }
     setPrevMode(mode)
     setMode("exiting")
-    window.setTimeout(() => { setMode("back"); setTemplateIndex(0) }, 260)
+    modeTimeoutRef.current = window.setTimeout(() => { setMode("back"); setTemplateIndex(0) }, 260)
   }
 
   // Click anywhere on template card → next, or close on last
   const onCardClick = () => {
     if (templateIndex < total - 1) {
+      if (slideTimeoutRef.current !== null) {
+        window.clearTimeout(slideTimeoutRef.current)
+      }
       setSlideDir("forward")
-      window.setTimeout(() => { setTemplateIndex((i) => i + 1); setSlideDir(null) }, 220)
+      slideTimeoutRef.current = window.setTimeout(() => { setTemplateIndex((i) => i + 1); setSlideDir(null) }, 220)
     } else {
       // last template — vanish upward, back to category front
+      if (modeTimeoutRef.current !== null) {
+        window.clearTimeout(modeTimeoutRef.current)
+      }
       setPrevMode(mode)
       setMode("closing")
-      window.setTimeout(() => { setMode("front"); setTemplateIndex(0) }, 260)
+      modeTimeoutRef.current = window.setTimeout(() => { setMode("front"); setTemplateIndex(0) }, 260)
     }
   }
 
@@ -110,13 +121,19 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
     e.stopPropagation()
     if (templateIndex === 0) {
       // Back to category front
+      if (modeTimeoutRef.current !== null) {
+        window.clearTimeout(modeTimeoutRef.current)
+      }
       setPrevMode(mode)
       setMode("closing")
-      window.setTimeout(() => { setMode("front"); setTemplateIndex(0) }, 260)
+      modeTimeoutRef.current = window.setTimeout(() => { setMode("front"); setTemplateIndex(0) }, 260)
       return
     }
+    if (slideTimeoutRef.current !== null) {
+      window.clearTimeout(slideTimeoutRef.current)
+    }
     setSlideDir("back")
-    window.setTimeout(() => { setTemplateIndex((i) => i - 1); setSlideDir(null) }, 220)
+    slideTimeoutRef.current = window.setTimeout(() => { setTemplateIndex((i) => i - 1); setSlideDir(null) }, 220)
   }
 
   const copyTemplate = async (e: React.MouseEvent) => {
