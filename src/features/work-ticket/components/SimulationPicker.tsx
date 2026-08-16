@@ -1,4 +1,4 @@
-import simulation1 from '@/imports/simulation_1.png'
+import simulation1 from '@/imports/simulation_1.webp'
 import { NavPill } from '@/components/NavPill'
 import { useNavigate } from 'react-router-dom'
 
