@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import type { DialogueEntry, DialogueState } from '../types'
 import { useTypewriter } from '../hooks/useTypewriter'
@@ -58,17 +58,32 @@ function MentorBadge({ dim }: { dim: boolean }) {
 
 // ─── User avatar — robot SVG, no container circle ───────────────────────────
 function UserAvatar({ dim }: { dim: boolean }) {
+  const [loaded, setLoaded] = useState(false)
+
   return (
     <img
       src={imgRobot}
       alt="User"
-      style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, opacity: dim ? 0.38 : 1, transition: 'opacity 0.5s ease', filter: 'drop-shadow(0 1px 8px white)' }}
+      loading="eager"
+      onLoad={() => setLoaded(true)}
+      style={{ 
+        width: 52, 
+        height: 52, 
+        objectFit: 'contain', 
+        flexShrink: 0, 
+        opacity: dim ? 0.38 : (loaded ? 1 : 0), 
+        transition: 'opacity 0.3s ease', 
+        filter: 'drop-shadow(0 1px 8px white)' 
+      }}
     />
   )
 }
 
 // ─── Mentor avatar — with bulb positioned diagonally top-right of the head ──
 function MentorAvatar({ dim, active, showBulb }: { dim: boolean; active: boolean; showBulb: boolean }) {
+  const [mentorLoaded, setMentorLoaded] = useState(false)
+  const [bulbLoaded, setBulbLoaded] = useState(false)
+
   return (
     // Outer div provides room for the overflowing diagonal bulb
     <div style={{ position: 'relative', width: 52, paddingTop: showBulb ? 14 : 0, flexShrink: 0, filter: 'drop-shadow(0 1px 8px white)' }}>
@@ -78,14 +93,16 @@ function MentorAvatar({ dim, active, showBulb }: { dim: boolean; active: boolean
           width: 52,
           height: 50,
           overflow: 'hidden',
-          opacity: dim ? 0.35 : 1,
-          transition: 'opacity 0.5s ease',
+          opacity: dim ? 0.35 : (mentorLoaded ? 1 : 0),
+          transition: 'opacity 0.3s ease',
           animation: active ? 'iconGlow 2s ease-in-out infinite' : 'none',
         }}
       >
         <img
           src={imgMentor}
           alt="Mentor"
+          loading="eager"
+          onLoad={() => setMentorLoaded(true)}
           style={{ position: 'relative', width: '208%', height: '143%', marginLeft: '-55%', marginTop: '-14%', maxWidth: 'none', pointerEvents: 'none' }}
         />
       </div>
@@ -95,6 +112,8 @@ function MentorAvatar({ dim, active, showBulb }: { dim: boolean; active: boolean
         <img
           src={imgBombilla}
           alt="Key insight"
+          loading="eager"
+          onLoad={() => setBulbLoaded(true)}
           style={{
             position: 'absolute',
             // top of mentor div; 14px above face because we added paddingTop:14
@@ -102,9 +121,9 @@ function MentorAvatar({ dim, active, showBulb }: { dim: boolean; active: boolean
             right: -10,
             width: 25,
             height: 25,
-            opacity: dim ? 0.38 : 1,
+            opacity: dim ? 0.38 : (bulbLoaded ? 1 : 0),
             animation: active && !dim ? 'bulbPulse 1.8s ease-in-out infinite' : 'none',
-            transition: 'opacity 0.5s ease',
+            transition: 'opacity 0.3s ease',
             filter: 'drop-shadow(0 1px 8px #ffff00)',
           }}
         />
