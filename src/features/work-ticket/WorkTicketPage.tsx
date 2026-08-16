@@ -4,6 +4,7 @@ import { NavPill } from '../../components/NavPill'
 import { workTicketDialogue } from './data/workTicketDialogue'
 import DialogueBlock from './components/DialogueBlock'
 import CustomCursor from './components/CustomCursor'
+import SimulationPicker from './components/SimulationPicker'
 
 // Type declaration for confetti loaded from CDN
 declare global {
@@ -16,6 +17,7 @@ type CursorState = 'reading' | 'ready' | 'restart'
 
 export function WorkTicketPage() {
   const [activeIndex, setActiveIndex] = useState(0)
+  const [hasSelectedSimulation, setHasSelectedSimulation] = useState(false)
   const [isTypingComplete, setIsTypingComplete] = useState(false)
   const [skipAnimation, setSkipAnimation] = useState(false)
   const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 })
@@ -275,6 +277,10 @@ export function WorkTicketPage() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [goBack])
+
+  if (!hasSelectedSimulation) {
+  return <SimulationPicker onSelectTrackpad={() => setHasSelectedSimulation(true)} />
+}
 
   const containerStyle: CSSProperties = {
     position: 'relative',
