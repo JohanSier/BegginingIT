@@ -15,8 +15,6 @@ const callFlowSteps = [
 export default function CallFlow() {
   const [isHovered, setIsHovered] = useState(false)
   const [audioUnavailable, setAudioUnavailable] = useState(false)
-  const [chatIconLoaded, setChatIconLoaded] = useState(false)
-  const [videoIconLoaded, setVideoIconLoaded] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const playExample = async () => {
@@ -66,7 +64,6 @@ export default function CallFlow() {
             alt="" 
             className="call-flow__play-icon" 
             loading="eager"
-            onLoad={() => setVideoIconLoaded(true)}
           />
           <span>Play Example</span>
           <span>2:00</span>
@@ -88,7 +85,12 @@ export default function CallFlow() {
 function CallFlowLabel() {
   return (
     <span className="call-flow__label">
-      <img src={chatIcon} alt="" className="call-flow__chat-icon" />
+      <img 
+        src={chatIcon} 
+        alt="" 
+        className="call-flow__chat-icon" 
+        loading="eager"
+      />
       <span>Call Flow</span>
     </span>
   )
