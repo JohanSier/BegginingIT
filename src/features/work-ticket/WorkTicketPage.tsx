@@ -23,7 +23,6 @@ export function WorkTicketPage() {
   const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 })
   const [inZone, setInZone] = useState(false)
   const [cursorSide, setCursorSide] = useState<'left' | 'right' | null>(null)
-  const [cursorReady, setCursorReady] = useState(false)
   const [showBeginningHint, setShowBeginningHint] = useState(false)
   const [simulationKey, setSimulationKey] = useState(0)
   
@@ -40,7 +39,6 @@ export function WorkTicketPage() {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const dialogueRefs = useRef<(HTMLDivElement | null)[]>([])
-  const readyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const isFinished = activeIndex >= workTicketDialogue.length - 1 && isTypingComplete
 
@@ -66,19 +64,6 @@ export function WorkTicketPage() {
     setCam({ x: 0, y: 0, z: 1 });
   }, [activeIndex])
 
-  // Cursor ready state - always ready when in zone (per user request for always-show arrows)
-  useEffect(() => {
-    if (readyTimerRef.current) clearTimeout(readyTimerRef.current)
-    // Always set cursor ready when in zone
-    if (inZone) {
-      readyTimerRef.current = setTimeout(() => setCursorReady(true), 100)
-    } else {
-      setCursorReady(false)
-    }
-    return () => {
-      if (readyTimerRef.current) clearTimeout(readyTimerRef.current)
-    }
-  }, [inZone])
 
   const checkZone = useCallback((clientX: number): { inZone: boolean; side: 'left' | 'right' | null } => {
     const w = window.innerWidth
@@ -146,14 +131,12 @@ export function WorkTicketPage() {
       setActiveIndex(0)
       setIsTypingComplete(false)
       setSkipAnimation(false)
-      setCursorReady(false)
       setCam({ x: 0, y: 0, z: 1 });
       containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     } else {
       setActiveIndex((prev) => Math.min(prev + 1, workTicketDialogue.length - 1))
       setIsTypingComplete(false)
       setSkipAnimation(false)
-      setCursorReady(false)
     }
   }, [isFinished, containerRef])
 
@@ -162,7 +145,6 @@ export function WorkTicketPage() {
       setActiveIndex((prev) => prev - 1)
       setIsTypingComplete(true)
       setSkipAnimation(true)
-      setCursorReady(true)
     }
   }, [activeIndex])
 
@@ -397,7 +379,6 @@ export function WorkTicketPage() {
           setActiveIndex(0)
           setIsTypingComplete(false)
           setSkipAnimation(false)
-          setCursorReady(false)
           setCam({ x: 0, y: 0, z: 1 })
           setSimulationKey(prev => prev + 1)
         }}
