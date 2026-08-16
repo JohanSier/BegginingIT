@@ -322,24 +322,72 @@ export function WorkTicketPage() {
           transition: isDragging ? 'none' : 'transform 0.1s ease-out',
         }}
       >
-        {/* Title */}
-        <p
+        {/* Title with back button */}
+        <div
           style={{
-            fontFamily: "'Lato', sans-serif",
-            fontStyle: 'italic',
-            fontWeight: 400,
-            fontSize: 18,
-            lineHeight: '22.5px',
-            letterSpacing: '0.9px',
-            color: 'rgba(255,255,255,0.38)',
-            textAlign: 'center',
-            margin: 0,
-            marginBottom: -16,
-            userSelect: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+            position: 'relative',
           }}
         >
-          Example of Working a Ticket
-        </p>
+          {/* Back to simulation picker text */}
+          <button
+            type="button"
+            onClick={() => setHasSelectedSimulation(false)}
+            style={{
+              position: 'absolute',
+              left: -80,
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              padding: 0,
+              opacity: 0.7,
+              transition: 'opacity 0.2s ease, transform 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '1'
+              e.currentTarget.style.transform = 'scale(1.05)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '0.7'
+              e.currentTarget.style.transform = 'scale(1)'
+            }}
+            aria-label="Back to simulation picker"
+          >
+            <span
+              style={{
+                fontFamily: "'Lato', sans-serif",
+                fontStyle: 'italic',
+                fontWeight: 400,
+                fontSize: 14,
+                letterSpacing: '0.7px',
+                color: 'rgba(255,255,255,0.7)',
+              }}
+            >
+              Go Back
+            </span>
+          </button>
+
+          <p
+            style={{
+              fontFamily: "'Lato', sans-serif",
+              fontStyle: 'italic',
+              fontWeight: 400,
+              fontSize: 18,
+              lineHeight: '22.5px',
+              letterSpacing: '0.9px',
+              color: 'rgba(255,255,255,0.38)',
+              textAlign: 'center',
+              margin: 0,
+              marginBottom: -16,
+              userSelect: 'none',
+            }}
+          >
+            Example of Working a Ticket
+          </p>
+        </div>
 
         {/* Render dialogues 0..activeIndex */}
         {workTicketDialogue.slice(0, activeIndex + 1).map((entry, i) => (
@@ -382,24 +430,27 @@ export function WorkTicketPage() {
       <AnimatePresence>
         {showBeginningHint && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.4 }}
             style={{
               position: 'fixed',
-              bottom: 120,
-              left: '50%',
-              transform: 'translateX(-50%)',
+              left: '40%',
+              top: '30%',
+              transform: 'translate(50%, 50%)',
               fontFamily: "'Lato', sans-serif",
               fontStyle: 'italic',
-              fontSize: 12,
-              color: 'rgba(255,255,255,0.3)',
+              fontSize: 16,
+              letterSpacing: '0.8px',
+              color: 'rgba(255,255,255,0.4)',
               textAlign: 'center',
               pointerEvents: 'none',
               zIndex: 100,
+              whiteSpace: 'nowrap',
             }}
           >
-            You're at the beginning
+            You're already at the start of the simulation
           </motion.div>
         )}
       </AnimatePresence>

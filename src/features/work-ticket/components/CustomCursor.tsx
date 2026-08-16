@@ -1,4 +1,4 @@
-import svgPaths from '../../../imports/Frame/svg-xgf2o1h7f8'
+import svgPaths from '@/imports/Frame/svg-xgf2o1h7f8'
 
 interface CustomCursorProps {
   x: number
