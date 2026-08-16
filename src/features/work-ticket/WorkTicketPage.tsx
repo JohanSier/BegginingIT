@@ -384,7 +384,7 @@ export function WorkTicketPage() {
         }}
         style={{
           position: 'fixed',
-          left: 520,
+          left: 'clamp(50px, calc(50% - 310px - 130px), 520px)',
           top: 80,
           border: 'none',
           background: 'none',
