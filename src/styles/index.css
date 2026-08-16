@@ -28,7 +28,7 @@
 
 /* Front face — category info */
 .tpl-child-front { display: flex; flex-direction: column; padding: 16px; position: absolute; inset: 0; border-radius: 2px 8px 8px 8px; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 0.52s cubic-bezier(.4,0,.2,1); }
-.tpl-child-front h2 { font-family: 'Arbutus Slab', serif; font-weight: 400; color: #000; line-height: 1.25; font-size: 16px; margin: 0 0 auto; padding-top: 14px; font-style: normal; }
+.tpl-child-front h2 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 400; color: #000; line-height: 1.25; font-size: 16px; margin: 0 0 auto; padding-top: 14px; font-style: normal; }
 .tpl-child-front p { font-family: 'Open Sans', sans-serif; font-size: 12px; color: #495456; font-style: normal; margin: 0; padding-bottom: 14px; }
 
 /* Front face */
@@ -52,7 +52,7 @@
 
 .deck-top-eyebrow { display: flex; align-items: center; gap: 4px; font-size: 9px; letter-spacing: .1em; color: #bbb; font-style: normal; margin-bottom: 5px; font-family: 'Open Sans', sans-serif; }
 .deck-top-sep { opacity: .4; }
-.deck-top-title { font-family: 'Arbutus Slab', serif; font-weight: 400; font-style: normal; font-size: 13px; line-height: 1.25; color: #111; margin: 0 0 6px; flex-shrink: 0; }
+.deck-top-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 400; font-style: normal; font-size: 13px; line-height: 1.25; color: #111; margin: 0 0 6px; flex-shrink: 0; }
 /* scrollable body — pointer events on the pre stop propagation so vertical scroll doesn't trigger swipe */
 .deck-top-body { white-space: pre-wrap; font: 400 11px/1.65 'Open Sans', sans-serif; color: #555; flex: 1; overflow-y: auto; margin: 0; min-height: 0; scrollbar-width: none; cursor: auto; mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent 100%); }
 .deck-top-body::-webkit-scrollbar { display: none; }
