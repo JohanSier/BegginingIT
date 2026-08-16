@@ -25,6 +25,7 @@ export function WorkTicketPage() {
   const [cursorSide, setCursorSide] = useState<'left' | 'right' | null>(null)
   const [cursorReady, setCursorReady] = useState(false)
   const [showBeginningHint, setShowBeginningHint] = useState(false)
+  const [simulationKey, setSimulationKey] = useState(0)
   
   // Drag functionality (from Home page)
   const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => ({
@@ -332,44 +333,6 @@ export function WorkTicketPage() {
             position: 'relative',
           }}
         >
-          {/* Back to simulation picker text */}
-          <button
-            type="button"
-            onClick={() => setHasSelectedSimulation(false)}
-            style={{
-              position: 'absolute',
-              left: -80,
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              opacity: 0.7,
-              transition: 'opacity 0.2s ease, transform 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = '1'
-              e.currentTarget.style.transform = 'scale(1.05)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = '0.7'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-            aria-label="Back to simulation picker"
-          >
-            <span
-              style={{
-                fontFamily: "'Lato', sans-serif",
-                fontStyle: 'italic',
-                fontWeight: 400,
-                fontSize: 14,
-                letterSpacing: '0.7px',
-                color: 'rgba(255,255,255,0.7)',
-              }}
-            >
-              Go Back
-            </span>
-          </button>
-
           <p
             style={{
               fontFamily: "'Lato', sans-serif",
@@ -392,7 +355,7 @@ export function WorkTicketPage() {
         {/* Render dialogues 0..activeIndex */}
         {workTicketDialogue.slice(0, activeIndex + 1).map((entry, i) => (
           <DialogueBlock
-            key={entry.id}
+            key={`${entry.id}-${simulationKey}`}
             ref={(el) => {
               dialogueRefs.current[i] = el
             }}
@@ -425,6 +388,54 @@ export function WorkTicketPage() {
           </p>
         )}
       </div>
+
+      {/* Back to simulation picker text - fixed position */}
+      <button
+        type="button"
+        onClick={() => {
+          setHasSelectedSimulation(false)
+          setActiveIndex(0)
+          setIsTypingComplete(false)
+          setSkipAnimation(false)
+          setCursorReady(false)
+          setCam({ x: 0, y: 0, z: 1 })
+          setSimulationKey(prev => prev + 1)
+        }}
+        style={{
+          position: 'fixed',
+          left: 520,
+          top: 80,
+          border: 'none',
+          background: 'none',
+          cursor: 'pointer',
+          padding: 0,
+          opacity: 0.7,
+          transition: 'opacity 0.2s ease, transform 0.2s ease',
+          zIndex: 50,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.opacity = '1'
+          e.currentTarget.style.transform = 'scale(1.05)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.opacity = '0.7'
+          e.currentTarget.style.transform = 'scale(1)'
+        }}
+        aria-label="Back to simulation picker"
+      >
+        <span
+          style={{
+            fontFamily: "'Lato', sans-serif",
+            fontStyle: 'italic',
+            fontWeight: 400,
+            fontSize: 14,
+            letterSpacing: '0.7px',
+            color: 'rgba(255,255,255,0.7)',
+          }}
+        >
+          Go Back
+        </span>
+      </button>
 
       {/* Beginning hint */}
       <AnimatePresence>
