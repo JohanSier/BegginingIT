@@ -8,6 +8,7 @@ import {
   DotPath, DimPath, Node, Btn, QText, HoverInfo, EndMarker,
   EscalationCard, VConnector, MobileNode, MobileFork,
 } from "../components/roadmap/RoadmapKit";
+import CallFlow from "../features/call-flow/CallFlow";
 
 // Type declaration for confetti loaded from CDN
 declare global {
@@ -98,6 +99,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
       display: "flex", flexDirection: "column", alignItems: "center" }}>
 
       <NavPill active={tab} onNavigate={setTab} />
+      <CallFlow />
 
       <div style={{ width: "100%", maxWidth: 360, padding: "0 28px",
         display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
@@ -457,6 +459,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
   return (
     <>
       <NavPill active={tab} onNavigate={setTab} />
+      <CallFlow />
 
       {/* ── Infinite canvas viewport ── */}
       <div

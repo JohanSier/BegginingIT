@@ -1,0 +1,149 @@
+.call-flow {
+  position: absolute;
+  top: var(--call-flow-top, 50px);
+  right: var(--call-flow-right, 50px);
+  z-index: 20;
+  width: 126px;
+  height: 58px;
+  transition: all 1s cubic-bezier(.16, 5, .5, 21), height 1s cubic-bezier(.16, 1, .3, 1);
+  font-family: 'Lato:Bold Italic', 'Lato', sans-serif;
+  font-style: italic;
+}
+
+.call-flow.is-hovered,
+.call-flow:focus-within {
+  width: 288px;
+  height: 675px;
+}
+
+.call-flow__trigger,
+.call-flow__panel {
+  box-sizing: border-box;
+  border: 1px solid #272727;
+  border-radius: 15px;
+  background: #0a0a0a;
+  box-shadow: none;
+}
+
+.call-flow__trigger {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 126px;
+  height: 58px;
+  padding: 12px 8px;
+  appearance: none;
+  border: 1px solid #272727;
+  color: #fff;
+  cursor: default;
+  transition: opacity .16s ease;
+}
+
+.call-flow__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 7px 13px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .6px;
+  line-height: 15px;
+  white-space: nowrap;
+}
+
+.call-flow__chat-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  overflow: hidden;
+}
+
+.call-flow__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 288px;
+  height: 670px;
+  padding: 82px 17px 24px;
+  color: #bbb;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px) scale(.985);
+  transform-origin: top right;
+  transition: opacity .45s ease, transform 1s cubic-bezier(.16, 1, .3, 1);
+}
+
+.call-flow.is-hovered .call-flow__panel,
+.call-flow:focus-within .call-flow__panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.call-flow.is-hovered .call-flow__trigger,
+.call-flow:focus-within .call-flow__trigger {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.call-flow__header {
+  position: absolute;
+  top: 9px;
+  right: 8px;
+}
+
+.call-flow__script {
+  margin-top: -10px;
+  display: grid;
+  gap: 18px;
+  width: 250px;
+  color: #bbb;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .6px;
+  line-height: 15px;
+}
+
+.call-flow__script p { margin: 0; }
+.call-flow__script .call-flow__or { margin-top: -3px; margin-bottom: -3px; }
+
+.call-flow__play {
+  position: absolute;
+  bottom: 42px;
+  left: 27px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 151px;
+  min-height: 40px;
+  padding: 7px 13px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .03);
+  color: #fff;
+  cursor: pointer;
+  font: 700 italic 12px/15px 'Lato:Bold Italic', 'Lato', sans-serif;
+  letter-spacing: .6px;
+  white-space: nowrap;
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.call-flow__play:hover { border-color: rgba(255, 255, 255, .32); background: rgba(255, 255, 255, .08); transform: translateY(-1px); }
+.call-flow__play:focus-visible, .call-flow__trigger:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.call-flow__play-icon { width: 24px; height: 24px; flex: 0 0 24px; display: flex; align-items: center; justify-content: center; }
+.call-flow__audio-status { position: absolute; bottom: 9px; left: 27px; max-width: 220px; color: rgba(255,255,255,.58); font: 400 italic 10px/12px 'Lato', sans-serif; }
+
+@media (max-width: 560px) {
+  .call-flow { top: 16px; right: 16px; }
+  .call-flow.is-hovered, .call-flow:focus-within { width: min(288px, calc(100vw - 32px)); }
+  .call-flow__panel { width: min(288px, calc(100vw - 32px)); }
+}
