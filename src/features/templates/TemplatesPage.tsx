@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, type CSSProperties, type PointerEvent } from "react"
+import { useState, useRef, useCallback, useEffect, type CSSProperties } from "react"
 import { NavPill } from "../../components/NavPill"
 
 type Template = { title: string; body: string }
@@ -8,49 +8,48 @@ const categories: Category[] = [
   {
     title: "Greetings",
     templates: [
-      { title: "A warm welcome", body: "Hi [Name],\n\nWelcome to BeginningIT — great to have you here. I'm here if you need a hand getting started." },
-      { title: "A quick hello", body: "Hey [Name]!\n\nJust checking in. How can I help you today?" },
-      { title: "First response", body: "Hello [Name],\n\nThanks for reaching out. I've got your message and I'm taking a look now." },
+      { title: "Thanks for contacting I", body: "Hello [User],\n\nThanks for contacting SOS. I’ll contact you shortly.\n\n" },
+      { title: "Thanks for contacting II", body: "Hello [User],\n\nI’ll contact you right away.\n\n" },
+      { title: "Tried to reach out", body: "Hello [User],\n\nI just tried reaching out to your number ending in [Last 4 numbers]. Please, do not call the queue, but rather, let me know on this ticket when you are available and I will reach out.\n\nThank You\n\n" },
     ],
   },
   {
-    title: "Ticket updates",
+    title: "Ticket Updates/Follow Up",
     templates: [
-      { title: "We're on it", body: "Hi [Name],\n\nThanks for flagging this. I'm investigating the issue and will update you as soon as I have more information." },
-      { title: "Need more details", body: "Hi [Name],\n\nCould you share a screenshot and the steps you took before the issue appeared? That will help me reproduce it." },
-      { title: "Resolved", body: "Hi [Name],\n\nThis is now resolved. Please try again when you have a moment, and let me know if anything still feels off." },
-      { title: "Still investigating", body: "Hi [Name],\n\nI'm still looking into this and wanted to keep you in the loop. I'll send another update shortly." },
+      { title: "Third Party Response", body: "Hi [User],\n\nI hope you’re doing well. May I ask if you received any response from [Third Party]?\n\nPlease let me know!\n\n" },
+      { title: "Reaching out to Pending Tickets", body: "Hi [User],\n\nI'm reaching out again just to make sure if the issue is still happening. If so, let me know when you're available so we can check it out!\n\n" },
+      { title: "Still Investigating", body: "Hi [User],\n\nWe're still looking into this and wanted to keep you in the loop. I'll send another update shortly.\n\n" },
+      { title: "Resolved", body: "Hi [User],\n\nThis is now resolved. Please try again when you have a moment, and let me know if anything still feels off.\n\n" },
     ],
   },
   {
-    title: "Follow-ups",
+    title: "Escalations",
     templates: [
-      { title: "Gentle nudge", body: "Hi [Name],\n\nJust following up on my last note — I wanted to make sure it didn't get buried.\n\nWhen you have a moment, could you let me know how you'd like to proceed? Even a quick reply helps me keep things moving on my end.\n\nNo rush at all, just checking in. Happy to hop on a call if that's easier than going back and forth over email." },
-      { title: "Checking in", body: "Hi [Name],\n\nI wanted to circle back and see how things are going on your end.\n\nDid you get a chance to try the steps I suggested? If anything felt unclear or didn't work as expected, please do let me know — I'm happy to walk through it together.\n\nAlso, if the situation has changed since we last spoke, just let me know and we can adjust the approach. I'm here whenever you're ready to pick this back up." },
+      { title: "Case is being escalated", body: "Hi [User],\n\nAs I mentioned in the call, this case is being escalated to our tier 2 team, and a member of that team will be reaching out to you directly.\n\nThank you, and I hope you have a great day!\n\n" },
+      { title: "Escalating Directly to T2 in", body: "Hi [Name],\n\nThank you for reaching out to us. I appreciate you bringing this matter to our attention.\n\nTo ensure your request is handled as efficiently and thoroughly as possible, I will be escalating your case to our Tier 2 support team for further review. They have the appropriate resources to take a closer look and provide you with the assistance you need. \n\nA member of the Tier 2 team will be reaching out to you shortly to continue working with you directly and provide updates on your case. \n\nThank you!\n\n" },
     ],
   },
   {
-    title: "Scheduling",
+    title: "Asking for Approval",
     templates: [
-      { title: "Set up a call", body: "Hi [Name],\n\nWould a quick call be helpful? Send over a couple of times that work for you and I'll find a slot." },
-      { title: "Meeting reminder", body: "Hi [Name],\n\nA quick reminder about our session at [time]. Looking forward to speaking with you." },
-      { title: "Reschedule", body: "Hi [Name],\n\nNo problem at all — let's find another time. What does your availability look like this week?" },
+      { title: "Add to Distro Group", body: "Hi [Manager],\n\nI hope all is well.\n\nCould you please confirm if we can proceed with adding [User] to the group labeled [Group Name]?\n\nThank you in advance for your help.\n\n" },
+      { title: "MFA Reset Approval", body: "Hi [Manager],\n\nThis is [You] from the SOS team. [User] recently switched phones and his MFA is no longer working. May I get your approval to reset his MFA so he can enroll a new device?\n\nThanks\n\n" },
     ],
   },
   {
-    title: "Feedback",
+    title: "Give Email Access to Coworker",
     templates: [
-      { title: "Ask for feedback", body: "Hi [Name],\n\nI'd love to hear how that worked for you. Is there anything we could make clearer or better?" },
-      { title: "Thank you", body: "Hi [Name],\n\nThank you for the thoughtful feedback. I really appreciate you taking the time to share it." },
-      { title: "Feature request", body: "Hi [Name],\n\nThat's a helpful idea. I've captured it for the team and will keep you posted if it moves forward." },
+      { title: "Tell user you have to ask their Manager", body: "Hi [User],\n\nThanks for reaching out\n\nBefore moving forward, I'd like to check with your manager first. Since this falls under company policy, I would appreciate having written approval from your manager so we can ensure everything is properly documented!\n\nOnce I receive that confirmation, I'll give you access to [Other User]'s email!\n\n" },
+      { title: "Asking their Manager", body: "Hi [User's Manager],\n\nI hope you're doing well.\n\nI wanted to reach out regarding a request from [User]\n\n Would you please let me know if you approve granting [User] access to [Other User]'s email account?\n\nThank you for your time\n\n" },
+      { title: "After Manager granted Access", body: "Thanks for the quick answer [User's Manager]!\n\n [User], I've granted you access to [Other User]'s email account. Changes can take some time to synchronize, typically 1 hour.\n\n Let me know if you have access then! \n\n" },
     ],
   },
   {
-    title: "Boundaries",
+    title: "Closing",
     templates: [
-      { title: "Set expectations", body: "Hi [Name],\n\nI want to make sure I set the right expectation: this will take a little time to resolve. I'll keep you updated throughout." },
-      { title: "Not in scope", body: "Hi [Name],\n\nI understand what you're aiming for. That isn't something we can support right now, but here's the closest option available: [option]." },
-      { title: "Close the loop", body: "Hi [Name],\n\nSince I haven't heard back, I'm going to close this for now. You can always reply here to reopen the conversation." },
+      { title: "Close Ticket", body: "Hi [User],\n\nI’m glad we were able to get everything resolved successfully. I'll go ahead and close this ticket now, but If anything else comes up in the future, don’t hesitate to submit a new ticket. Our team will always be here to assist you \n\nEnjoy the rest of your day!\n\n" },
+      { title: "It was a pleasure I", body: "It was a pleasure assisting you today, [USER]!\n\nI’m glad everything was resolved successfully. If you need help with anything else in the future, please feel free to submit another ticket, we’ll be happy to assist.\n\n Enjoy the rest of your day\n\n" },
+      { title: "It was a pleasure II", body: "Hi [User],\n\nIt was a pleasure assisting you today!\n\nI’m glad we were able to get everything resolved successfully. If you need any further assistance with the [Issue], please feel free to reply to this same email thread, even if it has been 'Solved', it will automatically reopen, and I’ll be happy to help.\n\nIf anything else comes up in the future, don’t hesitate to submit a new ticket. Our team will always be here to assist you.\n\n Wishing you a lovely rest of your day!\n\n" },
     ],
   },
 ]
@@ -69,9 +68,18 @@ type CardMode = "front" | "exiting" | "back" | "closing"
 
 function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: number }) {
   const [mode, setMode] = useState<CardMode>("front")
+  const [prevMode, setPrevMode] = useState<CardMode>("front")
   const [templateIndex, setTemplateIndex] = useState(0)
   const [copiedTitle, setCopiedTitle] = useState<string | null>(null)
   const [slideDir, setSlideDir] = useState<"forward" | "back" | null>(null)
+  const bodyRef = useRef<HTMLPreElement>(null)
+
+  // Reset scroll position when template changes
+  useEffect(() => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollTop = 0
+    }
+  }, [templateIndex])
 
   const templates = category.templates
   const total = templates.length
@@ -79,6 +87,7 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
 
   // Click category card → open
   const openCard = () => {
+    setPrevMode(mode)
     setMode("exiting")
     window.setTimeout(() => { setMode("back"); setTemplateIndex(0) }, 260)
   }
@@ -90,15 +99,22 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
       window.setTimeout(() => { setTemplateIndex((i) => i + 1); setSlideDir(null) }, 220)
     } else {
       // last template — vanish upward, back to category front
+      setPrevMode(mode)
       setMode("closing")
       window.setTimeout(() => { setMode("front"); setTemplateIndex(0) }, 260)
     }
   }
 
-  // ← arrow → previous template only
+  // ← arrow → previous template only, or back to category on first
   const onPrev = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (templateIndex === 0) return
+    if (templateIndex === 0) {
+      // Back to category front
+      setPrevMode(mode)
+      setMode("closing")
+      window.setTimeout(() => { setMode("front"); setTemplateIndex(0) }, 260)
+      return
+    }
     setSlideDir("back")
     window.setTimeout(() => { setTemplateIndex((i) => i - 1); setSlideDir(null) }, 220)
   }
@@ -122,6 +138,7 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
     mode === "exiting" ? "is-exiting" : "",
     mode === "closing" ? "is-exiting" : "",
     mode === "back" ? "is-hidden" : "",
+    mode === "front" && (prevMode === "back" || prevMode === "closing") ? "is-entering" : "",
   ].filter(Boolean).join(" ")
 
   const backClass = [
@@ -129,6 +146,7 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
     slideDir === "forward" ? "slide-forward" : "",
     slideDir === "back" ? "slide-back" : "",
     mode === "back" && !slideDir ? "is-entering" : "",
+    mode === "closing" ? "slide-out-up" : "",
   ].filter(Boolean).join(" ")
 
   return (
@@ -156,10 +174,8 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
                   onClick={mode === "back" ? onCardClick : undefined}
                   style={{ cursor: mode === "back" ? "pointer" : "default" }}
                 >
-                  {/* ← goes to previous template; hidden on first */}
-                  {templateIndex > 0 && (
-                    <button className="card-close-btn" onClick={onPrev} aria-label="Previous template">←</button>
-                  )}
+                  {/* ← goes to previous template or back to category */}
+                  <button className="card-close-btn" onClick={onPrev} aria-label="Previous template">←</button>
 
                   <div className="deck-top-eyebrow">
                     <span>{String(templateIndex + 1).padStart(2, "0")}</span>
@@ -169,9 +185,9 @@ function CategoryCard({ category, cardIndex }: { category: Category; cardIndex: 
 
                   <p className="deck-top-title">{current.title}</p>
 
-                  <pre className="deck-top-body">{current.body}</pre>
+                  <pre className="deck-top-body" ref={bodyRef}>{current.body}</pre>
 
-                  <div className="deck-top-footer" onClick={(e) => e.stopPropagation()}>
+                  <div className="deck-top-footer">
                     <div className="deck-mini-dots">
                       {templates.map((_, di) => (
                         <span key={di} className={`deck-mini-dot${di === templateIndex ? " is-active" : ""}`} />

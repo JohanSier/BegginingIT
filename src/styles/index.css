@@ -34,6 +34,7 @@
 /* Front face */
 .tpl-child-front.is-exiting { animation: card-exit-up 0.26s ease forwards; pointer-events: none; }
 .tpl-child-front.is-hidden  { opacity: 0; pointer-events: none; }
+.tpl-child-front.is-entering { animation: template-drop-in 0.24s ease forwards; }
 
 /* Back face — no 3D, pure fade/slide */
 .tpl-child-back { position: absolute; inset: 0; border-radius: 2px 8px 8px 8px; background: #fff; border: 1px solid #e4e4e4; filter: drop-shadow(0px 1px 3.5px white); overflow: hidden; padding: 10px 12px; display: flex; flex-direction: column; box-sizing: border-box; }
@@ -42,6 +43,8 @@
 .tpl-child-back.slide-forward { animation: slide-out-up 0.2s ease forwards; }
 /* back = click ← to prev: old content slides out down, new slides in from above */
 .tpl-child-back.slide-back    { animation: slide-out-down 0.2s ease forwards; }
+/* closing = going back to category: slides out up */
+.tpl-child-back.slide-out-up { animation: slide-out-up 0.2s ease forwards; }
 
 /* ← back to category */
 .card-close-btn { background: none; border: none; color: #bbb; font-size: 13px; cursor: pointer; line-height: 1; padding: 0; align-self: flex-start; font-style: normal; transition: color .15s; margin-bottom: 4px; }
