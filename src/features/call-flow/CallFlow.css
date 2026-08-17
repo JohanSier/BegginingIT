@@ -70,9 +70,9 @@
   position: absolute;
   top: 0;
   right: 0;
-  width: 288px;
-  height: 670px;
-  padding: 82px 17px 24px;
+  width: 355px;
+  height: 625px;
+  padding: 82px 32px 24px;
   color: #bbb;
   opacity: 0;
   pointer-events: none;
@@ -104,7 +104,7 @@
   margin-top: -10px;
   display: grid;
   gap: 18px;
-  width: 250px;
+  width: 290px;
   color: #bbb;
   font-size: 13px;
   font-weight: 500;
