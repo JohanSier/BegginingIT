@@ -18,7 +18,7 @@
 .templates-shell { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
 
 /* ── Template grid — reference stacked card style ── */
-.template-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 48px; }
+.template-grid { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(189px, 1fr)); gap: 48px; }
 
 .tpl-card { cursor: pointer; position: relative; height: 0; padding-bottom: 120%; --offset-multiplier: 4px; --translate: 0; transform: translate(var(--translate), var(--translate)); transition: transform 0.6s ease; animation: template-card-enter .55s cubic-bezier(.2,.8,.2,1) both; animation-delay: var(--card-delay); }
 .tpl-card:not(.is-flipped):hover { --offset-multiplier: 6px; --translate: calc(-1px * (var(--cards) - 1)); transition: transform 0.3s ease; }
@@ -80,7 +80,7 @@
 /* Large mobile: 2-column grid, reduce page padding */
 @media (max-width: 640px) {
   .templates-page { padding: 52px 20px 100px; }
-  .template-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; }
+  .template-grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); gap: 28px 20px; }
   /* cards fill their column, keep 120% aspect ratio */
   .tpl-card { width: 100%; }
 }
