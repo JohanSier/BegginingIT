@@ -1,5 +1,5 @@
 import { useState } from "react"
-import timeIcon from "../../imports/time.svg"
+import timeIcon from "../../imports/Time.svg"
 import "./TimeRule.css"
 
 type TimeRuleProps = {
