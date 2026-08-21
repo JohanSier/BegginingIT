@@ -52,6 +52,13 @@ const categories: Category[] = [
       { title: "It was a pleasure II", body: "Hi [User],\n\nIt was a pleasure assisting you today!\n\nI’m glad we were able to get everything resolved successfully. If you need any further assistance with the [Issue], please feel free to reply to this same email thread, even if it has been 'Solved', it will automatically reopen, and I’ll be happy to help.\n\nIf anything else comes up in the future, don’t hesitate to submit a new ticket. Our team will always be here to assist you.\n\n Wishing you a lovely rest of your day!\n\n" },
     ],
   },
+  {
+    title: "Report Email as Phishing",
+    templates: [
+      { title: "Report it as Phishing I", body: "Hey [User],\n\nRemember, if you're unsure and suspect that an email is a phishing attempt or spam, please use the Report button at the top ribbon in Outlook or right-click on the email > Report > Report Phishing to report this and it will be sent to our designated team to investigate its legitimacy.\n\nYou should never forward a suspicious email to anyone, that includes SOS\n\n Thank you\n\n" },
+      { title: "Report it as Phishing II", body: "Hello [User],\n\nThanks for contacting SOS. For these kinds of emails, we will need to report them using the phishing button on our Outlook Desktop App.\n\nFor that we will do the following:\n\nRight click on the suspicious email.\nSelect the option for 'Report'.\nSelect 'Report Phishing'.\n\nBy reporting this, our cybersecurity team will let you know if you can trust or no the email and also the sender.\n\nThis will send it to your deleted folder and can be recovered if you get the confirmation it is safe.\n\nLet me know if there are any questions.\n\nHave a great rest of your day! \n\n" },
+    ],
+  },
 ]
 
 function ClipboardIcon() {
