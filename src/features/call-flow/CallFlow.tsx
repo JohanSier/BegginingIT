@@ -34,8 +34,11 @@ export default function CallFlow() {
         audio.pause()
         setHasPaused(true)
       } else {
-        audio.currentTime = 0
-        setCurrentTime(0)
+        // Only reset to 0 if it's the first time playing
+        if (!hasPlayed) {
+          audio.currentTime = 0
+          setCurrentTime(0)
+        }
         await audio.play()
         setAudioUnavailable(false)
         setHasPlayed(true)
@@ -137,7 +140,7 @@ export default function CallFlow() {
               {isPlaying ? "Playing" : (hasPlayed && hasPaused ? "Resume" : "Play")}
             </span>
             <span className={isPlaying ? "is-playing" : ""} style={{ marginLeft: "10px" }}>
-              {isPlaying ? formatTime(currentTime) : formatTime(hasPlayed ? currentTime : AUDIO_DURATION)}
+              {isPlaying ? formatTime(currentTime) : (hasPlayed ? formatTime(currentTime) : formatTime(AUDIO_DURATION))}
             </span>
           </button>
           {hasPlayed && (
