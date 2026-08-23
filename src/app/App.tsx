@@ -10,6 +10,7 @@ import {
 } from "../components/roadmap/RoadmapKit";
 import CallFlow from "../features/call-flow/CallFlow";
 import TimeRule from "../features/time-rule/TimeRule";
+import FiveWs from "../features/five-ws/FiveWs";
 
 // Type declaration for confetti loaded from CDN
 declare global {
@@ -74,6 +75,13 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
   pickInfo: (v: "yes"|"no") => void;
   pickFixed: (v: "yes"|"no") => void;
 }) {
+  const [showFiveWs, setShowFiveWs] = useState(false);
+
+  // Show 5Ws when user clicks NO on "Is the information provided enough?", hide when Call the user is clicked
+  useEffect(() => {
+    const callVis = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null) && info === "no" && !progress.call;
+    setShowFiveWs(callVis);
+  }, [vip, urgent, info, progress.analyze, progress.call]);
   const hasCall = info === "no";
   const q2Open = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null);
   const workVis = q2Open && (info === "yes" || (info === "no" && progress.call));
@@ -170,7 +178,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
 
         {/* 5Ws card + Call user (NO at Q2) */}
         <AnimatePresence>
-          {false && info === "no" && (
+          {info === "no" && (
             <>
               <VConnector key={`v-call-${info}`} delay={d.call} height={28} />
               <MobileNode key={`call-${info}`} label="Call the user" state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
@@ -178,15 +186,38 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
               <motion.div key={`call-card-${info}`}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }} transition={{ duration: 0.35, delay: d.cw }}
-                style={{marginTop: 12, width: "100%" }}>
-                <InfoCard 
+                style={{marginTop: 12, width: "100%"}}>
+                <InfoCard
                   title="Gather more information using 5 Ws"
                   bullets={[
-                    "1. Most Important: Do Caller Verify", 
+                    "1. Most Important: Do Caller Verify",
                     "2. Mention the call will be recorded for security and training purposes",
                   ]} />
               </motion.div>
             </>
+          )}
+        </AnimatePresence>
+
+        {/* Mobile 5Ws component */}
+        <AnimatePresence>
+          {showFiveWs && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 1000,
+                pointerEvents: "none",
+              }}
+            >
+              <FiveWs />
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -296,6 +327,14 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
   pickInfo: (v: "yes"|"no") => void;
   pickFixed: (v: "yes"|"no") => void;
 }) {
+  const [showFiveWs, setShowFiveWs] = useState(false);
+
+  // Show 5Ws when user clicks NO on "Is the information provided enough?", hide when Call the user is clicked
+  useEffect(() => {
+    const callVis = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null) && info === "no" && !progress.call;
+    setShowFiveWs(callVis);
+  }, [vip, urgent, info, progress.analyze, progress.call]);
+
   // ── Camera state: world-space origin of the viewport ──────────────────────
   // x/y = where in world-space the viewport top-left maps to (negative = panned right)
   // z = zoom level (1 = default, >1 = zoomed in, <1 = zoomed out)
@@ -609,6 +648,29 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
               state={progress.call ? "done" : "idle"} onClick={() => complete("call")} delay={d.call}
               hoverCard={<InfoCard title="Gather more information using 5 Ws" bullets={["1. Most Important: Do Caller Verify", "2. Mention the call will be recorded for security and training purposes"]} />}
               cardStyle={{ left: -30, top: 60 }} />}
+          </AnimatePresence>
+
+          {/* ── 5Ws component ── */}
+          <AnimatePresence>
+            {showFiveWs && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: "absolute",
+                  left: XC - 80,
+                  top: CY - 320,
+                  width: 200,
+                  height: 150,
+                  zIndex: 1000,
+                  pointerEvents: "none",
+                }}
+              >
+                <FiveWs />
+              </motion.div>
+            )}
           </AnimatePresence>
 
           {/* ── Work the Ticket ── */}
