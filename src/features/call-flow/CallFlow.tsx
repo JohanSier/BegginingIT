@@ -39,6 +39,14 @@ export default function CallFlow() {
           audio.currentTime = 0
           setCurrentTime(0)
         }
+        // Load audio if not ready
+        if (audio.readyState === 0) {
+          await new Promise((resolve, reject) => {
+            audio.addEventListener('canplay', resolve, { once: true })
+            audio.addEventListener('error', reject, { once: true })
+            audio.load()
+          })
+        }
         await audio.play()
         setAudioUnavailable(false)
         setHasPlayed(true)

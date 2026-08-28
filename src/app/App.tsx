@@ -79,7 +79,8 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
 
   // Show 5Ws when user clicks NO on "Is the information provided enough?", hide when Call the user is clicked
   useEffect(() => {
-    const callVis = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null) && info === "no" && !progress.call;
+    const q2Open = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null);
+    const callVis = q2Open && info === "no" && !progress.call;
     setShowFiveWs(callVis);
   }, [vip, urgent, info, progress.analyze, progress.call]);
   const hasCall = info === "no";
@@ -331,7 +332,8 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
 
   // Show 5Ws when user clicks NO on "Is the information provided enough?", hide when Call the user is clicked
   useEffect(() => {
-    const callVis = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null) && info === "no" && !progress.call;
+    const q2Open = (vip === "yes" && progress.analyze) || (vip === "no" && urgent !== null);
+    const callVis = q2Open && info === "no" && !progress.call;
     setShowFiveWs(callVis);
   }, [vip, urgent, info, progress.analyze, progress.call]);
 
