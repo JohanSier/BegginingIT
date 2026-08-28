@@ -68,6 +68,19 @@
 
 /* ── Responsive ── */
 
+/* Large screens (27" monitors and above): increase card sizes */
+@media (min-width: 1400px) {
+  .template-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 48px; max-width: 1400px; }
+  .templates-shell { max-width: 1400px; }
+  .tpl-child-front h2 { font-size: 18px; }
+  .tpl-child-front p { font-size: 13px; }
+  .deck-top-title { font-size: 14px; }
+  .deck-top-body { font-size: 12px; }
+  .deck-top-eyebrow { font-size: 10px; }
+  .deck-top-footer .copy-button { height: 28px; font-size: 11px; padding: 0 10px; }
+  .deck-top-footer .copy-button svg { width: 13px; height: 13px; }
+}
+
 /* Tablet: tighten gap, slightly smaller header */
 @media (max-width: 860px) {
   .templates-shell { max-width: 100%; padding: 0; }
