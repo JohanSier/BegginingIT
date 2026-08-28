@@ -68,8 +68,8 @@
 
 /* ── Responsive ── */
 
-/* Large screens (27" monitors and above): increase card sizes */
-@media (min-width: 1400px) {
+/* Very large screens (3000px+): increase card sizes */
+@media (min-width: 3000px) {
   .template-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 48px; max-width: 1400px; }
   .templates-shell { max-width: 1400px; }
   .tpl-child-front h2 { font-size: 18px; }
