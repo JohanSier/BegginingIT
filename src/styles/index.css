@@ -69,7 +69,7 @@
 /* ── Responsive ── */
 
 /* Very large screens (1600px width AND 1200px height): increase card sizes */
-@media (min-width: 1750px) {
+@media (min-width: 1715px) {
   .template-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 48px; max-width: 1400px; }
   .templates-shell { max-width: 1400px; }
   .tpl-child-front h2 { font-size: 18px; }
