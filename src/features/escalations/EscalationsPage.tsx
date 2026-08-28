@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { NavPill } from "../../components/NavPill";
 import { usePinSound } from "../../hooks/usePinSound";
 import {
-  Human, InfoCard, DotPath, DimPath, Node, Btn, QText, EndMarker,
+  InfoCard, DotPath, DimPath, Node, Btn, QText, EndMarker,
   VConnector, MobileNode, MobileFork, CARD_NOTE,
 } from "../../components/roadmap/RoadmapKit";
 import { QUESTIONS, DESTINATION, DOC_BULLETS, DOC_NOTE, type QNum } from "./escalationsContent";
@@ -81,7 +81,8 @@ function NotifyCard() {
 function EscalateCard({ trigger }: { trigger: QNum }) {
   return (
     <InfoCard width={180} title=""
-      note={`Transfer this ticket to ${DESTINATION[trigger]}. Leave the ticket status in "Open".`} />
+      note={`Transfer this ticket to ${DESTINATION[trigger]}. Leave the ticket status in "Open".`}
+      doodle={<img src="/imports/escalateDoodle1.svg" alt="Escalation doodle" style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))", width: 61, height: 73 }} />} />
   );
 }
 
@@ -324,8 +325,10 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
             </AnimatePresence>
           </svg>
 
-          {/* ── Human + start label ── */}
-          <div style={{ position: "absolute", left: 42, top: NODE_Y - 38 }}><Human /></div>
+          {/* ── Escalate doodle + start label ── */}
+          <div style={{ position: "absolute", left: 42, top: NODE_Y - 38 }}>
+            <img src="/imports/escalateDoodle1.svg" alt="Escalation doodle" style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))", width: 61, height: 73 }} />
+          </div>
           <div style={{ position: "absolute", left: 8, top: NODE_Y + 44, fontFamily: "Lato,sans-serif",
             fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap" }}>
             Escalating a Ticket
@@ -419,7 +422,7 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <Human size={28} />
+          <img src="/imports/escalateDoodle1.svg" alt="Escalation doodle" style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))", width: 61, height: 73 }} />
           <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
             Escalating a Ticket
           </span>

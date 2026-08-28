@@ -94,8 +94,8 @@ export const CARD_NOTE: React.CSSProperties = {
   margin: 0,
 };
 
-export function InfoCard({ title, bullets, note, width = 168, style }: {
-  title: string; bullets?: string[]; note?: string; width?: number; style?: React.CSSProperties;
+export function InfoCard({ title, bullets, note, width = 168, style, doodle }: {
+  title: string; bullets?: string[]; note?: string; width?: number; style?: React.CSSProperties; doodle?: React.ReactNode;
 }) {
   return (
     <motion.div
@@ -105,6 +105,7 @@ export function InfoCard({ title, bullets, note, width = 168, style }: {
       transition={{ duration: 0.35, ease: "easeOut" }}
       style={{ ...CARD_STYLE, width, ...style }}
     >
+      {doodle && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>{doodle}</div>}
       <p style={{ ...CARD_TITLE, cursor: "text" }}>{title}</p>
       {(bullets || note) && <div style={CARD_DIVIDER} />}
       {bullets && bullets.map((b, i) => (
