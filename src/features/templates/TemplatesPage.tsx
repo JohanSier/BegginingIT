@@ -59,6 +59,13 @@ const categories: Category[] = [
       { title: "Report it as Phishing II", body: "Hello [User],\n\nThanks for contacting SOS. For these kinds of emails, we will need to report them using the phishing button on our Outlook Desktop App.\n\nFor that we will do the following:\n\nRight click on the suspicious email.\nSelect the option for 'Report'.\nSelect 'Report Phishing'.\n\nBy reporting this, our cybersecurity team will let you know if you can trust or no the email and also the sender.\n\nThis will send it to your deleted folder and can be recovered if you get the confirmation it is safe.\n\nLet me know if there are any questions.\n\nHave a great rest of your day! \n\n" },
     ],
   },
+  {
+    title: "Reach out to Third Party",
+    templates: [
+      { title: "Email Third Party for Access", body: "Hey [User],\n\nPlease email [Third Party Name] (Email) since she's the one who has administrative privileges and can assist you in getting access into [App].\n\nThanks and have a great day!\n\n" },
+      { title: "Keep Ticket Open for Third Party", body: "Hey [User],\n\nI forgot to mention that I'll keep the ticket open until you receive a solution from [Third Party] team. Once you've connected with them, please let me know whether they were able to help, and I'll be happy to assist further if needed.\n\nThank you\n\n" },
+    ],
+  },
 ]
 
 function ClipboardIcon() {

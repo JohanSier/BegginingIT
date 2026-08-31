@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { NavPill } from "../../components/NavPill";
 import { usePinSound } from "../../hooks/usePinSound";
 import {
-  InfoCard, DotPath, DimPath, Node, Btn, QText, EndMarker,
-  VConnector, MobileNode, MobileFork, CARD_NOTE,
+  InfoCard, DotPath, DimPath, Node, Btn, EndMarker,
+  VConnector, MobileNode, MobileFork,
 } from "../../components/roadmap/RoadmapKit";
 import { QUESTIONS, DESTINATION, DOC_BULLETS, DOC_NOTE, type QNum } from "./escalationsContent";
 
@@ -44,9 +44,6 @@ const NO_MORE_X = QX[4] + 190;
 function yesPath(qx: number) {
   return `M ${qx},${YES_Y} C ${qx + 30},${SHARED_Y - 55} ${DOC_X - 140},${SHARED_Y - 55} ${DOC_X - 16},${SHARED_Y}`;
 }
-function noPath(fromX: number, toX: number) {
-  return `M ${fromX + 18},${NO_Y} L ${toX - 18},${NO_Y}`;
-}
 
 const P_START = `M 74,${NODE_Y} L ${QX[1] - 18},${NO_Y}`;
 const P_Q1_NO = `M ${QX[1] + 50},${YES_Y - 170} C ${QX[1] + 105},${YES_Y - 288} ${QX[2] - 60},${YES_Y - 50} ${QX[2] + 20},${YES_Y - 100}`;
@@ -81,8 +78,7 @@ function NotifyCard() {
 function EscalateCard({ trigger }: { trigger: QNum }) {
   return (
     <InfoCard width={180} title=""
-      note={`Transfer this ticket to ${DESTINATION[trigger]}. Leave the ticket status in "Open".`}
-      doodle={<img src="/imports/escalateDoodle1.svg" alt="Escalation doodle" style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))", width: 61, height: 73 }} />} />
+      note={`Transfer this ticket to ${DESTINATION[trigger]}. Leave the ticket status in "Open".`} />
   );
 }
 
