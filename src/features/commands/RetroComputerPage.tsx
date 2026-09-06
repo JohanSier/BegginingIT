@@ -1,14 +1,8 @@
 import { FormEvent, useState, useRef, useCallback, useEffect } from "react"
 import { NavPill } from "../../components/NavPill"
 import robotLogo from "../../imports/robot.svg"
+import OrangeStickyNote from "../../imports/OrangeStickyNote"
 import "./RetroComputerPage.css"
-
-// Placeholder for OrangeStickyNote - user needs to provide this component
-function OrangeStickyNote() {
-  return (
-    <div style={{ width: '100%', height: '100%', background: '#ff9f32', borderRadius: '2px' }} />
-  )
-}
 
 const bootLines = [
   "Welcome to Higginbotham! Is a pleasure having you here",
@@ -23,12 +17,42 @@ const bootLines = [
   "  B: Learn some IT troubleshooting steps",
 ]
 
+const stickyNoteContent = "When it might be useful: Keep a quick reminder here for the next troubleshooting step or command you want to try. lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor inci  you want to try. lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor in"
+
+// Function to split text into chunks of max 80 words
+function splitTextIntoChunks(text: string, maxWords: number = 80): string[] {
+  const words = text.split(/\s+/)
+  const chunks: string[] = []
+  
+  for (let i = 0; i < words.length; i += maxWords) {
+    chunks.push(words.slice(i, i + maxWords).join(' '))
+  }
+  
+  return chunks
+}
+
+// Function to calculate sticky note positions
+function getStickyNotePositions(index: number) {
+  // First sticky note on left, second on right, alternate for additional notes
+  // First two sticky notes have same height, from third onwards they stack vertically
+  const verticalOffset = index < 2 ? 0 : (index - 1) * 250
+  const isEven = index % 2 === 0
+  
+  return {
+    top: 10 + verticalOffset,
+    left: isEven ? 'calc(-100% + 200px)' : 'calc(100% + 34px)'
+  }
+}
+
 export default function RetroComputerPage() {
   const [screenOn, setScreenOn] = useState(true)
   const [centralUnitOn, setCentralUnitOn] = useState(true)
   const [history, setHistory] = useState<string[]>([])
   const [command, setCommand] = useState("")
   const outputRef = useRef<HTMLDivElement>(null)
+  
+  // Split sticky note content into chunks
+  const stickyNoteChunks = splitTextIntoChunks(stickyNoteContent, 80)
 
   // Drag functionality
   const [cam, setCam] = useState({ x: 0, y: 0, z: 1 })
@@ -240,10 +264,21 @@ export default function RetroComputerPage() {
               </div>
             </div>
           </div>
-          <aside className="retro-sticky-note" aria-label="When it might be useful">
-            <div className="retro-sticky-note__art"><OrangeStickyNote /></div>
-            <strong>When it might be useful:</strong>
-          </aside>
+          {stickyNoteChunks.map((chunk, index) => {
+            const position = getStickyNotePositions(index)
+            return (
+              <aside 
+                key={index} 
+                className="retro-sticky-note" 
+                aria-label={`Sticky note ${index + 1}`}
+                style={{ top: position.top, left: position.left }}
+              >
+                <div className="retro-sticky-note__art"><OrangeStickyNote /></div>
+                <strong>When it might be useful:</strong>
+                <p>{chunk}</p>
+              </aside>
+            )
+          })}
         </section>
       </div>
     </main>
