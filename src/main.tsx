@@ -6,6 +6,7 @@
   import { EscalationsPage } from "./features/escalations/EscalationsPage";
   import TemplatesPage from "./features/templates/TemplatesPage";
   import ITTeamPage from "./features/it-team/ITTeamPage";
+  import RetroComputerPage from "./features/commands/RetroComputerPage";
   import "./styles/index.css";
 
   createRoot(document.getElementById("root")!).render(
@@ -16,6 +17,7 @@
         <Route path="/escalations" element={<EscalationsPage />} />
         <Route path="/templates" element={<TemplatesPage />} />
         <Route path="/it-team" element={<ITTeamPage />} />
+        <Route path="/commands" element={<RetroComputerPage />} />
       </Routes>
     </BrowserRouter>
   );

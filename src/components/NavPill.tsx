@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function HomeIcon({ on }: { on: boolean }) {
@@ -59,9 +59,32 @@ function ITTeamIcon({ on }: { on: boolean }) {
   );
 }
 
+function CommandsIcon({ on }: { on: boolean }) {
+  const c = on ? "#fff" : "#898989";
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M4 17l6-6-6-6M12 19h8" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function NavPill({ active, onNavigate }: { active: string; onNavigate: (id: string) => void }) {
   const [hovered, setHovered] = useState<string | null>(null);
+  const [isCommandsVisible, setIsCommandsVisible] = useState(false);
+  const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
+
+  const scheduleClose = () => {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    closeTimeout.current = setTimeout(() => {
+      setIsCommandsVisible(false);
+      setHovered(null);
+    }, 500);
+  };
+
+  const cancelClose = () => {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+  };
 
   const handleClick = (id: string) => {
     if (id === "work") {
@@ -74,47 +97,110 @@ export function NavPill({ active, onNavigate }: { active: string; onNavigate: (i
       navigate("/templates");
     } else if (id === "it-team") {
       navigate("/it-team");
+    } else if (id === "commands") {
+      navigate("/commands");
     } else {
       onNavigate(id);
     }
   };
 
   return (
-    <div className="fixed bottom-20 left-1/2 z-50 flex gap-[18px] items-center justify-center px-6 py-[12px]"
-      style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}>
+    <nav
+      className="fixed bottom-20 left-1/2 z-50 flex gap-[18px] items-center justify-center px-6 py-[12px]"
+      style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}
+    >
       {[
         { id: "home", label: "Home", I: HomeIcon },
         { id: "work", label: "Work Ticket", I: TicketIcon },
         { id: "escalations", label: "Escalations", I: EscIcon },
-        { id: "templates", label: "Templates", I: TemplatesIcon },
+        ...(active === 'commands' 
+          ? [{ id: "commands", label: "Commands", I: CommandsIcon }]
+          : [{ id: "templates", label: "Templates", I: TemplatesIcon }]
+        ),
         { id: "it-team", label: "IT Team", I: ITTeamIcon },
       ].map(({ id, label, I }) => {
         const isHighlighted = active === id || hovered === id;
         const isActive = active === id;
+        const isSwappable = id === 'templates' || id === 'commands';
+
+        const navigationButton = (
+          <button
+            onClick={() => handleClick(id)}
+            onMouseEnter={() => setHovered(id)}
+            onMouseLeave={() => setHovered(null)}
+            onFocus={() => setHovered(id)}
+            onBlur={() => setHovered(null)}
+            className="flex flex-col items-center gap-[1px] cursor-pointer border-0 p-0"
+            style={{
+              marginLeft: id === "home" ? "2px" : id === "work" ? "4px" : "0",
+              marginRight: id === "it-team" ? "2px" : "0",
+              background: isActive ? "rgba(255,255,255,0.12)" : "none",
+              borderRadius: 40,
+              padding: "5px 10px",
+              transition: "color 0.2s ease, background 0.2s ease",
+            }}
+          >
+            <I on={isHighlighted} />
+            <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontWeight: 700, fontSize: 12,
+              color: isHighlighted ? "#fff" : "#898989", whiteSpace: "nowrap", transition: "color 0.2s" }}>
+              {label}
+            </span>
+          </button>
+        );
+
+        if (!isSwappable) return <div key={id}>{navigationButton}</div>;
+
+        const dropdownId = active === 'commands' ? 'templates' : 'commands';
+        const dropdownLabel = active === 'commands' ? 'Templates' : 'Commands';
+        const dropdownIcon = active === 'commands' ? TemplatesIcon : CommandsIcon;
+        const DropdownIcon = dropdownIcon;
 
         return (
-        <button key={id} onClick={() => handleClick(id)}
-          onMouseEnter={() => setHovered(id)}
-          onMouseLeave={() => setHovered(null)}
-          onFocus={() => setHovered(id)}
-          onBlur={() => setHovered(null)}
-          className="flex flex-col items-center gap-[1px] cursor-pointer border-0 p-0"
-          style={{
-            marginLeft: id === "home" ? "2px" : id === "work" ? "4px" : "0",
-            marginRight: id === "it-team" ? "2px" : "0",
-            background: isActive ? "rgba(255,255,255,0.12)" : "none",
-            borderRadius: 40,
-            padding: "5px 10px",
-            transition: "color 0.2s ease, background 0.2s ease",
-          }}>
-          <I on={isHighlighted} />
-          <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontWeight: 700, fontSize: 12,
-            color: isHighlighted ? "#fff" : "#898989", whiteSpace: "nowrap", transition: "color 0.2s" }}>
-            {label}
-          </span>
-        </button>
+          <div 
+            className="swappable-nav-anchor" 
+            key={id} 
+            style={{ position: 'relative', display: 'flex' }}
+            onMouseEnter={() => { setHovered(id); setIsCommandsVisible(true); cancelClose(); }}
+            onMouseLeave={scheduleClose}
+          >
+            {navigationButton}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 'calc(100% + 25px)',
+                left: '50%',
+                opacity: isCommandsVisible ? 1 : 0,
+                pointerEvents: isCommandsVisible ? 'auto' : 'none',
+                transform: isCommandsVisible ? 'translate(-50%, 0)' : 'translate(-50%, 8px)',
+                transformOrigin: 'center bottom',
+                transition: 'opacity .18s ease, transform .24s cubic-bezier(.16, 1, .3, 1)',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => handleClick(dropdownId)}
+                onMouseEnter={() => { setHovered(dropdownId); cancelClose(); }}
+                onMouseLeave={scheduleClose}
+                onFocus={() => { setHovered(dropdownId); cancelClose(); }}
+                onBlur={scheduleClose}
+                className="flex flex-col items-center gap-[1px] cursor-pointer border-0 p-0"
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  borderRadius: 40,
+                  padding: "5px 15px",
+                  transition: "color 0.2s ease, background 0.2s ease",
+                }}
+              >
+                <DropdownIcon on={active === dropdownId || hovered === dropdownId} />
+                <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontWeight: 700, fontSize: 12,
+                  color: (active === dropdownId || hovered === dropdownId) ? "#fff" : "#898989", whiteSpace: "nowrap", transition: "color 0.2s" }}>
+                  {dropdownLabel}
+                </span>
+              </button>
+            </div>
+          </div>
         );
       })}
-    </div>
+    </nav>
   );
 }
