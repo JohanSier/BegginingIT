@@ -17,17 +17,34 @@ const bootLines = [
   "  B: Learn some IT troubleshooting steps",
 ]
 
-const stickyNoteContent = "When it might be useful: Keep a quick reminder here for the next troubleshooting step or command you want to try. lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor inci  you want to try. lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor in"
+const stickyNoteContent = "When it might be useful:  here for the next troubleshooting step or gdsahsdhsadhsdashhash\n\nngdsahsdhsadhsdashhash\n\nngdsahsdhsadhsdashhash\n\nngdsahsdhsadhsdashhash"
 
-// Function to split text into chunks of max 80 words
+// Function to split text into chunks of max 80 words, preserving newlines
 function splitTextIntoChunks(text: string, maxWords: number = 80): string[] {
-  const words = text.split(/\s+/)
+  // Split into tokens, keeping newline runs as their own tokens instead of discarding them
+  const tokens = text.split(/(\n+)/).flatMap((part) =>
+    /^\n+$/.test(part) ? [part] : part.split(/ +/)
+  ).filter((token) => token !== '')
+
   const chunks: string[] = []
-  
-  for (let i = 0; i < words.length; i += maxWords) {
-    chunks.push(words.slice(i, i + maxWords).join(' '))
+  let current: string[] = []
+  let wordCount = 0
+
+  for (const token of tokens) {
+    const isNewline = /^\n+$/.test(token)
+    current.push(token)
+    if (!isNewline) wordCount++
+
+    if (wordCount >= maxWords) {
+      chunks.push(current.join(' ').replace(/ (\n+) /g, '$1'))
+      current = []
+      wordCount = 0
+    }
   }
-  
+  if (current.length > 0) {
+    chunks.push(current.join(' ').replace(/ (\n+) /g, '$1'))
+  }
+
   return chunks
 }
 
@@ -37,7 +54,7 @@ function getStickyNotePositions(index: number) {
   // First two sticky notes have same height, from third onwards they stack vertically
   const verticalOffset = index < 2 ? 0 : (index - 1) * 250
   const isEven = index % 2 === 0
-  
+
   return {
     top: 10 + verticalOffset,
     left: isEven ? 'calc(-100% + 200px)' : 'calc(100% + 34px)'
@@ -49,8 +66,9 @@ export default function RetroComputerPage() {
   const [centralUnitOn, setCentralUnitOn] = useState(true)
   const [history, setHistory] = useState<string[]>([])
   const [command, setCommand] = useState("")
+  const [notesVisible, setNotesVisible] = useState(false)
   const outputRef = useRef<HTMLDivElement>(null)
-  
+
   // Split sticky note content into chunks
   const stickyNoteChunks = splitTextIntoChunks(stickyNoteContent, 80)
 
@@ -182,13 +200,22 @@ export default function RetroComputerPage() {
   const submitCommand = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!command.trim()) return
-    
-    if (command.toLowerCase() === 'clear') {
+
+    const normalized = command.trim().toLowerCase()
+
+    if (normalized === 'clear') {
       setHistory([])
       setCommand("")
       return
     }
-    
+
+    if (normalized === 'a' || normalized === 'b') {
+      setNotesVisible(true)
+      setHistory((lines) => [...lines, `A> ${command}`, "Here's a quick reminder pinned to the side."])
+      setCommand("")
+      return
+    }
+
     setHistory((lines) => [...lines, `A> ${command}`, "Command not supported yet."])
     setCommand("")
   }
@@ -208,7 +235,7 @@ export default function RetroComputerPage() {
       onPointerUp={onPointerUp}
       style={{ cursor: isDragging ? "grabbing" : "grab" }}
     >
-      <NavPill active="commands" onNavigate={() => {}} />
+      <NavPill active="commands" onNavigate={() => { }} />
       <div style={{ transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.z})`, transition: isDragging ? "none" : "transform 0.1s ease-out" }}>
         <section className="retro-computer" aria-label="Interactive retro computer">
           <div className="center">
@@ -225,13 +252,13 @@ export default function RetroComputerPage() {
                               {history.map((line, index) => <div key={`${line}-${index}`}>{line || "\u00a0"}</div>)}
                               <form onSubmit={submitCommand} className="terminal-form">
                                 <span>A&gt;&nbsp;</span>
-                                <input 
-                                  className="terminalInput" 
-                                  value={command} 
-                                  onChange={(event) => setCommand(event.target.value)} 
+                                <input
+                                  className="terminalInput"
+                                  value={command}
+                                  onChange={(event) => setCommand(event.target.value)}
                                   onKeyDown={handleKeyDown}
-                                  aria-label="Terminal command" 
-                                  autoComplete="off" 
+                                  aria-label="Terminal command"
+                                  autoComplete="off"
                                 />
                               </form>
                             </>
@@ -264,16 +291,17 @@ export default function RetroComputerPage() {
               </div>
             </div>
           </div>
-          {stickyNoteChunks.map((chunk, index) => {
+          {notesVisible && stickyNoteChunks.map((chunk, index) => {
             const position = getStickyNotePositions(index)
             return (
-              <aside 
-                key={index} 
-                className="retro-sticky-note" 
+              <aside
+                key={index}
+                className="retro-sticky-note retro-sticky-note--enter"
                 aria-label={`Sticky note ${index + 1}`}
-                style={{ top: position.top, left: position.left }}
+                style={{ top: position.top, left: position.left, animationDelay: `${index * 0.15}s` }}
               >
-                <div className="retro-sticky-note__art"><OrangeStickyNote /></div>
+                <div className="retro-sticky-note__art retro-sticky-note__art--top"><OrangeStickyNote /></div>
+                <div className="retro-sticky-note__art retro-sticky-note__art--bottom" aria-hidden="true"><OrangeStickyNote /></div>
                 <strong>When it might be useful:</strong>
                 <p>{chunk}</p>
               </aside>

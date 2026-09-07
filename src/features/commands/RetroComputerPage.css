@@ -29,17 +29,84 @@
 .retro-computer .computer .powerButton { position: absolute; width: 35px; height: 26px; left: 265px; background: #333; top: 30px; }.retro-computer .buttonSlide { position: absolute; width: 90%; height: 12px; left: 5%; top: 2px; background: #111; border-radius: 1px; }.retro-computer .computerButton { position: absolute; width: 45%; height: 8px; top: 2px; border: 0; background: #fa4646; cursor: pointer; transition: left .22s ease; }.retro-computer .computerButtonOff { left: 8%; }.retro-computer .computerButtonOn { left: 48%; }.retro-computer .offIndicator { position: absolute; width: 4px; height: 4px; top: 16px; left: 5px; border-radius: 50%; border: 1px white solid; }.retro-computer .onIndicator { position: absolute; width: 0; height: 6px; top: 16px; left: 28px; border-right: 1px white solid; }.retro-computer .computer .powerLight { position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 315px; top: 38px; }
 .retro-computer .output { position: absolute; width: 95%; height: 80%; top: 20px; left: 10px; color: #33ff66; font: 11px/12px 'VT323', monospace; overflow-y: auto; overscroll-behavior: contain; }.retro-computer .terminal-form { display: flex; }.retro-computer .terminalInput { width: 60%; height: 10px; padding: 0; border: 0; outline: 0; background: none; color: #33ff66; font: inherit; }.retro-computer .popup { position: absolute; inset: 0; width: 80px; height: 30px; margin: auto; border: 1px #33ff66 solid; border-top-width: 5px; text-align: center; line-height: 30px; animation: retro-popup 1s infinite; }
 @keyframes retro-popup { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-.retro-sticky-note { position: absolute; top: 60px; left: calc(100% + 34px); width: 170px; height: 153px; color: #3c2808; font: 700 13px/1.18 'Lato:Bold', 'Lato', sans-serif; transform: rotate(3deg); }.retro-sticky-note__art { position: absolute; inset: 0; overflow: hidden; }.retro-sticky-note__art > div { width: 846px; height: 758px; transform: scale(.201); transform-origin: top left; }.retro-sticky-note strong { position: absolute; z-index: 1; top: 35px; left: 25px; width: 114px; }
+
+.retro-sticky-note {
+  position: absolute;
+  width: 220px;
+  min-height: 197px;
+  height: auto;
+  box-sizing: border-box;
+  padding: 50px 20px 20px 33px;
+  color: #3c2808;
+  font: 700 13px/1.18 'Lato:Bold', 'Lato', sans-serif;
+  transform: rotate(3deg);
+  opacity: 0;
+  overflow: hidden;
+}
+.retro-sticky-note__art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  container-type: size;
+}
+.retro-sticky-note__art > div {
+  width: 846px;
+  height: 758px;
+  transform-origin: center center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  transform: scale(max(100cqw / 846, 100cqh / 758));
+}
+ 
+.retro-sticky-note strong {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+.retro-sticky-note p {
+  position: relative;
+  z-index: 1;
+  margin: 8px 0 0;
+  color: #4b3310;
+  font: 400 10px/1.3 'Lato', sans-serif;
+  white-space: pre-line;
+}
+
+@keyframes sticky-note-fade-in {
+  from { opacity: 0; transform: rotate(3deg) translateY(14px) scale(0.94); }
+  to { opacity: 1; transform: rotate(3deg) translateY(0) scale(1); }
+}
+.retro-sticky-note--enter {
+  animation: sticky-note-fade-in 0.5s cubic-bezier(.2,.8,.2,1) forwards;
+}
+
 @media (max-width: 720px) { .retro-computer { transform: scale(.96); } .retro-sticky-note { left: calc(100% - 16px); top: 360px; transform: scale(.8) rotate(3deg); transform-origin: top left; } }
 @media (max-width: 500px) { .retro-computer { transform: scale(.82); } .retro-sticky-note { display: none; } }
 
 /* The imported note keeps its paper surface while its Figma shadow layer is omitted here. */
 .retro-sticky-note__art [data-name="Shadow"] { display: none; }
-.retro-sticky-note { width: 220px; height: 197px; }
-.retro-sticky-note__art > div { transform: scale(.26); }
-.retro-sticky-note strong { top: 45px; left: 33px; width: 150px; }
-.retro-sticky-note p { position: absolute; z-index: 1; top: 72px; left: 33px; width: 151px; margin: 0; color: #4b3310; font: 400 10px/1.3 'Lato', sans-serif; }
 
+/* Keep the supplied robot mark legible against the computer's grey faceplate. */
+.retro-computer .robot-logo {
+  top: 6px;
+  left: 128px;
+  z-index: 2;
+  width: 44px;
+  height: 20px;
+  display: block;
+  object-fit: contain;
+  filter: grayscale(1) contrast(3) brightness(.42);
+  mix-blend-mode: normal;
+}
+
+@media (max-width: 720px) { .retro-computer { transform: scale(.96); } .retro-sticky-note { left: calc(100% - 16px); top: 360px; transform: scale(.8) rotate(3deg); transform-origin: top left; } }
+@media (max-width: 500px) { .retro-computer { transform: scale(.82); } .retro-sticky-note { display: none; } }
+
+/* The imported note keeps its paper surface while its Figma shadow layer is omitted here. */
+.retro-sticky-note__art [data-name="Shadow"] { display: none; }
 /* Keep the supplied robot mark legible against the computer's grey faceplate. */
 .retro-computer .robot-logo {
   top: 6px;
