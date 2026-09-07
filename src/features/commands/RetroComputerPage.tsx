@@ -62,11 +62,12 @@ function getStickyNotePositions(index: number) {
 }
 
 export default function RetroComputerPage() {
-  const [screenOn, setScreenOn] = useState(true)
-  const [centralUnitOn, setCentralUnitOn] = useState(true)
+  const [screenOn, setScreenOn] = useState(false)
+  const [centralUnitOn, setCentralUnitOn] = useState(false)
   const [history, setHistory] = useState<string[]>([])
   const [command, setCommand] = useState("")
   const [notesVisible, setNotesVisible] = useState(false)
+  const [showTurnOnMessage, setShowTurnOnMessage] = useState(true)
   const outputRef = useRef<HTMLDivElement>(null)
 
   // Split sticky note content into chunks
@@ -122,6 +123,22 @@ export default function RetroComputerPage() {
 
     return () => {
       // Cleanup if needed
+    }
+  }, [screenOn, centralUnitOn])
+
+  // Handle turn on message appearing/disappearing
+  useEffect(() => {
+    if (screenOn || centralUnitOn) {
+      setShowTurnOnMessage(false)
+    } else {
+      setShowTurnOnMessage(true)
+    }
+  }, [screenOn, centralUnitOn])
+
+  // Hide sticky notes when computer is turned off
+  useEffect(() => {
+    if (!screenOn && !centralUnitOn) {
+      setNotesVisible(false)
     }
   }, [screenOn, centralUnitOn])
 
@@ -291,6 +308,9 @@ export default function RetroComputerPage() {
               </div>
             </div>
           </div>
+          {showTurnOnMessage && !screenOn && !centralUnitOn && (
+            <div className="turn-on-message">Turn the Computer On!</div>
+          )}
           {notesVisible && stickyNoteChunks.map((chunk, index) => {
             const position = getStickyNotePositions(index)
             return (

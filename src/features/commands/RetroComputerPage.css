@@ -30,6 +30,20 @@
 .retro-computer .output { position: absolute; width: 95%; height: 80%; top: 20px; left: 10px; color: #33ff66; font: 11px/12px 'VT323', monospace; overflow-y: auto; overscroll-behavior: contain; }.retro-computer .terminal-form { display: flex; }.retro-computer .terminalInput { width: 60%; height: 10px; padding: 0; border: 0; outline: 0; background: none; color: #33ff66; font: inherit; }.retro-computer .popup { position: absolute; inset: 0; width: 80px; height: 30px; margin: auto; border: 1px #33ff66 solid; border-top-width: 5px; text-align: center; line-height: 30px; animation: retro-popup 1s infinite; }
 @keyframes retro-popup { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+.turn-on-message {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #666;
+  font-family: 'Lato:Bold', 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  animation: retro-popup 2s infinite;
+  white-space: nowrap;
+}
+
 .retro-sticky-note {
   position: absolute;
   width: 220px;
