@@ -27,7 +27,7 @@
 .retro-computer .computerFrame2 { position: absolute; width: 130px; height: 46px; background: #999; border: 2px #888 solid; left: 115px; top: 7px; border-radius: 3px; }.retro-computer .floppy { position: absolute; width: 124px; height: 25px; left: 3px; top: 3px; background: #222; }.retro-computer .fingerGrip { position: absolute; width: 30px; height: 23px; background: #0d0d0d; top: 1px; left: 47px; border-radius: 3px; }.retro-computer .slot { position: absolute; width: 95%; height: 5px; left: 2.5%; top: 9px; border-radius: 3px; background: #000; }
 .retro-computer [class^='socket'] { position: absolute; width: 60.5px; height: 12px; background: #000; }.retro-computer .socket1 { top: 31px; left: 3px; }.retro-computer .socket2 { top: 31px; left: 66.5px; }
 .retro-computer .computer .powerButton { position: absolute; width: 35px; height: 26px; left: 265px; background: #333; top: 30px; }.retro-computer .buttonSlide { position: absolute; width: 90%; height: 12px; left: 5%; top: 2px; background: #111; border-radius: 1px; }.retro-computer .computerButton { position: absolute; width: 45%; height: 8px; top: 2px; border: 0; background: #fa4646; cursor: pointer; transition: left .22s ease; }.retro-computer .computerButtonOff { left: 8%; }.retro-computer .computerButtonOn { left: 48%; }.retro-computer .offIndicator { position: absolute; width: 4px; height: 4px; top: 16px; left: 5px; border-radius: 50%; border: 1px white solid; }.retro-computer .onIndicator { position: absolute; width: 0; height: 6px; top: 16px; left: 28px; border-right: 1px white solid; }.retro-computer .computer .powerLight { position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 315px; top: 38px; }
-.retro-computer .output { position: absolute; width: 95%; height: 80%; top: 20px; left: 10px; color: #33ff66; font: 11px/12px 'VT323', monospace; overflow-y: auto; overscroll-behavior: contain; }.retro-computer .terminal-form { display: flex; }.retro-computer .terminalInput { width: 60%; height: 10px; padding: 0; border: 0; outline: 0; background: none; color: #33ff66; font: inherit; }.retro-computer .popup { position: absolute; inset: 0; width: 80px; height: 30px; margin: auto; border: 1px #33ff66 solid; border-top-width: 5px; text-align: center; line-height: 30px; animation: retro-popup 1s infinite; }
+.retro-computer .output { position: absolute; width: 95%; height: 80%; top: 20px; left: 10px; color: #33ff66; font: 11px/12px 'VT323', monospace; overflow-y: auto; overscroll-behavior: contain; }.retro-computer .terminal-form { display: flex; }.retro-computer .terminalInput { width: 80%; height: 10px; padding: 0; border: 0; outline: 0; background: none; color: #33ff66; font: inherit; }.retro-computer .popup { position: absolute; inset: 0; width: 80px; height: 30px; margin: auto; border: 1px #33ff66 solid; border-top-width: 5px; text-align: center; line-height: 30px; animation: retro-popup 1s infinite; }
 @keyframes retro-popup { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
 .turn-on-message {
@@ -42,6 +42,32 @@
   letter-spacing: 0.5px;
   animation: retro-popup 2s infinite;
   white-space: nowrap;
+}
+
+.skip-message {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #666;
+  font-family: 'Lato:Bold', 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  animation: retro-popup 2s infinite;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  z-index: 100;
+}
+
+.skip-message:hover {
+  color: #888;
+}
+
+.skip-message:active {
+  color: #aaa;
 }
 
 .retro-sticky-note {
@@ -98,7 +124,7 @@
 }
 
 @media (max-width: 720px) { .retro-computer { transform: scale(.96); } .retro-sticky-note { left: calc(100% - 16px); top: 360px; transform: scale(.8) rotate(3deg); transform-origin: top left; } }
-@media (max-width: 500px) { .retro-computer { transform: scale(.82); } .retro-sticky-note { display: none; } }
+@media (max-width: 500px) { .retro-computer { transform: scale(.82); } }
 
 /* The imported note keeps its paper surface while its Figma shadow layer is omitted here. */
 .retro-sticky-note__art [data-name="Shadow"] { display: none; }
@@ -108,25 +134,7 @@
   top: 6px;
   left: 128px;
   z-index: 2;
-  width: 44px;
-  height: 20px;
-  display: block;
-  object-fit: contain;
-  filter: grayscale(1) contrast(3) brightness(.42);
-  mix-blend-mode: normal;
-}
-
-@media (max-width: 720px) { .retro-computer { transform: scale(.96); } .retro-sticky-note { left: calc(100% - 16px); top: 360px; transform: scale(.8) rotate(3deg); transform-origin: top left; } }
-@media (max-width: 500px) { .retro-computer { transform: scale(.82); } .retro-sticky-note { display: none; } }
-
-/* The imported note keeps its paper surface while its Figma shadow layer is omitted here. */
-.retro-sticky-note__art [data-name="Shadow"] { display: none; }
-/* Keep the supplied robot mark legible against the computer's grey faceplate. */
-.retro-computer .robot-logo {
-  top: 6px;
-  left: 128px;
-  z-index: 2;
-  width: 44px;
+  width: 35px;
   height: 20px;
   display: block;
   object-fit: contain;
