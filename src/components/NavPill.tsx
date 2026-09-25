@@ -107,7 +107,7 @@ export function NavPill({ active, onNavigate }: { active: string; onNavigate: (i
   return (
     <nav
       className="fixed bottom-20 left-1/2 z-50 flex gap-[18px] items-center justify-center px-6 py-[12px]"
-      style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1.2px solid #E4E4E4", boxShadow: "0 1px 7px 0 white", background: "#000" }}
+      style={{ transform: "translateX(-50%)", borderRadius: 60, border: "1px solid #e4e4e443", background: "#000" }}
     >
       {[
         { id: "home", label: "Home", I: HomeIcon },

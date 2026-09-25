@@ -11,7 +11,7 @@ export const itTeam: TeamMember[] = [
   { name: "Jon Ong", role: "Team Lead, Tier 3", platform: "team-lead-tier3" },
   { name: "Jon Jewett", role: "Tier 3", platform: "team-lead-tier3" },
   { name: "Rex Kleckner", role: "Tier 2", platform: "tier-2" },
-  { name: "Christian Gresham.", role: "Tier 2", platform: "tier-2" },
+  { name: "Christian Gresham", role: "Tier 2", platform: "tier-2" },
   { name: "Chris Vu", role: "Tier 2", platform: "tier-2" },
   { name: "Trent Shaw", role: "Tier 2", platform: "tier-2" },
   { name: "Jorge Castañeda", role: "Tier 2", platform: "tier-2" },
