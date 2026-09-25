@@ -117,7 +117,7 @@ export function NavPill({ active, onNavigate }: { active: string; onNavigate: (i
           ? [{ id: "commands", label: "Commands", I: CommandsIcon }]
           : [{ id: "templates", label: "Templates", I: TemplatesIcon }]
         ),
-        { id: "it-team", label: "IT Team", I: ITTeamIcon },
+        { id: "it-team", label: "SOS Team", I: ITTeamIcon },
       ].map(({ id, label, I }) => {
         const isHighlighted = active === id || hovered === id;
         const isActive = active === id;
