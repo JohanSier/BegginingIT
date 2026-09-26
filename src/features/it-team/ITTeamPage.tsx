@@ -6,7 +6,7 @@ import "./ITTeamPage.css"
 
 // Custom component for distance-based eye tracking
 function SmartBlobatar({ name, size }: { name: string; size: number }) {
-  const [isClose, setIsClose] = useState(false)
+  const [shouldTrack, setShouldTrack] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -21,12 +21,12 @@ function SmartBlobatar({ name, size }: { name: string; size: number }) {
       Math.pow(e.clientY - centerY, 2)
     )
     
-    // Only track eyes if mouse is within 200px
-    setIsClose(distance < 200)
+    // Track eyes if mouse is within 300px
+    setShouldTrack(distance < 300)
   }
 
   const handleMouseLeave = () => {
-    setIsClose(false)
+    setShouldTrack(false)
   }
 
   return (
@@ -38,7 +38,7 @@ function SmartBlobatar({ name, size }: { name: string; size: number }) {
     >
       <Blobatar 
         name={name} 
-        animate={isClose ? "hover" : "none"}
+        animate={shouldTrack ? "always" : undefined}
         size={size}
       />
     </div>
@@ -48,15 +48,14 @@ function SmartBlobatar({ name, size }: { name: string; size: number }) {
 export default function ITTeamPage() {
   const [cam, setCam] = useState(() => {
     if (typeof window === "undefined") return { x: 0, y: 0, z: 1 }
-    // Center the content initially
+    // Position to show the first platform at the top
     const screenWidth = window.innerWidth
     const containerWidth = 1400 // max-width of container
-    const screenHeight = window.innerHeight
-    const estimatedContentHeight = 2000 // approximate height of all platforms
+    const topOffset = 120 // padding-top from CSS
     
     return {
       x: Math.round((screenWidth - containerWidth) / 2),
-      y: Math.round((screenHeight - estimatedContentHeight) / 2),
+      y: Math.round(topOffset - 100), // Move 100px to the top (upward)
       z: 1,
     }
   })
