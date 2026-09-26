@@ -1,47 +1,23 @@
 import { useState, useRef, useCallback, useEffect } from "react"
 import { NavPill } from "../../components/NavPill"
 import { Blobatar } from "@blobatar/react"
+import { useGaze } from "@blobatar/react/gaze"
 import { itTeam, platforms } from "./data/itTeam"
+import "blobatar/motion.css"
+import "blobatar/gaze.css"
 import "./ITTeamPage.css"
 
-// Custom component for distance-based eye tracking
+// Eyes idle (breathe/bob/blink) via motion.css, and track the pointer via gaze.css
 function SmartBlobatar({ name, size }: { name: string; size: number }) {
-  const [shouldTrack, setShouldTrack] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current) return
-    
-    const rect = containerRef.current.getBoundingClientRect()
-    const centerX = rect.left + rect.width / 2
-    const centerY = rect.top + rect.height / 2
-    
-    const distance = Math.sqrt(
-      Math.pow(e.clientX - centerX, 2) + 
-      Math.pow(e.clientY - centerY, 2)
-    )
-    
-    // Track eyes if mouse is within 300px
-    setShouldTrack(distance < 300)
-  }
-
-  const handleMouseLeave = () => {
-    setShouldTrack(false)
-  }
+  const { ref } = useGaze({ travel: 5, lookAt: "pointer" })
 
   return (
-    <div 
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ display: 'inline-block' }}
-    >
-      <Blobatar 
-        name={name} 
-        animate={shouldTrack ? "always" : undefined}
-        size={size}
-      />
-    </div>
+    <Blobatar
+      ref={ref}
+      name={name}
+      animate="always"
+      size={size}
+    />
   )
 }
 
