@@ -8,6 +8,81 @@ import {
 } from "../../components/roadmap/RoadmapKit";
 import { QUESTIONS, DESTINATION, DOC_BULLETS, DOC_NOTE, type QNum } from "./escalationsContent";
 
+// Simple stick figure for escalation page (inline SVG for instant loading)
+function EscalationHuman({ size = 40 }: { size?: number }) {
+  const h = Math.round(size * 89.43 / 48.13);
+  return (
+    <svg width={size} height={h} viewBox="0 0 48.13 89.4301" fill="none"
+      style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))" }}>
+      {/* Head */}
+      <circle
+        cx="24.065"
+        cy="15.4"
+        r="7.44"
+        stroke="white"
+        strokeWidth="3.36"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Body */}
+      <line
+        x1="24.065"
+        y1="22.84"
+        x2="24.065"
+        y2="50"
+        stroke="white"
+        strokeWidth="3.36"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Left arm */}
+      <line
+        x1="24.065"
+        y1="30"
+        x2="12"
+        y2="45"
+        stroke="white"
+        strokeWidth="3.36"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Right arm */}
+      <line
+        x1="24.065"
+        y1="30"
+        x2="36"
+        y2="45"
+        stroke="white"
+        strokeWidth="3.36"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Left leg */}
+      <line
+        x1="24.065"
+        y1="50"
+        x2="16"
+        y2="75"
+        stroke="white"
+        strokeWidth="3.36"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Right leg */}
+      <line
+        x1="24.065"
+        y1="50"
+        x2="32"
+        y2="75"
+        stroke="white"
+        strokeWidth="3.36"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // Type declaration for confetti loaded from CDN (already loaded by the Home page)
 declare global {
   interface Window {
@@ -323,7 +398,7 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
 
           {/* ── Escalate doodle + start label ── */}
           <div style={{ position: "absolute", left: 42, top: NODE_Y - 38 }}>
-            <img src="/imports/escalateDoodle1.svg" alt="Escalation doodle" style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))", width: 61, height: 73 }} />
+            <EscalationHuman size={61} />
           </div>
           <div style={{ position: "absolute", left: 8, top: NODE_Y + 44, fontFamily: "Lato,sans-serif",
             fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap" }}>
@@ -418,7 +493,7 @@ function MobileEscalations({ answers, trigger, allNo, flow, complete, answer, re
         display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <img src="/imports/escalateDoodle1.svg" alt="Escalation doodle" style={{ filter: "drop-shadow(0 0 6px rgba(255,255,255,1.5))", width: 61, height: 73 }} />
+          <EscalationHuman size={61} />
           <span style={{ fontFamily: "Lato,sans-serif", fontStyle: "italic", fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
             Escalating a Ticket
           </span>
