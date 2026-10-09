@@ -25,10 +25,9 @@ export const itTeam: TeamMember[] = [
   { name: "Diego Velez", role: "Tier 1", platform: "tier-1" },
   { name: "Mohammad Wajiduddin", role: "Tier 1", platform: "tier-1" },
   { name: "Johan Cortes", role: "Tier 1", platform: "tier-1" },
+  { name: "Steffania Triana", role: "Tier 1", platform: "tier-1" },
   { name: "Daiver Bejar", role: "Tier 1", platform: "tier-1" },
   { name: "Carlos Tunarrosa", role: "Tier 1", platform: "tier-1" },
-  { name: "Steffania Triana", role: "Tier 1", platform: "tier-1" },
-  { name: "Pedro Ramos", role: "Tier 1", platform: "tier-1" },
 ]
 
 export interface PlatformConfig {
