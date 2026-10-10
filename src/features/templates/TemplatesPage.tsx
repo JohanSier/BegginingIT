@@ -8,9 +8,10 @@ const categories: Category[] = [
   {
     title: "Greetings",
     templates: [
-      { title: "Thanks for contacting I", body: "Hello [User],\n\nThanks for contacting SOS. I’ll contact you shortly.\n\n" },
-      { title: "Thanks for contacting II", body: "Hello [User],\n\nI’ll contact you right away.\n\n" },
-      { title: "Tried to reach out", body: "Hello [User],\n\nI just tried reaching out to your number ending in [Last 4 numbers]. Please, do not call the queue, but rather, let me know on this ticket when you are available and I will reach out.\n\nThank You\n\n" },
+      { title: "Thanks for contacting III", body: "Hello [User],\n\nThis is [You] from SOS!\n\nThank you for reaching out, I will begin working on this and will let you know when I have an update for you.\n\n" },
+      { title: "Thanks for contacting I", body: "Hello [User],\n\nThis is [You] from SOS!\n\nThanks for reaching out. I’ll contact you shortly.\n\n" },
+      { title: "Thanks for contacting II", body: "Hello [User],\n\nThis is [You] from SOS!\n\nI’ll contact you right away.\n\n" },
+      { title: "Tried to reach out", body: "Hello [User],\n\nThis is [You] from SOS!\n\nI just tried reaching out to your number ending in [Last 4 numbers]. Please, do not call the queue, but rather, let me know on this ticket when you are available and I will reach out.\n\nThank You\n\n" },
     ],
   },
   {

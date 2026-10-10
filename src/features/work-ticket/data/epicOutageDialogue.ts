@@ -55,13 +55,13 @@ export const epicOutageDialogue: DialogueEntry[] = [
     id: 9,
     speaker: 'mentor',
     message:
-      "The SLA is a 1-hour response. Once you take the ticket, send an immediate email, then follow up with a call. In the ticket type make sure you put Incident and Link it to the Problem ticket that was created, maybe you have to create it the problem ticket instead, double check with team on Nerd Herd chat",
+      "The SLA is a 1-hour response. Once you take the ticket, send an immediate email, then follow up with a call. In the ticket type make sure you put Incident and Link it to the Problem ticket that was created, maybe you have to create the problem ticket instead, double check with team on Nerd Herd chat",
   },
   {
     id: 10,
     speaker: 'mentor',
     message:
-      "Tell the user the truth: Higginbotham's Epic instance is unavailable, the Epic team is already engaged, and nothing on their computer needs fixing. Just wait for the Epic Team updates",
+      "Tell the user the truth: Higginbotham's Epic instance is unavailable, the Epic team is already engaged, and there's nothing we could do on our end to fix it. Just wait for the Epic Team updates",
   },
   {
     id: 11,
