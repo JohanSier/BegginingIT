@@ -7,6 +7,9 @@ import { useTypewriter } from '../hooks/useTypewriter'
 import svgPathsUser from '../../../imports/Group18/svg-2app3oq84x'
 import svgPathsMentor from '../../../imports/Group19/svg-cukm4u87w6'
 
+// Import SVG as React component
+import problemTicketDoodle from '../../../imports/problemTicketDoodle.svg?url'
+
 // Use public folder paths for images
 const imgRobot = '/imports/robot.svg'
 const imgMentor = '/imports/mentor.png'
@@ -56,24 +59,30 @@ function MentorBadge({ dim }: { dim: boolean }) {
   )
 }
 
-// ─── User avatar — robot SVG, no container circle ───────────────────────────
-function UserAvatar({ dim }: { dim: boolean }) {
+// ─── User avatar — robot SVG or problem ticket doodle, no container circle ───────────────────────────
+function UserAvatar({ dim, simulationType }: { dim: boolean; simulationType: 'trackpad' | 'epic-outage' }) {
   const [loaded, setLoaded] = useState(false)
+  const [error, setError] = useState(false)
+  const imgSrc = simulationType === 'epic-outage' ? problemTicketDoodle : imgRobot
+  const isProblemTicket = simulationType === 'epic-outage'
 
   return (
     <img
-      src={imgRobot}
+      src={imgSrc}
       alt="User"
       loading="eager"
       onLoad={() => setLoaded(true)}
-      style={{ 
-        width: 52, 
-        height: 52, 
-        objectFit: 'contain', 
-        flexShrink: 0, 
-        opacity: dim ? 0.38 : (loaded ? 1 : 0), 
-        transition: 'opacity 0.3s ease', 
-        filter: 'drop-shadow(0 1px 8px white)' 
+      onError={() => setError(true)}
+      style={{
+        width: isProblemTicket ? 52 : 52,
+        height: isProblemTicket ? 52 : 52,
+        objectFit: 'contain',
+        flexShrink: 0,
+        opacity: dim ? 0.38 : (loaded ? 1 : 0),
+        transition: 'opacity 0.3s ease',
+        filter: 'drop-shadow(0 1px 8px white)',
+        borderRadius: isProblemTicket ? 8 : 0,
+        backgroundColor: error ? 'rgba(255,255,255,0.1)' : 'transparent'
       }}
     />
   )
@@ -138,6 +147,7 @@ interface DialogueBlockProps {
   state: DialogueState
   skipAnimation?: boolean
   onTypingComplete?: () => void
+  simulationType?: 'trackpad' | 'epic-outage'
 }
 
 // W-words only highlighted in entry id=3, case-sensitive. Other tokens always highlighted.
@@ -179,7 +189,7 @@ const textStyle: CSSProperties = {
 }
 
 const DialogueBlock = forwardRef<HTMLDivElement, DialogueBlockProps>(
-  ({ entry, state, skipAnimation, onTypingComplete }, ref) => {
+  ({ entry, state, skipAnimation, onTypingComplete, simulationType = 'trackpad' }, ref) => {
     const isActive = state === 'active'
     const isUser = entry.speaker === 'user'
     const dim = state === 'completed'
@@ -222,7 +232,7 @@ const DialogueBlock = forwardRef<HTMLDivElement, DialogueBlockProps>(
     if (isUser) {
       return (
         <div ref={ref} style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 12, paddingLeft: 110, animation: 'fadeSlideIn 0.4s ease forwards', opacity: 0 }}>
-          <UserAvatar dim={dim} />
+          <UserAvatar dim={dim} simulationType={simulationType} />
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
             <UserBadge dim={dim} />
             <p style={{ ...textStyle, color: textColor, textAlign: 'left', maxWidth: 290, transition: 'color 0.5s ease' }}>

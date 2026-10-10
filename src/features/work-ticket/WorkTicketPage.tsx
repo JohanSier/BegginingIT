@@ -2,9 +2,11 @@ import { useState, useRef, useCallback, useEffect, type CSSProperties, type Mous
 import { motion, AnimatePresence } from 'motion/react'
 import { NavPill } from '../../components/NavPill'
 import { workTicketDialogue } from './data/workTicketDialogue'
+import { epicOutageDialogue } from './data/epicOutageDialogue'
 import DialogueBlock from './components/DialogueBlock'
 import CustomCursor from './components/CustomCursor'
 import SimulationPicker from './components/SimulationPicker'
+import type { DialogueEntry } from './types'
 
 // Type declaration for confetti loaded from CDN
 declare global {
@@ -14,10 +16,12 @@ declare global {
 }
 
 type CursorState = 'reading' | 'ready' | 'restart'
+type SimulationType = 'trackpad' | 'epic-outage'
 
 export function WorkTicketPage() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [hasSelectedSimulation, setHasSelectedSimulation] = useState(false)
+  const [simulationType, setSimulationType] = useState<SimulationType>('trackpad')
   const [isTypingComplete, setIsTypingComplete] = useState(false)
   const [skipAnimation, setSkipAnimation] = useState(false)
   const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 })
@@ -25,6 +29,9 @@ export function WorkTicketPage() {
   const [cursorSide, setCursorSide] = useState<'left' | 'right' | null>(null)
   const [showBeginningHint, setShowBeginningHint] = useState(false)
   const [simulationKey, setSimulationKey] = useState(0)
+
+  // Get the appropriate dialogue based on simulation type
+  const currentDialogue: DialogueEntry[] = simulationType === 'trackpad' ? workTicketDialogue : epicOutageDialogue
   
   // Drag functionality (from Home page)
   const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => ({
@@ -40,7 +47,7 @@ export function WorkTicketPage() {
   const containerRef = useRef<HTMLDivElement>(null)
   const dialogueRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const isFinished = activeIndex >= workTicketDialogue.length - 1 && isTypingComplete
+  const isFinished = activeIndex >= currentDialogue.length - 1 && isTypingComplete
 
   const cursorState: CursorState = (() => {
     if (!inZone) return 'reading'
@@ -134,11 +141,11 @@ export function WorkTicketPage() {
       setCam({ x: 0, y: 0, z: 1 });
       containerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
     } else {
-      setActiveIndex((prev) => Math.min(prev + 1, workTicketDialogue.length - 1))
+      setActiveIndex((prev) => Math.min(prev + 1, currentDialogue.length - 1))
       setIsTypingComplete(false)
       setSkipAnimation(false)
     }
-  }, [isFinished, containerRef])
+  }, [isFinished, containerRef, currentDialogue.length])
 
   const goBack = useCallback(() => {
     if (activeIndex > 0) {
@@ -262,7 +269,18 @@ export function WorkTicketPage() {
   }, [goBack])
 
   if (!hasSelectedSimulation) {
-  return <SimulationPicker onSelectTrackpad={() => setHasSelectedSimulation(true)} />
+  return (
+    <SimulationPicker
+      onSelectTrackpad={() => {
+        setSimulationType('trackpad')
+        setHasSelectedSimulation(true)
+      }}
+      onSelectEpicOutage={() => {
+        setSimulationType('epic-outage')
+        setHasSelectedSimulation(true)
+      }}
+    />
+  )
 }
 
   const containerStyle: CSSProperties = {
@@ -330,12 +348,12 @@ export function WorkTicketPage() {
               userSelect: 'none',
             }}
           >
-            Example of Working a Ticket
+            {simulationType === 'trackpad' ? 'Example of Working a Ticket' : 'Epic Outage Simulation'}
           </p>
         </div>
 
         {/* Render dialogues 0..activeIndex */}
-        {workTicketDialogue.slice(0, activeIndex + 1).map((entry, i) => (
+        {currentDialogue.slice(0, activeIndex + 1).map((entry, i) => (
           <DialogueBlock
             key={`${entry.id}-${simulationKey}`}
             ref={(el) => {
@@ -345,6 +363,7 @@ export function WorkTicketPage() {
             state={i === activeIndex ? 'active' : 'completed'}
             skipAnimation={i === activeIndex ? skipAnimation : false}
             onTypingComplete={i === activeIndex ? handleTypingComplete : undefined}
+            simulationType={simulationType}
           />
         ))}
 
@@ -376,6 +395,7 @@ export function WorkTicketPage() {
         type="button"
         onClick={() => {
           setHasSelectedSimulation(false)
+          setSimulationType('trackpad')
           setActiveIndex(0)
           setIsTypingComplete(false)
           setSkipAnimation(false)

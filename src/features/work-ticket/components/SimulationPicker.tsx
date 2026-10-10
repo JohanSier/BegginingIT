@@ -1,9 +1,11 @@
 import simulation1 from '@/imports/simulation_1.webp'
+import epicProblemTicket from '@/imports/epicProblemTicket.png'
 import { NavPill } from '@/components/NavPill'
 import { useNavigate } from 'react-router-dom'
 
 interface SimulationPickerProps {
   onSelectTrackpad: () => void
+  onSelectEpicOutage: () => void
 }
 
 function SimulationCard({
@@ -11,11 +13,13 @@ function SimulationCard({
   detail,
   state = 'available',
   onClick,
+  image,
 }: {
   title: string
   detail: string
   state?: 'available' | 'coming-soon'
   onClick?: () => void
+  image?: string
 }) {
   const isAvailable = state === 'available'
 
@@ -29,7 +33,7 @@ function SimulationCard({
     >
       <span className="simulation-card__art" aria-hidden="true">
         {isAvailable ? (
-          <img src={simulation1} alt="" className="simulation-card__image" />
+          <img src={image} alt="" className="simulation-card__image" />
         ) : (
           <span className="simulation-card__placeholder" />
         )}
@@ -40,7 +44,7 @@ function SimulationCard({
   )
 }
 
-export default function SimulationPicker({ onSelectTrackpad }: SimulationPickerProps) {
+export default function SimulationPicker({ onSelectTrackpad, onSelectEpicOutage }: SimulationPickerProps) {
   const navigate = useNavigate()
 
   const handleNavigate = (id: string) => {
@@ -63,8 +67,8 @@ export default function SimulationPicker({ onSelectTrackpad }: SimulationPickerP
         <div className="simulation-picker__inner">
           <h1 id="simulation-picker-title" aria-hidden="true">CHOOSE A SIMULATION</h1>
           <div className="simulation-picker__cards">
-            <SimulationCard title="Trackpad Issue" detail="By Johan Cortes" onClick={onSelectTrackpad} />
-            <SimulationCard title="Available Soon" detail="In Progress" state="coming-soon" />
+            <SimulationCard title="Trackpad Issue" detail="Handled By Johan Cortes" onClick={onSelectTrackpad} image={simulation1} />
+            <SimulationCard title="Epic Problem Ticket" detail="Handled By Diego Velez" onClick={onSelectEpicOutage} image={epicProblemTicket} />
             <SimulationCard title="Available Soon" detail="In Progress" state="coming-soon" />
           </div>
         </div>
