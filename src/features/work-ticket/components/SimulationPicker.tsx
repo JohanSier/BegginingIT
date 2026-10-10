@@ -1,6 +1,6 @@
 import simulation1 from '@/imports/simulation_1.webp'
-import epicProblemTicket from '@/imports/epicProblemTicket.png'
-import phishingSimulation from '@/imports/simulation_3.png'
+import epicProblemTicket from '@/imports/epicProblemTicket.webp'
+import phishingSimulation from '@/imports/simulation_3.webp'
 import { NavPill } from '@/components/NavPill'
 import { useNavigate } from 'react-router-dom'
 

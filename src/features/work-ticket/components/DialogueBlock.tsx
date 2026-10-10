@@ -16,8 +16,8 @@ import userScenario4 from '../../../imports/user-scenario-4.svg?url'
 
 // Use public folder paths for images
 const imgRobot = '/imports/robot.svg'
-const imgMentor = '/imports/mentor.png'
-const imgBombilla = '/imports/bulb.png'
+const imgMentor = '/imports/mentor.webp'
+const imgBombilla = '/imports/bulb.webp'
 
 const badgeTextStyle: CSSProperties = {
   fontFamily: "'Lato', sans-serif",
