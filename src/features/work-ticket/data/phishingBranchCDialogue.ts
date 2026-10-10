@@ -48,7 +48,7 @@ export const phishingBranchCDialogue: DialogueEntry[] = [
     id: 8,
     speaker: 'mentor',
     message:
-      "Secure the account:\n• Sign user out of all sessions\n• Reset password\n• Disable the compromised mail rule",
+      "Secure the account:\n• Sign user out of all sessions\n• Reset password\n• Disable the compromised mail rule \n• Install and run Malwarebytes. (You'll always see 3 files that are recognized as malware but they are safe, do not quarantine those) If you see more than 3, ping a T2 for review.",
   },
   {
     id: 9,

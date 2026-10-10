@@ -11,7 +11,7 @@ export const phishingBranchBDialogue: DialogueEntry[] = [
     speaker: 'mentor',
     important: true,
     message:
-      "Key insight: This is a confirmed credential exposure. Immediate action is required.",
+      "This is a confirmed credential exposure. Immediate action is required.",
   },
   {
     id: 3,

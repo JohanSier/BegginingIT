@@ -166,8 +166,23 @@ export function WorkTicketPage() {
       setActiveIndex((prev) => prev - 1)
       setIsTypingComplete(true)
       setSkipAnimation(true)
+    } else if (showScenarioSelector) {
+      // On scenario selector, go back to simulation picker
+      setHasSelectedSimulation(false)
+      setSimulationType('trackpad')
+      setShowScenarioSelector(false)
+      setActiveIndex(0)
+      setIsTypingComplete(false)
+      setSkipAnimation(false)
+    } else if (simulationType.startsWith('phishing') && simulationType !== 'phishing') {
+      // If at the beginning of a phishing branch, go back to scenario selector
+      setSimulationType('phishing')
+      setShowScenarioSelector(true)
+      setActiveIndex(0)
+      setIsTypingComplete(false)
+      setSkipAnimation(false)
     }
-  }, [activeIndex])
+  }, [activeIndex, simulationType, showScenarioSelector])
 
   const handleClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
@@ -444,7 +459,7 @@ export function WorkTicketPage() {
         {/* End-of-conversation hint */}
         {isFinished && (
           <>
-            {simulationType.startsWith('phishing') && simulationType !== 'phishing' && (
+            {simulationType.startsWith('phishing') && (
               <button
                 type="button"
                 onClick={() => {
@@ -493,7 +508,7 @@ export function WorkTicketPage() {
                 color: 'rgba(255,255,255,0.22)',
                 textAlign: 'center',
                 margin: 0,
-                marginTop: simulationType.startsWith('phishing') && simulationType !== 'phishing' ? 8 : -24,
+                marginTop: simulationType.startsWith('phishing') ? 8 : -24,
                 animation: 'fadeSlideIn 0.6s ease forwards',
                 opacity: 0,
                 userSelect: 'none',
@@ -509,8 +524,20 @@ export function WorkTicketPage() {
       <button
         type="button"
         onClick={() => {
-          setHasSelectedSimulation(false)
-          setSimulationType('trackpad')
+          if (showScenarioSelector) {
+            // Already on scenario selector, go back to simulation picker
+            setHasSelectedSimulation(false)
+            setSimulationType('trackpad')
+            setShowScenarioSelector(false)
+          } else if (simulationType === 'phishing' || simulationType.startsWith('phishing-branch')) {
+            // In any phishing scenario, go back to scenario selector
+            setSimulationType('phishing')
+            setShowScenarioSelector(true)
+          } else {
+            // In other simulations, go to simulation picker
+            setHasSelectedSimulation(false)
+            setSimulationType('trackpad')
+          }
           setActiveIndex(0)
           setIsTypingComplete(false)
           setSkipAnimation(false)

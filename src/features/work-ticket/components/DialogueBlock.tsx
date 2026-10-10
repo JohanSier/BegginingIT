@@ -7,8 +7,12 @@ import { useTypewriter } from '../hooks/useTypewriter'
 import svgPathsUser from '../../../imports/Group18/svg-2app3oq84x'
 import svgPathsMentor from '../../../imports/Group19/svg-cukm4u87w6'
 
-// Import SVG as React component
+// Import SVGs as React components
 import problemTicketDoodle from '../../../imports/problemTicketDoodle.svg?url'
+import userScenario1 from '../../../imports/user-scenario-1.svg?url'
+import userScenario2 from '../../../imports/user-scenario-2.svg?url'
+import userScenario3 from '../../../imports/user-scenario-3.svg?url'
+import userScenario4 from '../../../imports/user-scenario-4.svg?url'
 
 // Use public folder paths for images
 const imgRobot = '/imports/robot.svg'
@@ -63,8 +67,17 @@ function MentorBadge({ dim }: { dim: boolean }) {
 function UserAvatar({ dim, simulationType }: { dim: boolean; simulationType: 'trackpad' | 'epic-outage' | 'phishing' | 'phishing-branch-a' | 'phishing-branch-b' | 'phishing-branch-c' }) {
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
-  const imgSrc = simulationType === 'epic-outage' ? problemTicketDoodle : imgRobot
-  const isProblemTicket = simulationType === 'epic-outage'
+
+  const imgSrc = (() => {
+    if (simulationType === 'epic-outage') return problemTicketDoodle
+    if (simulationType === 'phishing') return userScenario1
+    if (simulationType === 'phishing-branch-a') return userScenario2
+    if (simulationType === 'phishing-branch-b') return userScenario3
+    if (simulationType === 'phishing-branch-c') return userScenario4
+    return imgRobot
+  })()
+
+  const isCustomDoodle = simulationType !== 'trackpad'
 
   return (
     <img
@@ -74,14 +87,14 @@ function UserAvatar({ dim, simulationType }: { dim: boolean; simulationType: 'tr
       onLoad={() => setLoaded(true)}
       onError={() => setError(true)}
       style={{
-        width: isProblemTicket ? 52 : 52,
-        height: isProblemTicket ? 52 : 52,
+        width: 52,
+        height: 52,
         objectFit: 'contain',
         flexShrink: 0,
         opacity: dim ? 0.38 : (loaded ? 1 : 0),
         transition: 'opacity 0.3s ease',
         filter: 'drop-shadow(0 1px 8px white)',
-        borderRadius: isProblemTicket ? 8 : 0,
+        borderRadius: isCustomDoodle ? 8 : 0,
         backgroundColor: error ? 'rgba(255,255,255,0.1)' : 'transparent'
       }}
     />

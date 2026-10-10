@@ -11,7 +11,7 @@ export const phishingBranchADialogue: DialogueEntry[] = [
     speaker: 'mentor',
     important: true,
     message:
-      "Since the user did NOT click the link, no admin work is needed. There's nothing to remediate.",
+      "Ask if they clicked the link. If they did NOT click the link, no admin work is needed. There's nothing to remediate. Tell the user to be honest",
   },
   {
     id: 3,

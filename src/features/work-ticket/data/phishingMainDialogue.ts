@@ -24,14 +24,14 @@ export const phishingMainDialogue: DialogueEntry[] = [
     speaker: 'mentor',
     important: true,
     message:
-      "Before testing anything, check these in order:\n\n1. Zendesk. Search for similar tickets. Other users may have received the same email.\n2. IT Glue.\n3. Nerd Herd on Teams and Zoom chat. Type keywords like \"phishing\" or the email subject.\n\nHiggy feedback is helpful, but it can be wrong. In this real ticket, Higgy told the user they did the right thing, not to click again, and to wait for the security review. The agent rated that 3/5 as incomplete, because it missed the account and endpoint checks that were actually needed.",
+      "Before testing anything, check these in order:\n\n1. Search for similar tickets. Other users may have received the same email.\n\nHiggy feedback is helpful, but it can be wrong. In this real ticket, Higgy told the user they did the right thing, not to click again, and to wait for the security review. The agent rated that 3/5 as incomplete, because it missed the account and endpoint checks that were actually needed.",
   },
   {
     id: 5,
     speaker: 'mentor',
     important: true,
     message:
-      "When you call the user, Caller Verify them first. Don't touch their account or remote into their computer before that. If they mention the word of the day, share it with them.",
+      "When you call the user, Caller Verify them first. Don't touch their account, do password reset, or remote into their computer before that. If they ask about the word of the day, share it with them.",
   },
   {
     id: 6,
@@ -43,14 +43,14 @@ export const phishingMainDialogue: DialogueEntry[] = [
     speaker: 'mentor',
     important: true,
     message:
-      "The user's answers support the \"page never loaded\" scenario, but they don't prove it. A click on a suspicious link is enough to justify checking the account and the computer. Don't close the ticket just because the email was reported.\n\nAsk these before you remote in:\n\n• Did you enter a password or any information on the page?\n• Did anything download or open?\n• Did you use the Report tab to report the email? (This user did.)",
+      "The user's answers support the \"page never loaded\" scenario, but they don't prove it. A click on a suspicious link is enough to justify checking the account and the computer. Don't close the ticket just because the email was reported.\n\nAsk these before you remote in:\n• Did you enter a password or any information on the page?\n• Did anything download or open?\n• Did you use the Report tab to report the email? (This user did.)",
   },
   {
     id: 8,
     speaker: 'mentor',
     important: true,
     message:
-      "Key insight: Now test the hypotheses in order. Each step needs admin access.\n\n1. Secure the account.\n• In Microsoft Admin, sign the user out of all active sessions.\n• In Entra Admin, reset the password.\n\n2. Check for mailbox compromise.\n• Review the user's mail rules. Look for rules the user doesn't recognize.\n• Check the Sent and Deleted folders for messages the user didn't send or delete.\n\n3. Scan the workstation.\n• Start a remote session.\n• Install and run Malwarebytes.",
+      "Now do the following:\n\n1. Secure the account.\n• In Microsoft Admin, sign the user out of all active sessions.\n• In Entra Admin, reset the password.\n\n2. Check for mailbox compromise.\n• Review the user's mail rules. Look for rules the user doesn't recognize.\n• Check the Sent and Deleted folders for messages the user didn't send or delete.\n\n3. Scan the workstation.\n• Start a remote session.\n• Install and run Malwarebytes. (You'll always see 3 files that are recognized as malware but they are safe, do not quarantine those) If you see more than 3, ping a T2 for review.",
   },
   {
     id: 9,
@@ -66,27 +66,28 @@ export const phishingMainDialogue: DialogueEntry[] = [
   {
     id: 11,
     speaker: 'user',
-    message: "It says the scan finished.",
+    message: "It says the scan finished and found 3 malicious files, should I worry?.",
   },
   {
     id: 12,
     speaker: 'mentor',
+    important: true,
     message:
-      "The scan came back clean, no malware found. The mail rules were clean, and Sent and Deleted showed nothing suspicious. The account is secured and the endpoint is clear.\n\nConfirm the email was reported (it was). Tell the user:\n\n• Don't click the link again.\n• The Security Team reviews reported emails.\n• Next time, use the Report button. Don't forward suspicious emails to SOS.",
+      "Nope, those 3 files are safe and should not be quarantined. The scan came back clean, no malware found. The mail rules were clean, and Sent and Deleted showed nothing suspicious. The account is secured and the endpoint is clear.\n\nConfirm the email was reported (it was). Tell the user:\n\n• Don't click the link again.\n• The Security Team reviews reported emails.\n• Next time, use the Report button. Don't forward suspicious emails to SOS.",
   },
   {
     id: 13,
     speaker: 'mentor',
     important: true,
     message:
-      "Root cause: there wasn't a confirmed compromise. This was a precautionary remediation after a suspected phishing click. Verify full functionality by confirming the user can sign in with the new password and reach their email.",
+      "There wasn't a confirmed compromise. This was a precautionary remediation after a suspected phishing click. Verify full functionality by confirming the user can sign in with the new password and reach their email.",
   },
   {
     id: 14,
     speaker: 'mentor',
     important: true,
     message:
-      "Document the findings, the actions taken and the outcomes. Screenshots are highly encouraged, such as the clean Malwarebytes result. Following the Ticket Notes SOP, a note could read:\n\n• Caller verified, word of the day shared\n• Confirmed user clicked link, page closed before loading, no credentials entered\n• Signed user out of all sessions in Microsoft Admin\n• Reset password in Entra Admin\n• Reviewed mail rules, Sent and Deleted folders\n• No suspicious activity found\n\n• Ran Malwarebytes\n• Scan clean\n\nConclusion: No indicators of compromise found. Account secured as a precaution.",
+      "Document the findings, the actions taken and the outcomes. Screenshots are highly encouraged, such as the Malwarebytes result. Following the Ticket Notes SOP, a note could read:\n\n• Caller verified, word of the day shared\n• Confirmed user clicked link, page closed before loading, no credentials entered\n• Signed user out of all sessions in Microsoft Admin\n• Reset password in Entra Admin\n• Reviewed mail rules, Sent and Deleted folders\n• No suspicious activity found\n• Ran Malwarebytes\n• Scan clean\n\nConclusion: No indicators of compromise found. Account secured as a precaution.",
   },
   {
     id: 15,
