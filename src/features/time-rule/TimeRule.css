@@ -7,11 +7,11 @@
   height: 58px;
   font-family: 'Lato:Bold Italic', 'Lato', sans-serif;
   font-style: italic;
-  transition: width 1s cubic-bezier(.16, 1, .3, 1), height 1s cubic-bezier(.16, 1, .3, 1), opacity .3s ease, transform .3s ease;
+  transition: width 1s cubic-bezier(.16, 1, .3, 1), height 1s cubic-bezier(.16, 1, .3, 1);
 }
 
 .time-rule.is-hovered,
-.time-rule:focus-within { width: 288px; height: 265px; }
+.time-rule:focus-within { width: 288px; height: 265px; transform: translateX(5px); }
 
 .time-rule.is-suppressed {
   opacity: 0;
@@ -41,7 +41,6 @@
   appearance: none;
   color: #fff;
   cursor: default;
-  transition: opacity .16s ease;
 }
 
 .time-rule__label {
@@ -66,7 +65,7 @@
 .time-rule__panel {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 5px;
   width: 288px;
   height: 305px;
   padding: 80px 26px 20px;
@@ -88,7 +87,7 @@
 .time-rule.is-hovered .time-rule__trigger,
 .time-rule:focus-within .time-rule__trigger { opacity: 0; pointer-events: none; }
 
-.time-rule__header { position: absolute; top: 9px; right: 8px; }
+.time-rule__header { position: absolute; top: 9px; right: 5px; }
 .time-rule__milestones { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; row-gap: 13px; }
 .time-rule__milestones p { display: grid; margin: 0; color: #bbb; font: 400 italic 11px/15px 'Lato:Italic', 'Lato', sans-serif; letter-spacing: .6px; }
 .time-rule__milestones strong { color: #fff; font: 700 italic 13px/15px 'Lato:Bold Italic', 'Lato', sans-serif; white-space: nowrap; }

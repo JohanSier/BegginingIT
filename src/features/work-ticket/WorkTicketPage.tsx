@@ -3,9 +3,14 @@ import { motion, AnimatePresence } from 'motion/react'
 import { NavPill } from '../../components/NavPill'
 import { workTicketDialogue } from './data/workTicketDialogue'
 import { epicOutageDialogue } from './data/epicOutageDialogue'
+import { phishingMainDialogue } from './data/phishingMainDialogue'
+import { phishingBranchADialogue } from './data/phishingBranchADialogue'
+import { phishingBranchBDialogue } from './data/phishingBranchBDialogue'
+import { phishingBranchCDialogue } from './data/phishingBranchCDialogue'
 import DialogueBlock from './components/DialogueBlock'
 import CustomCursor from './components/CustomCursor'
 import SimulationPicker from './components/SimulationPicker'
+import ScenarioSelector from './components/ScenarioSelector'
 import type { DialogueEntry } from './types'
 
 // Type declaration for confetti loaded from CDN
@@ -16,12 +21,13 @@ declare global {
 }
 
 type CursorState = 'reading' | 'ready' | 'restart'
-type SimulationType = 'trackpad' | 'epic-outage'
+type SimulationType = 'trackpad' | 'epic-outage' | 'phishing' | 'phishing-branch-a' | 'phishing-branch-b' | 'phishing-branch-c'
 
 export function WorkTicketPage() {
   const [activeIndex, setActiveIndex] = useState(0)
   const [hasSelectedSimulation, setHasSelectedSimulation] = useState(false)
   const [simulationType, setSimulationType] = useState<SimulationType>('trackpad')
+  const [showScenarioSelector, setShowScenarioSelector] = useState(false)
   const [isTypingComplete, setIsTypingComplete] = useState(false)
   const [skipAnimation, setSkipAnimation] = useState(false)
   const [cursorPos, setCursorPos] = useState({ x: -200, y: -200 })
@@ -31,7 +37,15 @@ export function WorkTicketPage() {
   const [simulationKey, setSimulationKey] = useState(0)
 
   // Get the appropriate dialogue based on simulation type
-  const currentDialogue: DialogueEntry[] = simulationType === 'trackpad' ? workTicketDialogue : epicOutageDialogue
+  const currentDialogue: DialogueEntry[] = (() => {
+    if (simulationType === 'trackpad') return workTicketDialogue
+    if (simulationType === 'epic-outage') return epicOutageDialogue
+    if (simulationType === 'phishing') return phishingMainDialogue
+    if (simulationType === 'phishing-branch-a') return phishingBranchADialogue
+    if (simulationType === 'phishing-branch-b') return phishingBranchBDialogue
+    if (simulationType === 'phishing-branch-c') return phishingBranchCDialogue
+    return phishingMainDialogue
+  })()
   
   // Drag functionality (from Home page)
   const [cam, setCam] = useState<{ x: number; y: number; z: number }>(() => ({
@@ -279,6 +293,11 @@ export function WorkTicketPage() {
         setSimulationType('epic-outage')
         setHasSelectedSimulation(true)
       }}
+      onSelectPhishing={() => {
+        setSimulationType('phishing')
+        setHasSelectedSimulation(true)
+        setShowScenarioSelector(true)
+      }}
     />
   )
 }
@@ -348,12 +367,67 @@ export function WorkTicketPage() {
               userSelect: 'none',
             }}
           >
-            {simulationType === 'trackpad' ? 'Example of Working a Ticket' : 'Epic Outage Simulation'}
+            {simulationType === 'trackpad' ? 'Example of Working a Ticket' : simulationType === 'epic-outage' ? 'Epic Outage Simulation' : 'Phishing Link Simulation'}
           </p>
         </div>
 
+        {/* Scenario selector for phishing simulation */}
+        {simulationType === 'phishing' && showScenarioSelector && (
+          <ScenarioSelector
+            scenarios={[
+              {
+                id: 'main',
+                title: 'Scenario 1: User Clicked Link',
+                description: 'The user clicked the link but closed it before it loaded. No credentials entered.',
+                onClick: () => {
+                  setShowScenarioSelector(false)
+                  setActiveIndex(0)
+                  setIsTypingComplete(false)
+                  setSkipAnimation(false)
+                },
+              },
+              {
+                id: 'branch-a',
+                title: 'Scenario 2: User Didn\'t Click',
+                description: 'The user received a suspicious email but did not click the link.',
+                onClick: () => {
+                  setShowScenarioSelector(false)
+                  setSimulationType('phishing-branch-a')
+                  setActiveIndex(0)
+                  setIsTypingComplete(false)
+                  setSkipAnimation(false)
+                },
+              },
+              {
+                id: 'branch-b',
+                title: 'Scenario 3: Credentials Entered',
+                description: 'The user clicked the link and entered their password on the fake page.',
+                onClick: () => {
+                  setShowScenarioSelector(false)
+                  setSimulationType('phishing-branch-b')
+                  setActiveIndex(0)
+                  setIsTypingComplete(false)
+                  setSkipAnimation(false)
+                },
+              },
+              {
+                id: 'branch-c',
+                title: 'Scenario 4: Mail Rule Found',
+                description: 'An unrecognized mail rule was found during the investigation.',
+                onClick: () => {
+                  setShowScenarioSelector(false)
+                  setSimulationType('phishing-branch-c')
+                  setActiveIndex(0)
+                  setIsTypingComplete(false)
+                  setSkipAnimation(false)
+                },
+              },
+            ]}
+          />
+        )}
+
         {/* Render dialogues 0..activeIndex */}
-        {currentDialogue.slice(0, activeIndex + 1).map((entry, i) => (
+        {!showScenarioSelector && currentDialogue.slice(0, activeIndex + 1).map((entry, i) => (
           <DialogueBlock
             key={`${entry.id}-${simulationKey}`}
             ref={(el) => {
@@ -369,24 +443,65 @@ export function WorkTicketPage() {
 
         {/* End-of-conversation hint */}
         {isFinished && (
-          <p
-            style={{
-              fontFamily: "'Lato', sans-serif",
-              fontStyle: 'italic',
-              fontWeight: 400,
-              fontSize: 11,
-              letterSpacing: '0.12em',
-              color: 'rgba(255,255,255,0.22)',
-              textAlign: 'center',
-              margin: 0,
-              marginTop: -24,
-              animation: 'fadeSlideIn 0.6s ease forwards',
-              opacity: 0,
-              userSelect: 'none',
-            }}
-          >
-            Click to restart
-          </p>
+          <>
+            {simulationType.startsWith('phishing') && simulationType !== 'phishing' && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSimulationType('phishing')
+                  setShowScenarioSelector(true)
+                  setActiveIndex(0)
+                  setIsTypingComplete(false)
+                  setSkipAnimation(false)
+                }}
+                style={{
+                  fontFamily: "'Lato', sans-serif",
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontSize: 12,
+                  letterSpacing: '0.6px',
+                  color: 'rgba(255,255,255,0.6)',
+                  textAlign: 'center',
+                  margin: '0 auto',
+                  marginTop: 8,
+                  padding: '8px 16px',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: 8,
+                  background: 'rgba(255,255,255,0.05)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'
+                }}
+              >
+                Try Another Scenario
+              </button>
+            )}
+            <p
+              style={{
+                fontFamily: "'Lato', sans-serif",
+                fontStyle: 'italic',
+                fontWeight: 400,
+                fontSize: 11,
+                letterSpacing: '0.12em',
+                color: 'rgba(255,255,255,0.22)',
+                textAlign: 'center',
+                margin: 0,
+                marginTop: simulationType.startsWith('phishing') && simulationType !== 'phishing' ? 8 : -24,
+                animation: 'fadeSlideIn 0.6s ease forwards',
+                opacity: 0,
+                userSelect: 'none',
+              }}
+            >
+              Click to restart
+            </p>
+          </>
         )}
       </div>
 

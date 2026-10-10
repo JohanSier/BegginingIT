@@ -1,11 +1,13 @@
 import simulation1 from '@/imports/simulation_1.webp'
 import epicProblemTicket from '@/imports/epicProblemTicket.png'
+import phishingSimulation from '@/imports/simulation_3.png'
 import { NavPill } from '@/components/NavPill'
 import { useNavigate } from 'react-router-dom'
 
 interface SimulationPickerProps {
   onSelectTrackpad: () => void
   onSelectEpicOutage: () => void
+  onSelectPhishing: () => void
 }
 
 function SimulationCard({
@@ -44,7 +46,7 @@ function SimulationCard({
   )
 }
 
-export default function SimulationPicker({ onSelectTrackpad, onSelectEpicOutage }: SimulationPickerProps) {
+export default function SimulationPicker({ onSelectTrackpad, onSelectEpicOutage, onSelectPhishing }: SimulationPickerProps) {
   const navigate = useNavigate()
 
   const handleNavigate = (id: string) => {
@@ -69,7 +71,7 @@ export default function SimulationPicker({ onSelectTrackpad, onSelectEpicOutage 
           <div className="simulation-picker__cards">
             <SimulationCard title="Trackpad Issue" detail="Handled By Johan Cortes" onClick={onSelectTrackpad} image={simulation1} />
             <SimulationCard title="Epic Problem Ticket" detail="Handled By Diego Velez" onClick={onSelectEpicOutage} image={epicProblemTicket} />
-            <SimulationCard title="Available Soon" detail="In Progress" state="coming-soon" />
+            <SimulationCard title="Phishing Link" detail="Handled By SOS Team" onClick={onSelectPhishing} image={phishingSimulation} />
           </div>
         </div>
       </section>

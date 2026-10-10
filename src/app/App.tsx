@@ -10,6 +10,7 @@ import {
 } from "../components/roadmap/RoadmapKit";
 import CallFlow from "../features/call-flow/CallFlow";
 import TimeRule from "../features/time-rule/TimeRule";
+import TeamMeetings from "../features/team-meetings/TeamMeetings";
 import FiveWs from "../features/five-ws/FiveWs";
 
 // Type declaration for confetti loaded from CDN
@@ -111,6 +112,7 @@ function MobileApp({ tab, setTab, vip, urgent, info, fixed, progress, complete, 
       <NavPill active={tab} onNavigate={setTab} />
       <CallFlow />
       <TimeRule />
+      <TeamMeetings />
 
       <div style={{ width: "100%", maxWidth: 360, padding: "0 28px",
         display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
@@ -504,6 +506,7 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
       <NavPill active={tab} onNavigate={setTab} />
       <CallFlow />
       <TimeRule />
+      <TeamMeetings />
 
       {/* ── Infinite canvas viewport ── */}
       <div

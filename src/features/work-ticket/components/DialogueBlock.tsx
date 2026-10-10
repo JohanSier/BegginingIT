@@ -60,7 +60,7 @@ function MentorBadge({ dim }: { dim: boolean }) {
 }
 
 // ─── User avatar — robot SVG or problem ticket doodle, no container circle ───────────────────────────
-function UserAvatar({ dim, simulationType }: { dim: boolean; simulationType: 'trackpad' | 'epic-outage' }) {
+function UserAvatar({ dim, simulationType }: { dim: boolean; simulationType: 'trackpad' | 'epic-outage' | 'phishing' | 'phishing-branch-a' | 'phishing-branch-b' | 'phishing-branch-c' }) {
   const [loaded, setLoaded] = useState(false)
   const [error, setError] = useState(false)
   const imgSrc = simulationType === 'epic-outage' ? problemTicketDoodle : imgRobot
@@ -147,7 +147,7 @@ interface DialogueBlockProps {
   state: DialogueState
   skipAnimation?: boolean
   onTypingComplete?: () => void
-  simulationType?: 'trackpad' | 'epic-outage'
+  simulationType?: 'trackpad' | 'epic-outage' | 'phishing' | 'phishing-branch-a' | 'phishing-branch-b' | 'phishing-branch-c'
 }
 
 // W-words only highlighted in entry id=3, case-sensitive. Other tokens always highlighted.
