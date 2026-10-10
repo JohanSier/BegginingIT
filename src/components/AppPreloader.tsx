@@ -7,7 +7,7 @@ import { motion } from 'motion/react'
 
 const TITLE_TEXT = 'Begin in IT'
 const SUBTITLE_TEXT = 'Welcome to the SOS Team'
-const GOLD_ACCENT = '#f4c85a'
+const GOLD_ACCENT = '#5a95f4'
 const BLACK_BACKGROUND = '#000000'
 
 // Cell colors for the pixel grid (barely visible grain)
