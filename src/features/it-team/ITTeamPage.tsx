@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react"
 import { NavPill } from "../../components/NavPill"
+import { CenterViewButton } from "../../components/CenterViewButton"
 import { Blobatar } from "@blobatar/react"
 import { useGaze } from "@blobatar/react/gaze"
 import { itTeam, platforms } from "./data/itTeam"
@@ -36,7 +37,6 @@ export default function ITTeamPage() {
     }
   })
   const [isDragging, setIsDragging] = useState(false)
-  const [showCenterButton, setShowCenterButton] = useState(false)
   const drag = useRef({ active: false, startX: 0, startY: 0, camX: 0, camY: 0 })
   const vel = useRef({ vx: 0, vy: 0, px: 0, py: 0, t: 0 })
   const raf = useRef<number | null>(null)
@@ -73,19 +73,6 @@ export default function ITTeamPage() {
         y: drag.current.camY + (e.clientY - drag.current.startY),
         z: 1,
       }
-      // Check if container is completely off-screen
-      const screenWidth = window.innerWidth
-      const screenHeight = window.innerHeight
-      const containerWidth = 1400
-      const containerHeight = 1200 // approximate height of content
-      const containerLeft = newCam.x
-      const containerRight = newCam.x + containerWidth
-      const containerTop = newCam.y
-      const containerBottom = newCam.y + containerHeight
-
-      // Check if container intersects with viewport at all
-      const isVisible = containerRight > 0 && containerLeft < screenWidth && containerBottom > 0 && containerTop < screenHeight
-      setShowCenterButton(!isVisible)
       return newCam
     })
   }, [])
@@ -102,61 +89,13 @@ export default function ITTeamPage() {
       vx *= FRICTION
       vy *= FRICTION
       if (Math.abs(vx) < 0.05 && Math.abs(vy) < 0.05) { raf.current = null; return }
-      setCam(c => {
-        const newCam = { x: c.x + vx * 16, y: c.y + vy * 16, z: 1 }
-        // Check if container is completely off-screen
-        const screenWidth = window.innerWidth
-        const screenHeight = window.innerHeight
-        const containerWidth = 1400
-        const containerHeight = 1200
-        const containerLeft = newCam.x
-        const containerRight = newCam.x + containerWidth
-        const containerTop = newCam.y
-        const containerBottom = newCam.y + containerHeight
-
-        const isVisible = containerRight > 0 && containerLeft < screenWidth && containerBottom > 0 && containerTop < screenHeight
-        setShowCenterButton(!isVisible)
-        return newCam
-      })
+      setCam(c => ({ x: c.x + vx * 16, y: c.y + vy * 16, z: 1 }))
       raf.current = requestAnimationFrame(step)
     }
     raf.current = requestAnimationFrame(step)
   }, [])
 
   useEffect(() => () => { if (raf.current !== null) cancelAnimationFrame(raf.current); }, [])
-
-  const centerView = useCallback(() => {
-    const screenWidth = window.innerWidth
-    const containerWidth = 1400
-    const topOffset = 120
-    setCam({
-      x: Math.round((screenWidth - containerWidth) / 2),
-      y: Math.round(topOffset - 100),
-      z: 1,
-    })
-    setShowCenterButton(false)
-  }, [])
-
-  // Check if content is visible on mount and after resize
-  useEffect(() => {
-    const checkVisibility = () => {
-      const screenWidth = window.innerWidth
-      const screenHeight = window.innerHeight
-      const containerWidth = 1400
-      const containerHeight = 1200
-      const containerLeft = cam.x
-      const containerRight = cam.x + containerWidth
-      const containerTop = cam.y
-      const containerBottom = cam.y + containerHeight
-
-      const isVisible = containerRight > 0 && containerLeft < screenWidth && containerBottom > 0 && containerTop < screenHeight
-      setShowCenterButton(!isVisible)
-    }
-
-    checkVisibility()
-    window.addEventListener('resize', checkVisibility)
-    return () => window.removeEventListener('resize', checkVisibility)
-  }, [cam])
 
   return (
     <>
@@ -169,42 +108,7 @@ export default function ITTeamPage() {
         onPointerUp={onPointerUp}
         style={{ cursor: isDragging ? "grabbing" : "grab" }}
       >
-        {/* Always show for testing - remove && true later */}
-        {true && (
-          <button
-            onClick={centerView}
-            className="center-view-button"
-            style={{
-              position: 'fixed',
-              bottom: 100,
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: '#f4c85a',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderRadius: '50px',
-              padding: '12px 24px',
-              color: '#000',
-              fontFamily: "'Lato', sans-serif",
-              fontStyle: 'italic',
-              fontWeight: 700,
-              fontSize: '16px',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(10px)',
-              zIndex: 1000,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)'
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
-            }}
-          >
-            Center View
-          </button>
-        )}
+        <CenterViewButton cam={cam} onCenter={setCam} />
         <div
           className="it-team-container"
           style={{
