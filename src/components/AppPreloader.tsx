@@ -126,7 +126,7 @@ const subtitleStyle: CSSProperties = {
 
 export default function AppPreloader({ children }: { children: ReactNode }) {
   const [phase, setPhase] = useState<Phase>(() =>
-    SHOW_ONCE_PER_SESSION && sessionStorage.getItem(SESSION_KEY) ? 'done' : 'fonts'
+    SHOW_ONCE_PER_SESSION && sessionStorage.getItem(SESSION_KEY) ? 'done' : 'intro'
   )
   const [textExit, setTextExit] = useState(false)
   const [reduced] = useState(
@@ -134,32 +134,7 @@ export default function AppPreloader({ children }: { children: ReactNode }) {
   )
   const grid = useMemo(() => (reduced ? null : buildGrid()), [reduced])
 
-  // 1) Wait for the fonts (capped) so the title never flashes in a fallback font
-  useEffect(() => {
-    if (phase !== 'fonts') return
-    let cancelled = false
-    const go = () => {
-      if (!cancelled) setPhase('intro')
-    }
-    const timeout = window.setTimeout(go, FONT_LOAD_TIMEOUT)
-    const fonts = document.fonts
-    if (fonts?.load) {
-      Promise.all([
-        fonts.load('400 1em "Bricolage Grotesque"'),
-        fonts.load('italic 400 1em "Lato"'),
-      ])
-        .then(() => fonts.ready)
-        .then(go, go)
-    } else {
-      go()
-    }
-    return () => {
-      cancelled = true
-      window.clearTimeout(timeout)
-    }
-  }, [phase])
-
-  // 2) Intro: text plays, then the dissolve begins
+  // 1) Skip font loading - start animation immediately
   useEffect(() => {
     if (phase !== 'intro') return
     if (SHOW_ONCE_PER_SESSION) sessionStorage.setItem(SESSION_KEY, 'true')
