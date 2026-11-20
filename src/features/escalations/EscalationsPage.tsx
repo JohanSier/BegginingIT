@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { NavPill } from "../../components/NavPill";
+import { CenterViewButton } from "../../components/CenterViewButton";
 import { usePinSound } from "../../hooks/usePinSound";
 import {
   InfoCard, DotPath, DimPath, Node, Btn, EndMarker,
@@ -305,6 +306,8 @@ function DesktopEscalations({ answers, trigger, allNo, flow, complete, answer, r
         onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onWheel={handleWheel}
         style={{ position: "fixed", inset: 0, overflow: "hidden",
           cursor: isDragging ? "grabbing" : "grab", touchAction: "none" }}>
+
+        <CenterViewButton cam={cam} onCenter={setCam} containerWidth={CW} containerHeight={CH} />
 
         <div style={{ position: "absolute", top: 0, left: 0, width: CW, height: CH,
           transform: `translate(${sceneX}px, ${sceneY}px) scale(${cam.z})`,

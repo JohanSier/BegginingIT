@@ -29,7 +29,6 @@ export const itTeam: TeamMember[] = [
   { name: "Johan Cortes", role: "Tier 1", platform: "tier-1" },
   { name: "Daiver Bejar", role: "Tier 1", platform: "tier-1" },
   { name: "Carlos Tunarrosa", role: "Tier 1", platform: "tier-1" },
-  { name: "Cristhian Reyes", role: "Tier 1", platform: "tier-1" },
   { name: "Eduardo Gutierrez", role: "Tier 1", platform: "tier-1" },
   { name: "Daniel Hall", role: "Field Services Specialist", platform: "field-service", location: "Richardson TX" },
   { name: "Eryk Phillips", role: "Field Service Specialist Lead", platform: "field-service", location: "Corpus Christie TX" },
@@ -42,6 +41,9 @@ export const itTeam: TeamMember[] = [
   { name: "Jose Lopez", role: "Field Services Technician", platform: "field-service", location: "Atlanta GA" },
   { name: "Cedrick Johnson", role: "Field Services Technician", platform: "field-service", location: "Houston, TX" },
   { name: "Xavier Seay", role: "Field Services Technician", platform: "field-service", location: "Ft. Worth, Lake Street, TX" },
+  { name: "Patrick Macon", role: "Field Service Technician", platform: "field-service", location: "Memphis, TN" },
+  { name: "Franklin Pham", role: "Field Service Technician", platform: "field-service", location: "St. Petersburg, FL" },
+  { name: "Noel Garcia", role: "Field Service Technician", platform: "field-service", location: "Louisville, KY" },
 ]
 
 export interface PlatformConfig {
@@ -55,5 +57,6 @@ export const platforms: PlatformConfig[] = [
   { key: 'manager', label: 'Manager' },
   { key: 'team-lead-tier3', label: 'Team Lead / Tier 3' },
   { key: 'tier-2', label: 'Tier 2' },
+  { key: 'field-service', label: 'Field Service' },
   { key: 'tier-1', label: 'Tier 1' },
 ]

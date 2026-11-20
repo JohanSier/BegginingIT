@@ -123,22 +123,22 @@ export default function ITTeamPage() {
 
           if (platformMembers.length === 0) return null
 
-          // Render Tier 1 and Field Service side by side
-          if (platform.key === 'tier-1') {
+          // Render Tier 2 and Field Service side by side
+          if (platform.key === 'tier-2') {
             const fieldServiceMembers = itTeam.filter(member => member.platform === 'field-service')
             if (fieldServiceMembers.length > 0) {
-              // Use Field Service member count for consistent width
-              const blobWidth = `${Math.min(100, 60 + fieldServiceMembers.length * 4)}%`
-              const blobMaxWidth = `${Math.min(900, 400 + fieldServiceMembers.length * 30)}px`
+              // Tier 2 uses its own width, Field Service matches Tier 2's width
+              const tier2Width = `${Math.min(100, 60 + platformMembers.length * 6)}%`
+              const tier2MaxWidth = `${Math.min(1200, 500 + platformMembers.length * 40)}px`
 
               return (
-                <div key="tier1-fieldservice-row" className="platform-section-horizontal-wrapper">
+                <div key="tier2-fieldservice-row" className="platform-section-horizontal-wrapper">
                   <div className="platform-section">
                     <div
                       className="platform-blob"
                       style={{
-                        width: blobWidth,
-                        maxWidth: blobMaxWidth,
+                        width: tier2Width,
+                        maxWidth: tier2MaxWidth,
                       }}
                     >
                       <div className="platform-label">{platform.label}</div>
@@ -176,8 +176,8 @@ export default function ITTeamPage() {
                     <div
                       className="platform-blob"
                       style={{
-                        width: blobWidth,
-                        maxWidth: blobMaxWidth,
+                        width: tier2Width,
+                        maxWidth: tier2MaxWidth,
                       }}
                     >
                       <div className="platform-label">Field Service</div>

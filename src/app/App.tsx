@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { NavPill } from "../components/NavPill";
+import { CenterViewButton } from "../components/CenterViewButton";
 import { usePinSound } from "../hooks/usePinSound";
 import {
   type PinState, GpsPin, Human,
@@ -524,6 +525,8 @@ function DesktopApp({ tab, setTab, vip, urgent, info, fixed, progress, complete,
           touchAction: "none",
         }}
       >
+        <CenterViewButton cam={cam} onCenter={setCam} containerWidth={CW} containerHeight={CH} />
+
         {/* ── World container: camera transform applied here ── */}
         <div
           style={{

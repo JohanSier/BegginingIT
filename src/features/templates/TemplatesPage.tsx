@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect, type CSSProperties } from "react"
 import { NavPill } from "../../components/NavPill"
+import { CenterViewButton } from "../../components/CenterViewButton"
 
 type Template = { title: string; body: string }
 type Category = { title: string; templates: Template[] }
@@ -320,6 +321,7 @@ export default function TemplatesPage() {
       onPointerUp={onPointerUp}
       style={{ cursor: isDragging ? "grabbing" : "grab" }}
     >
+      <CenterViewButton cam={cam} onCenter={setCam} containerWidth={1200} containerHeight={1000} />
       <div className="templates-ambient templates-ambient-two" />
 
       <div className="templates-shell" style={{ transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.z})`, transition: isDragging ? "none" : "transform 0.1s ease-out", display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 64 }}>
